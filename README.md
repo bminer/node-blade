@@ -20,8 +20,11 @@ Installation
 ------------
 
 for Node (via npm): `npm install blade`
+
 for Browsers:
+
 Runtime only: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
+
 Compiler + Runtime: `wget https://raw.github.com/bminer/node-blade/master/dist/blade.min.js`
 
 Syntax
@@ -47,6 +50,15 @@ div.task-details.container
 
 which renders as `<div class="task-details container"></div>`.
 
+Tag attributes?  Yep, they work pretty much like Jade, too.
+Put attributes in parenthesis, separate with a comma and/or spaces.
+
+`a(href="/homepage", onclick="return false;")` renders as:
+
+```html
+<a href="/homepage" onclick="return false;"></a>
+```
+
 div div div is annoying... so we can omit this if we specify an id or some classes:
 
 ```
@@ -61,7 +73,7 @@ renders as:
 <div id="foo"></div><div class="bar"></div><div id="this" class="is cool"></div>
 ```
 
-Also, tags without matching ending tag like `img` render properly, depending on the doctype.
+Also, tags without matching ending tag like `<img>` render properly.
 
 ### Indenting
 
@@ -99,7 +111,7 @@ Want unescaped text?  Large blocks of text? Done.
 ```
 p! This will be <strong>unescaped</strong> text.
 	|
-		How about a block?
+		How about a block? (this is "escaped", btw)
 		Yep. It just works!
 		Neato.
 ```
@@ -108,10 +120,17 @@ renders as:
 
 ```html
 <p>This will be <strong>unescaped</strong> text.
-How about a block?
+How about a block? (this is &quot;escaped&quot;, btw)
 Yep. It just works!
 Neato.</p>
 ```
+
+Rules are:
+
+-Text is escaped by default
+-Want unescaped text? Precede with a `!`
+-Large text block? Use `|` and indent properly.
+-Unescaped text block? Use `|!` or even just `!` works.
 
 ### Filters
 
@@ -140,6 +159,123 @@ Built-in filters include:
 - :stylus (must have it installed)
 
 And, you can add custom filters at runtime using the API.
+
+### Functions
+
+Functions are reusable mini-templates. They are similar to 'mixins' in Jade.
+
+Defining a function:
+
+```
+function textbox(name, value)
+	input(type="text", name=name, value=value)
+```
+
+Calling a function and inserting into template structure:
+
+```
+form
+	!=functions.textbox("firstName", "Blake")
+```
+
+Or... maybe just putting the generated HTML into a variable?
+
+```
+- var text = functions.textbox("firstName", "Blake");
+form
+	!=text
+```
+
+Limitation: Don't use a local variable with the name `functions`... for obvious reasons.
+
+### Dynamic file includes
+
+`include "file.blade"`
+
+This will dynamically (at runtime) insert "file.blade" right into the current view, as if it
+was a single file
+
+### Parameterized Blocks
+
+Parameterized blocks allow you to mark places in your template with code that will be
+rendered later.
+
+- Use the `block` keyword to mark where the block will go.
+- Use the `render` keyword to render the matching block.
+- Use the `append` keyword to append to the matching block.
+- Use the `prepend` keyword to prepend to the matching block.
+- Use the `replace` keyword to replace to the matching block.
+
+For example:
+
+```
+head
+	block header(pageTitle)
+		title= pageTitle
+body
+	h1 Hello
+	render header("Page Title")
+	append header
+		script(src="text/javascript")
+	prepend header
+		meta
+```
+
+Will output:
+
+```
+<head>
+	<meta/>
+	<title>Page Title</title>
+	<script src="text/javascript"></script>
+</head>
+<body>
+	<h1>Hello</h1>
+</body>
+```
+
+Parameters are optional. A simple, empty block looks like this: `block block_name`
+
+If you do not insert a `render` call, the defined block will not render; however,
+any `append`, `prepend`, or `replace` will still work. All of these keywords
+work in child templates, too (see template inheritance).  A `render` call in a child
+view, for example, will take precedence over a `render` call in a parent view;
+that is, by calling `render title("Homepage")` in a child view, you will change
+the title of the page to "Homepage".
+
+For convenience, you can omit a `render` call by defining a rendered block like this:
+
+```
+rendered block foobar
+	h1 Some text
+```
+
+Although, as one might expect, rendered blocks cannot accept parameters.
+
+### Template Inheritance
+
+There is no `extends` keyword.  Just do this:
+
+layout.blade:
+
+```
+html
+	head
+		block title(pageTitle)
+			title=pageTitle
+	body
+		block body
+```
+
+homepage.blade:
+
+```
+include "layout.blade"
+render title("Homepage")
+replace block body
+	h1 Hello, World
+```
+
 
 API
 ---
