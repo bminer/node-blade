@@ -9,12 +9,12 @@ Never write HTML again. Please.
 Features
 --------
 
--Write extremely readable short-hand HTML
--True client-side template support with caching, etc.
--Functions (like Jade mixins)
--Parameterized blocks
--Filters
--Code and text are escaped by default for security/convenience
+ -Write extremely readable short-hand HTML
+ -True client-side template support with caching, etc.
+ -Functions (like Jade mixins)
+ -Parameterized blocks
+ -Filters
+ -Code and text are escaped by default for security/convenience
 
 Installation
 ------------
@@ -132,6 +132,7 @@ renders as:
 ```
 
 Built-in filters include:
+
 	- :nl2br
 	- :cdata
 	- :markdown

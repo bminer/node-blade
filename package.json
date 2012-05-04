@@ -9,9 +9,11 @@
   },
   "main": "lib/blade.js",
   "dependencies": {},
-  "devDependencies": {},
+  "devDependencies": {
+  	"pegjs": ">=0.7"
+  },
   "optionalDependencies": {},
   "engines": {
-    "node": "*"
+    "node": ">=0.6"
   }
 }
