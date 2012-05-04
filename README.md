@@ -43,7 +43,7 @@ div#awesome
 
 which renders as `<div id="awesome"></div>`.
 
-Any number of classes work, separated by "."
+Any number of classes work, separated by a dot (`.`)
 
 ```
 div.task-details.container
@@ -179,7 +179,7 @@ And, you can add custom filters at runtime using the API.
 
 ### Code
 
-Use "-" to specify a code block.  Use "=" to specify code output.  A few examples, please?
+Use dash (`-`) to specify a code block.  Use equals (`=`) to specify code output.  A few examples, please?
 
 Code blocks:
 
@@ -191,7 +191,8 @@ Code blocks:
 		p Get to work, slave!
 ```
 
-Code that outputs (i.e. in a text block or at the end of a tag)
+Code that outputs (i.e. in a text block or at the end of a tag).
+It's just like a text block, except with an `=`.
 
 ```
 #taskStatus= task.completed ? "Yay!" : "Awww... it's ok."
