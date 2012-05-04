@@ -135,7 +135,7 @@ Rules are:
 
 ### Filters
 
-Need <br/> tags inserted? Use a built-in filter, perhaps?
+Need `<br/>` tags inserted? Use a built-in filter, perhaps?
 
 ```
 p
@@ -155,8 +155,8 @@ Built-in filters include:
 
 - :nl2br
 - :cdata
-- :markdown
-- :coffeescript (use :cs as an alias)
+- :markdown (must have it installed)
+- :coffeescript (must have it installed) (use :cs as an alias if you want)
 - :stylus (must have it installed)
 
 And, you can add custom filters at runtime using the API.
@@ -185,6 +185,12 @@ Or... maybe just putting the generated HTML into a variable?
 - var text = functions.textbox("firstName", "Blake");
 form
 	!=text
+```
+
+Both examples would render:
+
+```html
+<form><input type="text" name="firstName" value="Blake"/></form>
 ```
 
 Limitation: Don't use a local variable with the name `functions`... for obvious reasons.
