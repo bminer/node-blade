@@ -12,6 +12,7 @@ Features
 - Write extremely readable short-hand HTML
 - True client-side template support with caching, etc.
 - Functions (like Jade mixins)
+- Dynamic file includes
 - Parameterized blocks
 - Filters
 - Code and text are escaped by default for security/convenience
@@ -127,10 +128,10 @@ Neato.</p>
 
 Rules are:
 
--Text is escaped by default
--Want unescaped text? Precede with a `!`
--Large text block? Use `|` and indent properly.
--Unescaped text block? Use `|!` or even just `!` works.
+- Text is escaped by default
+- Want unescaped text? Precede with a `!`
+- Large text block? Use `|` and indent properly.
+- Unescaped text block? Use `|!` or even just `!` works.
 
 ### Filters
 
