@@ -217,7 +217,7 @@ p
 	|= "escape me away & away"
 ```
 
-renders `<p>escape me away &amp; away</p>
+renders `<p>escape me away &amp; away</p>`
 
 ### Doctypes
 
@@ -255,7 +255,7 @@ Yes, you can modify the list of built-in doctypes through the API. Why would you
 
 ### Comments
 
-Use "//" for a comment.  Use "//-" if you don't want the comment to be rendered.  Block comments work, too.
+Use `//` for a line comment.  Use `//-` if you don't want the comment to be rendered.  Block comments work, too.
 
 ```
 //Comment example 1
@@ -354,7 +354,7 @@ body
 
 Will output:
 
-```
+```html
 <head>
 	<meta/>
 	<title>Page Title</title>
