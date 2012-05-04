@@ -245,10 +245,7 @@ Parameters are optional. A simple, empty block looks like this: `block block_nam
 
 If you do not insert a `render` call, the defined block will not render; however,
 any `append`, `prepend`, or `replace` will still work. All of these keywords
-work in child templates, too (see template inheritance).  A `render` call in a child
-view, for example, will take precedence over a `render` call in a parent view;
-that is, by calling `render title("Homepage")` in a child view, you will change
-the title of the page to "Homepage".
+work in included templates, too.  The order in which these keywords appear matters.
 
 For convenience, you can omit a `render` call by defining a rendered block like this:
 
@@ -283,6 +280,7 @@ replace block body
 	h1 Hello, World
 ```
 
+Hmmm... that wasn't so bad, actually.
 
 API
 ---
