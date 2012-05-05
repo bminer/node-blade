@@ -551,7 +551,7 @@ Asynchronously compiles a Blade template from a string.
 - `options` include:
 	- `filename` - the filename being compiled (required when using includes
 		or the `cache` option)
-	- `cache` - cache the compiled template
+	- `cache` - if true, the compiled template will be cached
 	- `debug` - outputs debug info to the console (defaults to false)
 	- `minify` - if true, Blade generates a minified template without debugging
 		information (defaults to false)
