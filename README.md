@@ -118,7 +118,7 @@ renders as:
 <div id="foo"></div><div class="bar"></div><div id="this" class="is cool"></div>
 ```
 
-Also, tags without matching ending tag like `<img>` render properly.
+Also, tags without matching ending tags like `<img>` render properly.
 
 ### Indenting
 
@@ -268,7 +268,7 @@ should avoid using these names in your view templates whenever possible:
 
 Don't forget a doctype!  Actually, you can, whatever... defaults to HTML 5, of course.
 
-Add a doctype using `doctype` keyword or `!!!` like this:
+Add a doctype using the `doctype` keyword or `!!!` like this:
 
 `!!! 5` means use HTML 5 doctype.
 
@@ -401,7 +401,7 @@ You can modify a block using three different commands:
 
 - Use the `append` keyword to append to the matching block.
 - Use the `prepend` keyword to prepend to the matching block.
-- Use the `replace` keyword to replace to the matching block.
+- Use the `replace` keyword to replace the matching block.
 
 Example:
 
@@ -454,7 +454,7 @@ Now, assuming nothing else happens to the block, the block will be rendered as:
 
 Parameterized blocks are really cool because "append", "prepend", and "replace"
 all work, too. You don't need to "render" the block to use "append", "prepend", and
-"replace"
+"replace".
 
 Another example:
 
@@ -484,10 +484,7 @@ Will output:
 </body>
 ```
 
-If you do not insert a `render` call, the defined block will not render, and
-all `append`, `prepend`, or `replace` will still work.
-
-#### What happens if I use `block block_name` more than once for the same block name?
+#### What happens if I define the same block more than once?
 
 You can re-define a block that has already been defined with another "block"
 statement. This completely destroys the previously defined block.
