@@ -6,6 +6,17 @@ JavaScript, so it will run on your microwave oven.
 
 Never write HTML again. Please.
 
+Table of Contents
+-----------------
+
+- [Features](#features)
+- [Todo](#todo)
+- [Installation](#installation)
+- [Language Syntax](#syntax)
+- [API](#api)
+- [Implementation Details](#implementation_details)
+- [License](#license)
+
 Features
 --------
 
@@ -167,7 +178,7 @@ Rules are:
 - Large text block? Use `|` and indent properly.
 - Unescaped text block? Use `|!` or even just `!` works.
 
-### Filters
+### Text filters
 
 Need `<br/>` tags inserted? Use a built-in filter, perhaps?
 
@@ -185,13 +196,14 @@ renders as:
 <p>How about some text with some breaks?<br/><br/>Yep! It works!</p>
 ```
 
-Built-in filters include:
+Built-in text filters include:
 
 - :nl2br
 - :cdata
 - :markdown (must have it installed)
-- :coffeescript (must have it installed) (use :cs as an alias if you want)
-- :stylus (must have it installed)
+
+Filters are essentially functions that accept a text string and return HTML. They
+cannot modify the AST directly.
 
 And, you can add custom filters at runtime using the API.
 
