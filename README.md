@@ -42,8 +42,10 @@ So, there is still stuff to do:
 
 - Better error handling and error reporting (right now it kinda sux)
 - Finish client-side runtime
+- Better test suite
 - Change tag ending based on doctype
 - Executable to compile and/or render templates via command line
+- Text string interpolation
 
 Installation
 ------------
@@ -627,4 +629,4 @@ anticipated!
 License
 -------
 
-See the LICENSE.txt file.
+See the [LICENSE.txt file](https://raw.github.com/bminer/node-blade/master/LICENSE.txt).
