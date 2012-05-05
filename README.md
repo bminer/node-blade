@@ -1,7 +1,7 @@
-node-blade
-==========
+Blade - HTML Template Compiler
+==============================
 
-Blade - HTML Template Compiler, inspired by Jade &amp; Haml, implemented in
+Blade is a HTML Template Compiler, inspired by Jade &amp; Haml, implemented in
 JavaScript, so it will run on your microwave oven.
 
 Never write HTML again. Please.
@@ -12,10 +12,12 @@ Features
 - Write extremely readable short-hand HTML
 - Insert escaped and unescaped text and vanilla JavaScript code
 - Code and text are escaped by default for security/convenience
-- True client-side template support with caching, etc.
 - Functions (like Jade mixins)
 - Dynamic file includes
 - Regular blocks and Parameterized blocks
+- True client-side template support with caching, etc.
+- Supports Express.JS
+- HTML Comments and block comments
 - Text filters
 
 Blade does more than Jade, and it does less than Jade. Your Jade templates
@@ -27,9 +29,10 @@ Todo
 Blade was implemented entirely in less than 4 days.
 So, there is still stuff to do:
 
-- Better error handling
+- Better error handling and error reporting (right now it kinda sux)
 - Finish client-side runtime
 - Change tag ending based on doctype
+- Executable to compile and/or render templates via command line
 
 Installation
 ------------
@@ -66,7 +69,7 @@ div.task-details.container
 which renders as `<div class="task-details container"></div>`.
 
 Tag attributes?  Yep, they work pretty much like Jade, too.
-Put attributes in parenthesis, separate with a comma and/or spaces.
+Put attributes in parenthesis, separate attributes with a comma, space, newline, or whatever.
 
 `a(href="/homepage", onclick="return false;")` renders as:
 
@@ -108,7 +111,8 @@ Also, tags without matching ending tag like `<img>` render properly.
 
 ### Indenting
 
-It works.
+It works. You can indent with any number of spaces or with a single tab character.
+Jade gives you a lot of weird indent flexibility. Blade, by design, does not.
 
 ```
 html
