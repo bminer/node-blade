@@ -2,7 +2,7 @@ node-blade
 ==========
 
 Blade - HTML Template Compiler, inspired by Jade &amp; Haml, implemented in
-JavaScript, so it will run on your microwave oven (only modern ones, like mine).
+JavaScript, so it will run on your microwave oven.
 
 Never write HTML again. Please.
 
@@ -10,12 +10,26 @@ Features
 --------
 
 - Write extremely readable short-hand HTML
+- Insert escaped and unescaped text and vanilla JavaScript code
+- Code and text are escaped by default for security/convenience
 - True client-side template support with caching, etc.
 - Functions (like Jade mixins)
 - Dynamic file includes
-- Parameterized blocks
-- Filters
-- Code and text are escaped by default for security/convenience
+- Regular blocks and Parameterized blocks
+- Text filters
+
+Blade does more than Jade, and it does less than Jade. Your Jade templates
+will probably need some modifications before they will work with Blade.
+
+Todo
+----
+
+Blade was implemented entirely in less than 4 days.
+So, there is still stuff to do:
+
+- Better error handling
+- Finish client-side runtime
+- Change tag ending based on doctype
 
 Installation
 ------------
@@ -326,18 +340,92 @@ Limitation: Don't use a local variable with the name `functions`... for obvious 
 This will dynamically (at runtime) insert "file.blade" right into the current view, as if it
 was a single file
 
-### Parameterized Blocks
+### Blocks
 
-Parameterized blocks allow you to mark places in your template with code that will be
+Blocks allow you to mark places in your template with code that may or may not be
 rendered later.
 
-- Use the `block` keyword to mark where the block will go.
-- Use the `render` keyword to render the matching block.
+You can do a lot with blocks, including template inheritance, etc. They behave quite
+differently from Jade.
+
+There are two types of blocks: regular blocks and parameterized blocks.
+
+#### Regular blocks
+
+Regular blocks are defined using the "block" keyword followed by a block name. Then,
+you optionally put indented block content below. Like this:
+
+```
+block regular_block
+	h1 Hello
+	p This is a test
+```
+
+Assuming nothing else happens to the block, it will be rendered as
+`<h1>Hello</h1><p>This is a test</p>` as expected. Empty blocks are also permitted.
+A simple, empty block looks like this: `block block_name`
+
+Of course, the purpose of declaring/defining a block is to possibly modify it later.
+You can modify a block using three different commands:
+
 - Use the `append` keyword to append to the matching block.
 - Use the `prepend` keyword to prepend to the matching block.
 - Use the `replace` keyword to replace to the matching block.
 
-For example:
+Example:
+
+```
+append regular_block
+	p This is also a test
+```
+
+#### Replacing a block
+
+Replacing a block is somewhat confusing, so I will explain further. If you replace
+a block, you are not changing the location of the defined block; you are only
+replacing the content of the block at its pre-defined location. If you want to change
+the location of a block, simply re-define a new block (see below).
+
+In addition, when you replace a block, all previously appended and prepended content is
+lost. The behavior is usually desired, but it can sometimes be a source of confusion.
+
+If you replace a parameterized block (described below), you cannot call "render" on
+that block anymore.
+
+At this time, you cannot replace a block with a parameterized block. The "replace"
+command will not accept parameters.
+
+#### Parameterized blocks
+
+The other type of block is called a parameterized block, and it looks like this:
+
+```
+block regular_block(headerText, text)
+	h1= headerText
+	p= text
+```
+
+Parameterized blocks do not render automatically because they require parameters.
+Therefore, assuming nothing else happens to the block, the block will not be rendered
+at all.
+
+To render a block, use the "render" keyword like this:
+
+```
+render regular_block("Some header text", 'Some "paragraph" text')
+```
+
+Now, assuming nothing else happens to the block, the block will be rendered as:
+
+```html
+<h1>Some header text</h1><p>Some &quot;paragraph&quot; text</p>
+```
+
+Parameterized blocks are really cool because "append", "prepend", and "replace"
+all work, too. You don't need to "render" the block to use "append", "prepend", and
+"replace"
+
+Another example:
 
 ```
 head
@@ -365,24 +453,28 @@ Will output:
 </body>
 ```
 
-Parameters are optional. A simple, empty block looks like this: `block block_name`
+If you do not insert a `render` call, the defined block will not render, and
+all `append`, `prepend`, or `replace` will still work.
 
-If you do not insert a `render` call, the defined block will not render; however,
-any `append`, `prepend`, or `replace` will still work. All of these keywords
-work in included templates, too.  The order in which these keywords appear matters.
+#### What happens if I use `block block_name` more than once for the same block name?
 
-For convenience, you can omit a `render` call by defining a rendered block like this:
+You can re-define a block that has already been defined with another "block"
+statement. This completely destroys the previously defined block.
+Previously executed "append", "prepend", "replace", and "render" blocks do not affect the
+re-defined block.
 
-```
-rendered block foobar
-	h1 Some text
-```
+In summary...
 
-Although, as one might expect, rendered blocks cannot accept parameters.
+- Use the `block` keyword to mark where the block will go (block definition).
+- Use the `render` keyword to render the matching "parameterized" block.
+	Do not use this on a regular block.
+- Use the `append` keyword to append to the matching block.
+- Use the `prepend` keyword to prepend to the matching block.
+- Use the `replace` keyword to replace the matching block.
 
 ### Template Inheritance
 
-There is no `extends` keyword.  Just do this:
+There is no `extends` keyword.  Just use blocks and includes:
 
 layout.blade:
 
@@ -404,7 +496,19 @@ replace block body
 	h1 Hello, World
 ```
 
-Hmmm... that wasn't so bad, actually.
+If you render layout.blade, you get: `<html><head></head><body></body></html>`, but if you
+render homepage.blade, you get:
+
+```html
+<html>
+	<head>
+		<title>Homepage</title>
+	</head>
+	<body>
+		<h1>Hello, World</h1>
+	</body>
+</html>
+```
 
 API
 ---
@@ -457,3 +561,8 @@ Implementation Details
 The Blade parser is built using [PEG.js](https://github.com/dmajda/pegjs).
 Thanks to the PEG.js team for making this project much easier than I had
 anticipated!
+
+License
+-------
+
+See the LICENSE.txt file.
