@@ -14,7 +14,7 @@ Table of Contents
 - [Installation](#installation)
 - [Language Syntax](#syntax)
 - [API](#api)
-- [Implementation Details](#implementation_details)
+- [Implementation Details](#implementation-details)
 - [License](#license)
 
 Features
@@ -198,9 +198,11 @@ renders as:
 
 Built-in text filters include:
 
-- :nl2br
-- :cdata
-- :markdown (must have it installed)
+- :nl2br - Converts newline characters to `<br/>`
+- :cdata - Surrounds text like this: `<![CDATA[` ...text goes here... `]]>`
+	Text should not contain `]]>`.
+- :markdown (must have [markdown-js](https://github.com/evilstreak/markdown-js) installed)
+- :md (alias for :markdown)
 
 Filters are essentially functions that accept a text string and return HTML. They
 cannot modify the AST directly.
@@ -248,6 +250,19 @@ p
 ```
 
 renders `<p>escape me away &amp; away</p>`
+
+#### Variable names to avoid
+
+Blade, like other template engines, defines local variables within every single view. You
+should avoid using these names in your view templates whenever possible:
+
+- `locals`
+- `runtime`
+- `cb`
+- `buf`
+- `__` (that's two underscores)
+- Any of the compiler options (i.e. `debug`, `minify`, etc.)
+- `blade`
 
 ### Doctypes
 
@@ -529,46 +544,80 @@ render homepage.blade, you get:
 API
 ---
 
-### var tmpl = blade.compile(string, options)
+`var blade = require('blade');`
+
+### blade.compile(string, [options,] cb)
+
+Asynchronously compiles a Blade template from a string.
 
 - `string` is a string of Blade
 - `options` include:
-	- `filename` - the filename being compiled (optional, but recommended)
-	- `fileLoader` - a function that loads external files referenced in `string`.
-		should be of the form `function(filename, cb)` where cb is of the form
-		`cb(err, string)`
-	- `debug` - generates templates with debugging info
-	- `doctypes` - use this Object instead of `blade.doctypes`
+	- `filename` - the filename being compiled (required when using includes
+		or the `cache` option)
+	- `cache` - cache the compiled template
+	- `debug` - outputs debug info to the console (defaults to false)
+	- `minify` - if true, Blade generates a minified template without debugging
+		information (defaults to false)
+	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
+	- `inlineTags` - use this Object instead of `blade.Compiler.inlineTags`
+	- `filters` - use this Object instead of `blade.Compiler.filters`
+- `cb` is a function of the form: `cb(err, fn)` where `err` contains
+	any parse or compile errors and `fn` is the compiled template.
+	If an error occurs, `err` may contain the following properties:
+	- `message` - The error message
+	- `expected` - If the error is a 'SyntaxError', this is an array of expected tokens
+	- `found` - If the error is a 'SyntaxError', this is the token that was found
+	- `filename` - The filename where the error occurred
+	- `offset` - The offset in the string where the error occurred.
+	- `line` - The line # where the error occurred
+	- `column` - The column # where the error occurred
 
-Returns the template `tmpl` as a JavaScript function. You can render a
-template by calling the function: `tmpl(locals, options)`
+You can render a compiled template by calling the function: `tmpl(locals, cb)`
 	- `locals` are the local variables to be passed to the view template
-	- `options` include:
-		`runtime` - specify an Object containing Blade runtime functions
+	- `cb` is a function of the form `function(err, html)` where `err` contains
+		any runtime errors and `html` contains the rendered HTML.
 
-### blade.doctypes
+In addition, a compiled template has these properties:
+	- `template` - a function that also renders the template but accepts 3 parameters:
+		`tmpl.template(locals, runtime, cb)`. This simply allows you to use a custom
+		runtime environment, if you choose to do so.
 
-The list of built-in doctypes, which you can modify or whatever.
+You can call `tmpl.toString()`, just like you can on any other JavaScript function.
+This might be useful for client-side templates, for example.
 
-### blade.parse(string)
+### blade.compileFile(filename, [options,] cb)
+
+Asynchronously compile a Blade template from a filename on the filesystem.
+
+- `filename` is the filename
+- `options` - same as `blade.compile` above, except `filename` option is always
+	overwritten	with the `filename` specified.
+- `cb` - same as `blade.compile` above
+
+### blade.renderFile(filename, options, cb)
+
+Convenience function to asynchronously compile a template and render it.
+
+- `filename` is the filename
+- `options` - same as `blade.compileFile` above. This object is also passed
+	directly to the view, so it should also contain your view's local variables.
+- `cb` - a function of the form `function(err, html)`
+
+### blade.Compiler
+
+The compiler itself. It has some useful methods and properties.
+
+### blade.Compiler.parse(string)
 
 Just generates the parse tree for the string. For debugging purposes only.
 
-### blade.filters(name, function)
-
-Filters can be added at runtime. Templates with missing filters will compile,
-but they will not render properly.
-
-- `name` is the customized name of the filter
-- `function` is of the form: `function(text, cb)` accepting `text`
-	as input and passing the filtered output back to Blade by calling `cb`
-	of the form `cb(err, html)`
-
-
 ```javascript
 var blade = require('blade');
-var template = blade.compile(, options);
-var html = template(locals);
+blade.compile("string of blade", options, function(err, tmpl) {
+	tmpl(locals, function(err, html) {
+		console.log(html);
+	});
+});
 ```
 
 Implementation Details
