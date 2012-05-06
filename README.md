@@ -40,12 +40,13 @@ Todo
 Blade was implemented entirely in less than 4 days.
 So, there is still stuff to do:
 
-- Better error handling and error reporting (right now it kinda sux)
+- Better error handling and error reporting
 - Finish client-side runtime
 - Better test suite
 - Change tag ending based on doctype
 - Executable to compile and/or render templates via command line
 - Text string interpolation
+- More text filters?
 
 Installation
 ------------
@@ -502,6 +503,11 @@ In summary...
 - Use the `prepend` keyword to prepend to the matching block.
 - Use the `replace` keyword to replace the matching block.
 
+You may render, append to, prepend to, and replace undefined blocks; however,
+this, of course, has no effect. No error messages occur if you do this because
+a compiled view can also be included, and the parent view may have the block
+defined.
+
 ### Template Inheritance
 
 There is no `extends` keyword.  Just use blocks and includes:
@@ -557,6 +563,9 @@ Asynchronously compiles a Blade template from a string.
 	- `debug` - outputs debug info to the console (defaults to false)
 	- `minify` - if true, Blade generates a minified template without debugging
 		information (defaults to false)
+	- `includeSource` - if true, Blade inserts the Blade source file directly into
+		the compiled template, which can further improve error reporting, although
+		the size of the template is increased significantly. (defaults to false)
 	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
 	- `inlineTags` - use this Object instead of `blade.Compiler.inlineTags`
 	- `filters` - use this Object instead of `blade.Compiler.filters`
@@ -567,9 +576,14 @@ Asynchronously compiles a Blade template from a string.
 	- `expected` - If the error is a 'SyntaxError', this is an array of expected tokens
 	- `found` - If the error is a 'SyntaxError', this is the token that was found
 	- `filename` - The filename where the error occurred
-	- `offset` - The offset in the string where the error occurred.
+	- `offset` - The offset in the string where the error occurred
 	- `line` - The line # where the error occurred
 	- `column` - The column # where the error occurred
+
+Note: if there is a problem with the Blade compiler, or more likely, if there
+is a syntax error with the JavaScript code in your template, Node.js will not
+provide any line number or other information about the error. At the time of this
+writing, this is a limitation of the Google V8 engine.
 
 You can render a compiled template by calling the function: `tmpl(locals, cb)`
 	- `locals` are the local variables to be passed to the view template

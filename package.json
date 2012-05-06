@@ -2,7 +2,7 @@
   "author": "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
   "name": "blade",
   "description": "Blade - HTML Template Compiler, inspired by Jade & Haml",
-  "version": "0.0.0",
+  "version": "0.5.0",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
     "url": "https://github.com/bminer/node-blade"
@@ -15,5 +15,10 @@
   "optionalDependencies": {},
   "engines": {
     "node": ">=0.6"
+  },
+  "scripts": {
+  	"pretest": "./lib/parser/build.sh",
+  	"test": "node ./test/test.js",
+  	"prepublish": "./lib/parser/build.sh"
   }
 }
