@@ -37,7 +37,7 @@ will probably need some modifications before they will work with Blade.
 Todo
 ----
 
-Blade was implemented entirely in less than 4 days.
+Most of Blade was implemented in less than 4 days.
 So, there is still stuff to do:
 
 - Better error handling and error reporting
