@@ -156,7 +156,7 @@ renders as:
 <div id="foo"></div><div class="bar"></div><div id="this" class="is cool"></div>
 ```
 
-Jade just assumes anything without a tag name specifier is a `<div>` tag.
+Blade just assumes anything without a tag name specifier is a `<div>` tag.
 
 Also, tags without matching ending tags like `<img/>` render properly.
 
