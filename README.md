@@ -9,13 +9,44 @@ Never write HTML again. Please.
 Table of Contents
 -----------------
 
+- [Why use Blade instead of Jade?](#why-use-blade-instead-of-jade)
 - [Features](#features)
 - [Todo](#todo)
 - [Installation](#installation)
 - [Language Syntax](#syntax)
+	- [The Basics](#syntax)
+	- [Functions](#functions)
+	- [Dynamic File Includes](#dynamic-file-includes)
+	- [Blocks](#blocks)
 - [API](#api)
 - [Implementation Details](#implementation-details)
 - [License](#license)
+
+Why use Blade instead of Jade?
+-----------------------
+
+Here are the reasons Blade *might* be considered "better" than Jade:
+
+- **In Blade, file includes happen dynamically at run-time, instead of at compile-time.**
+	This means that files compiled in Blade are generally smaller than Jade
+	files when you are using file includes. In addition, if you re-use the same
+	included file among multiple parent views, the included file does not need to
+	be re-compiled. This can significantly decrease the size of client-side templates,
+	and reduce the overall bandwidth required to transfer the templates over the
+	Internet.
+- **Blocks in Blade are awesome.** We removed features from Jade like explicit template
+	inheritance and static file includes and then added features like blocks and
+	parameterized blocks. You might find our idea of a block to be similar to Jade's,
+	but just wait until you realize how much more flexible they are!
+- **Just Functions, not mixins or partials.** In Blade, there are no "mixins" or partial
+	templates. There are only functions, and they work just like regular JavaScript
+	functions that you've come to know and love. You can put your functions into separate
+	files and include them into other templates, you can take advantage of the `arguments`
+	Array-like Object, closures (not necessarily recommended), or whatever you want!
+	Can you define functions within other functions? Yep.
+- **Load function output into a variable.** Blade has a built-in syntax for taking
+	content rendered by a function and loading into a variable within your view template.
+	Then, you can pass the rendered HTML content to another function, for example.
 
 Features
 --------
@@ -25,7 +56,7 @@ Features
 - Code and text are escaped by default for security/convenience
 - Functions (like Jade mixins)
 - Dynamic file includes
-- Regular blocks and Parameterized blocks
+- Regular blocks and Parameterized blocks (aids in supporting template inheritance)
 - True client-side template support with caching, etc.
 - Supports Express.JS
 - HTML Comments and block comments
@@ -38,15 +69,8 @@ Todo
 ----
 
 Most of Blade was implemented in less than 4 days.
-So, there is still stuff to do:
-
-- Better error handling and error reporting
-- Finish client-side runtime
-- Better test suite
-- Change tag ending based on doctype
-- Executable to compile and/or render templates via command line
-- Text string interpolation
-- More text filters?
+So, there is still stuff to do. Check the [issues and milestones section]
+(https://github.com/bminer/node-blade/issues) for more details.
 
 Installation
 ------------
@@ -102,12 +126,23 @@ input(
 	)
 ```
 
-Yes... the `class` attribute is handled with extra special care. Pass an array or string. Yes,
-classes (delimited by ".") from before will be merged with the value of the attribute.
+You can also put substitute an attribute value with vanilla JS code like this:
+`input(type="text" name="contact-"+name value=value)`.  For example, if you passed the object
+`{name: "fred", value: "testing"}` to your view, the above would render to:
+`<input type="text" name="contact-fred" value="testing"/>`
+
+You cannot put whitespace in the vanilla JavaScript code, though. Blade uses whitespace to
+separate each attribute.
+
+And, yes... the `class` attribute is handled with extra special care. Pass an array or string.
+Classes (delimited by ".") from before will be merged with the value of the `class` attribute.
+
+For example:
 
 `div#foo.bar.dummy(class="another dude")` renders as: `<div id="foo" class="bar dummy another dude"></div>`
 
-div div div is annoying... so we can omit this if we specify an id or some classes:
+div, div, div can get annoying... so, we can omit the tag specifier if we specify an
+id or some classes:
 
 ```
 #foo
@@ -121,11 +156,14 @@ renders as:
 <div id="foo"></div><div class="bar"></div><div id="this" class="is cool"></div>
 ```
 
-Also, tags without matching ending tags like `<img>` render properly.
+Jade just assumes anything without a tag name specifier is a `<div>` tag.
+
+Also, tags without matching ending tags like `<img/>` render properly.
 
 ### Indenting
 
-It works. You can indent with any number of spaces or with a single tab character.
+It works. You can indent with any number of spaces or with a single tab character. The
+only rule is to be consistent within a given file.
 Jade gives you a lot of weird indent flexibility. Blade, by design, does not.
 
 ```
@@ -241,7 +279,7 @@ prepend a "!", as before:
 
 ```
 p
-	!= some_html
+	!= some_var_containing_html
 ```
 
 Extra "|" characters are okay, too.  Just don't forget that stuff after the "="
@@ -249,7 +287,7 @@ means JavaScript code!
 
 ```
 p
-	|= "escape me away & away"
+	|= "escape me" + " away & away"
 ```
 
 renders `<p>escape me away &amp; away</p>`
@@ -269,7 +307,7 @@ should avoid using these names in your view templates whenever possible:
 
 ### Doctypes
 
-Don't forget a doctype!  Actually, you can, whatever... defaults to HTML 5, of course.
+Don't forget a doctype!  Actually, you can, whatever...
 
 Add a doctype using the `doctype` keyword or `!!!` like this:
 
@@ -286,7 +324,7 @@ which renders as `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN>`
 Put the doctype at the top of your Blade files, please. Here is the list of built-in doctypes:
 
 ```javascript
-var doctypes = exports.doctypes = {
+exports.doctypes = {
   '5': '<!DOCTYPE html>',
   'xml': '<?xml version="1.0" encoding="utf-8" ?>',
   'default': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
@@ -303,7 +341,8 @@ Yes, you can modify the list of built-in doctypes through the API. Why would you
 
 ### Comments
 
-Use `//` for a line comment.  Use `//-` if you don't want the comment to be rendered.  Block comments work, too.
+Use `//` for a line comment.  Use `//-` if you don't want the comment to be rendered.
+Block comments work, too.
 
 ```
 //Comment example 1
@@ -348,13 +387,14 @@ Calling a function and inserting into template structure:
 
 ```
 form
-	!=functions.textbox("firstName", "Blake")
+	call textbox("firstName", "Blake")
 ```
 
 Or... maybe just putting the generated HTML into a variable?
 
 ```
-- var text = functions.textbox("firstName", "Blake");
+call textbox("firstName", "Blake") > text
+//alternative syntax: call text = textbox("firstName", "Blake")
 form
 	!=text
 ```
@@ -365,14 +405,62 @@ Both examples would render:
 <form><input type="text" name="firstName" value="Blake"/></form>
 ```
 
-Limitation: Don't use a local variable with the name `functions`... for obvious reasons.
+You can also append content rendered by a function to a variable:
+`call textbox("firstName", "Blake") >> text`
+	or... alternatively...
+`call text += textbox("firstName", "Blake")`
+
+Yes, you can use `arguments` within your function, just like a "real" JavaScript function.
+In fact, functions are "real" JavaScript functions, so even closures work! Although, remember
+that functions have access to the variables in scope at the time the function was defined, not
+the variables in scope when the function is called.
+
+Example:
+
+```
+- var x = 12;
+function test(foo)
+	h1=foo
+	- if(x)
+		p=x
+	- if(y)
+		p=y
+- var y = 23;
+#example
+	call test("Header")
+```
+
+would render: `<div id="example"><h1>Header</h1><p>12</p></div>`
+
+#### Adding classes or an id to rendered function content
+
+Yes, you can add a class name or id to the first element rendered by a function:
+
+```
+function dialog(msg)
+	.dialog
+		= msg
+call dialog("Blade is awesome")#foobar.foo.bar
+```
+
+which would render as `<div id="foobar" class="dialog foo bar">Blade is awesome</div>`.
+
+Although, if you try it with something like this, you get an error because the first
+child rendered by the function is not a tag.
+
+```
+function dialog(msg)
+	= msg
+call dialog("Blade is awesome")#foobar.foo.bar
+//compiler will generate an error
+```
 
 ### Dynamic file includes
 
 `include "file.blade"`
 
 This will dynamically (at runtime) insert "file.blade" right into the current view, as if it
-was a single file
+was a single file.
 
 ### Blocks
 
@@ -567,10 +655,11 @@ Asynchronously compiles a Blade template from a string.
 		the compiled template, which can further improve error reporting, although
 		the size of the template is increased significantly. (defaults to false)
 	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
-	- `inlineTags` - use this Object instead of `blade.Compiler.inlineTags`
+	- `inlineTags` - use this array instead of `blade.Compiler.inlineTags`
+	- `selfClosingTags` - use this array instead of `blade.Compiler.selfClosingTags`
 	- `filters` - use this Object instead of `blade.Compiler.filters`
-- `cb` is a function of the form: `cb(err, fn)` where `err` contains
-	any parse or compile errors and `fn` is the compiled template.
+- `cb` is a function of the form: `cb(err, tmpl)` where `err` contains
+	any parse or compile errors and `tmpl` is the compiled template.
 	If an error occurs, `err` may contain the following properties:
 	- `message` - The error message
 	- `expected` - If the error is a 'SyntaxError', this is an array of expected tokens
@@ -590,13 +679,14 @@ You can render a compiled template by calling the function: `tmpl(locals, cb)`
 	- `cb` is a function of the form `function(err, html)` where `err` contains
 		any runtime errors and `html` contains the rendered HTML.
 
-In addition, a compiled template has these properties:
+In addition, a compiled template has these properties and methods:
 	- `template` - a function that also renders the template but accepts 3 parameters:
 		`tmpl.template(locals, runtime, cb)`. This simply allows you to use a custom
 		runtime environment, if you choose to do so.
-
-You can call `tmpl.toString()`, just like you can on any other JavaScript function.
-This might be useful for client-side templates, for example.
+	- `filename` - the filename of the compiled template (if provided)
+	- `toString()` - a function that converts the view template function into a string
+		of JavaScript code. If you need a client-side template for example, you can
+		use this function.
 
 ### blade.compileFile(filename, [options,] cb)
 
@@ -623,6 +713,8 @@ The compiler itself. It has some useful methods and properties.
 ### blade.Compiler.parse(string)
 
 Just generates the parse tree for the string. For debugging purposes only.
+
+Example using the API:
 
 ```javascript
 var blade = require('blade');
