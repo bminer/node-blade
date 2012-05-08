@@ -462,6 +462,14 @@ call dialog("Blade is awesome")#foobar.foo.bar
 This will dynamically (at runtime) insert "file.blade" right into the current view, as if it
 was a single file.
 
+The include statement can also be followed by the name of a JavaScript variable containing
+the filename to be included.
+
+```
+- var filename = "file.blade"
+include filename
+```
+
 ### Blocks
 
 Blocks allow you to mark places in your template with code that may or may not be
