@@ -430,7 +430,8 @@ function test(foo)
 	call test("Header")
 ```
 
-would render: `<div id="example"><h1>Header</h1><p>12</p></div>`
+<del>would</del><ins>might</ins> render: `<div id="example"><h1>Header</h1><p>12</p></div>`
+(Note: I don't know if that previous statement is 100% true)
 
 #### Adding classes or an id to rendered function content
 
