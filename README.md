@@ -423,15 +423,11 @@ function test(foo)
 	h1=foo
 	- if(x)
 		p=x
-	- if(y)
-		p=y
-- var y = 23;
 #example
 	call test("Header")
 ```
 
-<del>would</del><ins>might</ins> render: `<div id="example"><h1>Header</h1><p>12</p></div>`
-(Note: I don't know if that previous statement is 100% true)
+would render: `<div id="example"><h1>Header</h1><p>12</p></div>`
 
 #### Adding classes or an id to rendered function content
 
