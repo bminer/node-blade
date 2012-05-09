@@ -6,8 +6,9 @@ JavaScript, so it will run on your microwave oven.
 
 Never write HTML again. Please.
 
-<img class="right" src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
+<img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
+"Blade's blood is the key" :P Sorry... I had to...
 
 Table of Contents
 -----------------
