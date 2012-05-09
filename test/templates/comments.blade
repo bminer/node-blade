@@ -1,0 +1,19 @@
+doctype strict
+html
+	head
+		//-
+			|
+				Whatever I type into this text block is a nice, hidden
+				comment, which means that a lot of Blade code can be 
+				commented out, simply by double indenting and prefixing it
+				with the //- followed by the |
+		//if lt IE 8
+			script(src="/ie-really-sux.js")
+		//Comment example 1
+		//-Comment example 2
+		//
+			#wow
+			p Block comments work, too
+			//Even comments within comments work, but they render
+				| a bit weird...
+	body
