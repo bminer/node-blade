@@ -6,6 +6,7 @@ var blade = require('../lib/blade'),
 	child_process = require('child_process');
 
 locals.includeSource = true;
+//locals.debug = true;
 
 var files = fs.readdirSync(__dirname + "/templates");
 console.log("----Rendering and testing templates...");
@@ -16,7 +17,10 @@ for(var i in files)
 			total++;
 			var inPath = __dirname + "/templates/" + filename;
 			var outPath = __dirname + "/output/" + path.basename(filename, ".blade") + ".html";
-			blade.renderFile(inPath, locals, function(err, html, info) {
+			var copy = {};
+			for(var i in locals)
+				copy[i] = locals[i];
+			blade.renderFile(inPath, copy, function(err, html, info) {
 				if(err) throw err;
 				if(path.existsSync(outPath) )
 				{
