@@ -55,6 +55,8 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 
 ## <img src="http://www.pbs.org/wgbh/nova/diamond/images/gp08jade.jpg" alt="Jade" width="226" height="169"/> Jade vs. Blade <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
 
+OK... it's admittedly not as funny as I thought it would be. But, I tried.
+
 Features
 --------
 
