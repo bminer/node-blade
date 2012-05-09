@@ -81,8 +81,6 @@ for Browsers:
 
 Runtime only: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
 
-Compiler + Runtime: `wget https://raw.github.com/bminer/node-blade/master/dist/blade.min.js`
-
 Syntax
 ------
 
