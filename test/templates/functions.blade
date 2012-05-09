@@ -1,0 +1,23 @@
+html
+	head
+		function textbox(name, value, label)
+			.field.another-class
+				-if(label)
+					label=label
+				input(type='text' name=name value=value)
+	body
+		form
+			fieldset
+				call textbox("name", author, "Name:")
+				call textbox("email", email, "Email:").foo#cool.foobar
+				call textbox("email", email, "Email:").foo#cool
+				call textbox("email", email, "Email:")#cool
+				call textbox("yourName", null, "Name:") > test_var
+				call textbox("yourEmail", null, "Email:") >> test_var
+				!=test_var
+				function textbox(name, value, label)
+					.field.another_class(class=name+"name")
+						-if(label)
+							label=label
+						input(type='text' name=name value=value)
+				call textbox("email", email, "Email:").foo#cool.foobar
