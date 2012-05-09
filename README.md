@@ -219,6 +219,39 @@ Rules are:
 - Large text block? Use `|` and indent properly.
 - Unescaped text block? Use `|!` or even just `!` works.
 
+Variable interpolation is supported for text blocks.  Use `#{var_name}` notation, and
+anything between the curly braces is treated as vanilla JavaScript code.
+
+For example, you can write:
+
+```
+p
+	|
+		I am just testing #{whatever + ", alright?"}
+		
+		Relax...
+```
+
+instead of writing the equivalent, but arguably less awesome...
+
+```
+p
+	|=
+		"I am just testing " + whatever + ", alright?" +
+		"\n\n" +
+		"Relax..."
+```
+
+Assuming a local variable `whatever` is passed to the value with value "Blade",
+both of the examples above will render to this:
+
+```html
+<p>I am just testing Blade, alright?
+
+Relax...</p>
+```
+		
+
 ### Text filters
 
 Need `<br/>` tags inserted? Use a built-in filter, perhaps?
