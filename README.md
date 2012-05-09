@@ -11,7 +11,7 @@ Table of Contents
 
 - [Why use Blade instead of Jade?](#why-use-blade-instead-of-jade)
 - [Features](#features)
-- [Todo](#todo)
+- [Project Status](#project-status)
 - [Installation](#installation)
 - [Language Syntax](#syntax)
 	- [The Basics](#syntax)
@@ -65,12 +65,21 @@ Features
 Blade does more than Jade, and it does less than Jade. Your Jade templates
 will probably need some modifications before they will work with Blade.
 
-Todo
-----
+Project Status
+--------------
 
-Most of Blade was implemented in less than 4 days.
-So, there is still stuff to do. Check the [issues and milestones section]
-(https://github.com/bminer/node-blade/issues) for more details.
+I'd say that Blade is in **beta**. There are some [known issues]
+(https://github.com/bminer/node-blade/issues), and I would not recommend Blade
+for production environments. That being said, I am using Blade for a few
+projects, and it will be receiving more and more test coverage.
+
+If you find a bug, please [report it here]
+(https://github.com/bminer/node-blade/issues). If you include the Blade code
+that failed along with the expected HTML output, that is always splendid.
+
+By all means, please feel free to submit pull requests for new features,
+new tests, or whatever! For big changes, say ~100 lines of code, you
+might want to contact me first or submit an issue before getting started.
 
 Installation
 ------------
@@ -766,7 +775,11 @@ Implementation Details
 
 The Blade parser is built using [PEG.js](https://github.com/dmajda/pegjs).
 Thanks to the PEG.js team for making this project much easier than I had
-anticipated!
+anticipated! To modify the parser, simply change `./lib/parser/blade-grammer.pegjs`,
+and the new parser will be automatically built the next time you run tests.
+
+To install all devDependencies, just do: `npm link` or install manually
+To run tests, ensure devDependencies are installed, then run: `npm test`
 
 License
 -------
