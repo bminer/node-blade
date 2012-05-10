@@ -347,12 +347,9 @@ Blade, like other template engines, defines local variables within every single 
 should avoid using these names in your view templates whenever possible:
 
 - `locals`
-- `runtime`
 - `cb`
-- `buf`
 - `__` (that's two underscores)
 - Any of the compiler options (i.e. `debug`, `minify`, etc.)
-- `blade`
 
 ### Doctypes
 
@@ -458,6 +455,9 @@ You can also append content rendered by a function to a variable:
 `call textbox("firstName", "Blake") >> text`
 	or... alternatively...
 `call text += textbox("firstName", "Blake")`
+
+Note: when you define a block (see below) within a function, and you output the rendered
+content to a variable, the block will be destroyed immediately after the function call.
 
 Yes, you can use `arguments` within your function, just like a "real" JavaScript function.
 In fact, functions are "real" JavaScript functions, so even closures work! Although, remember
@@ -649,6 +649,10 @@ You may render, append to, prepend to, and replace undefined blocks; however,
 this, of course, has no effect. No error messages occur if you do this because
 a compiled view can also be included, and the parent view may have the block
 defined.
+
+When you define a block within a function, and you output the function's rendered
+content to a variable, the defined block will be destroyed immediately after
+the function call.
 
 ### Template Inheritance
 
