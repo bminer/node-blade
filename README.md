@@ -568,8 +568,8 @@ lost. The behavior is usually desired, but it can sometimes be a source of confu
 If you replace a parameterized block (described below), you cannot call "render" on
 that block anymore.
 
-At this time, you cannot replace a block with a parameterized block. The "replace"
-command will not accept parameters.
+At this time, you cannot replace any defined block with a parameterized block.
+The "replace" command will not accept parameters.
 
 #### Parameterized blocks
 
@@ -598,8 +598,8 @@ Now, assuming nothing else happens to the block, the block will be rendered as:
 ```
 
 Parameterized blocks are really cool because "append", "prepend", and "replace"
-all work, too. You don't need to "render" the block to use "append", "prepend", and
-"replace".
+all work, too. Just remember that order matters. A render call always "appends"
+to the block, and you can render as many times as you wish.
 
 Another example:
 
@@ -611,7 +611,8 @@ body
 	h1 Hello
 	render header("Page Title")
 	append header
-		script(src="text/javascript")
+		script(type="text/javascript")
+	render header("Page Title")
 	prepend header
 		meta
 ```
@@ -622,7 +623,8 @@ Will output:
 <head>
 	<meta/>
 	<title>Page Title</title>
-	<script src="text/javascript"></script>
+	<script type="text/javascript"></script>
+	<title>Page Title</title>
 </head>
 <body>
 	<h1>Hello</h1>
@@ -645,10 +647,8 @@ In summary...
 - Use the `prepend` keyword to prepend to the matching block.
 - Use the `replace` keyword to replace the matching block.
 
-You may render, append to, prepend to, and replace undefined blocks; however,
-this, of course, has no effect. No error messages occur if you do this because
-a compiled view can also be included, and the parent view may have the block
-defined.
+You may not render, append to, prepend to, or replace undefined blocks. If you do so,
+an error message will occur.
 
 When you define a block within a function, and you output the function's rendered
 content to a variable, the defined block will be destroyed immediately after
@@ -711,11 +711,16 @@ Asynchronously compiles a Blade template from a string.
 		information (defaults to false)
 	- `includeSource` - if true, Blade inserts the Blade source file directly into
 		the compiled template, which can further improve error reporting, although
-		the size of the template is increased significantly. (defaults to false)
+		the size of the template is increased significantly. (defaults to true if
+		and only if `process.env.NODE_ENV` is "development" and minify is false;
+		defaults to false, otherwise)
 	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
 	- `inlineTags` - use this array instead of `blade.Compiler.inlineTags`
 	- `selfClosingTags` - use this array instead of `blade.Compiler.selfClosingTags`
 	- `filters` - use this Object instead of `blade.Compiler.filters`
+	- `templateNamespace` - the name of the reserved variable in the view
+		(defaults to two underscores: __). Other reserved names are
+		[listed here](#variable-names-to-avoid)
 - `cb` is a function of the form: `cb(err, tmpl)` where `err` contains
 	any parse or compile errors and `tmpl` is the compiled template.
 	If an error occurs, `err` may contain the following properties:
