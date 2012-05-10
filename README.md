@@ -738,19 +738,21 @@ provide any line number or other information about the error. At the time of thi
 writing, this is a limitation of the Google V8 engine.
 
 You can render a compiled template by calling the function: `tmpl(locals, cb)`
-	- `locals` are the local variables to be passed to the view template
-	- `cb` is a function of the form `function(err, html)` where `err` contains
+
+- `locals` are the local variables to be passed to the view template
+- `cb` is a function of the form `function(err, html)` where `err` contains
 		any runtime errors and `html` contains the rendered HTML.
 
 In addition, a compiled template has these properties and methods:
-	- `template` - a function that also renders the template but accepts 3 parameters:
-		`tmpl.template(locals, runtime, cb)`. This simply allows you to use a custom
-		runtime environment, if you choose to do so.
-	- `filename` - the filename of the compiled template (if provided)
-	- `toString()` - a function that converts the view template function into a string
-		of JavaScript code. If you need a client-side template for example, you can
-		use this function. [Uglify-JS](https://github.com/mishoo/UglifyJS) is now used
-		if you have it installed.
+
+- `template` - a function that also renders the template but accepts 3 parameters:
+	`tmpl.template(locals, runtime, cb)`. This simply allows you to use a custom
+	runtime environment, if you choose to do so.
+- `filename` - the filename of the compiled template (if provided)
+- `toString()` - a function that converts the view template function into a string
+	of JavaScript code. If you need a client-side template for example, you can
+	use this function. [Uglify-JS](https://github.com/mishoo/UglifyJS) is now used
+	if you have it installed.
 
 ### blade.compileFile(filename, [options,] cb)
 
