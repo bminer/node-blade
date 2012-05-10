@@ -6,16 +6,9 @@ var blade = require('../lib/blade'),
 	child_process = require('child_process');
 
 locals.includeSource = true;
-//locals.debug = true;
+locals.debug = true;
 
-var files = fs.readdirSync(__dirname + "/templates");
-console.log("----Rendering and testing templates...");
-console.time("Test");
-var done = 0, failed = 0, total = 0;
-for(var i in files)
-	if(path.extname(files[i]) == ".blade")
 		(function(filename) {
-			total++;
 			var inPath = __dirname + "/templates/" + filename;
 			var outPath = __dirname + "/output/" + path.basename(filename, ".blade") + ".html";
 			var copy = {};
@@ -33,7 +26,6 @@ for(var i in files)
 					compare.on('exit', function(code) {
 						if(diff != "")
 						{
-							failed++;
 							console.log("----Test failed for file:", filename,
 								"\nTemplate:\n" + info.source,
 								"\nHTML:\n" + html,
@@ -41,28 +33,17 @@ for(var i in files)
 						}
 						else
 							console.log("----Test passed for file:", filename);
-						allDone();
 					});
 					compare.stdin.write(html);
 					compare.stdin.end();
 				}
 				else
 				{
-					fs.writeFileSync(outPath, html);
 					console.log("Review output for file:", filename,
 						"\nTemplate:\n" + info.source,
 						"\nHTML:\n" + html);
 					console.log("-----------------------------------------------");
-					allDone();
+					console.log("File not written");
 				}
 			});
-		})(files[i]);
-	else allDone();
-function allDone() {
-	if(++done == files.length)
-	{
-		console.log("-----------------------------------------------");
-		console.log("Done - " + (done-failed) + " of " + total + " tests passed");
-		console.timeEnd("Test");
-	}
-}
+		})(process.argv[2] + ".blade");
