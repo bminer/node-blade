@@ -749,7 +749,8 @@ In addition, a compiled template has these properties and methods:
 	- `filename` - the filename of the compiled template (if provided)
 	- `toString()` - a function that converts the view template function into a string
 		of JavaScript code. If you need a client-side template for example, you can
-		use this function.
+		use this function. [Uglify-JS](https://github.com/mishoo/UglifyJS) is now used
+		if you have it installed.
 
 ### blade.compileFile(filename, [options,] cb)
 
