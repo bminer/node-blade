@@ -23,6 +23,7 @@ Table of Contents
 	- [Dynamic File Includes](#dynamic-file-includes)
 	- [Blocks](#blocks)
 - [API](#api)
+- [Browser Usage](#browser-usage)
 - [Implementation Details](#implementation-details)
 - [License](#license)
 
@@ -98,6 +99,7 @@ for Node (via npm): `npm install blade`
 for Browsers:
 
 Runtime only: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
+Runtime is about 3-4 KB, uncompressed.
 
 Syntax
 ------
@@ -772,6 +774,34 @@ Convenience function to asynchronously compile a template and render it.
 	directly to the view, so it should also contain your view's local variables.
 - `cb` - a function of the form `function(err, html)`
 
+### blade.middleware(sourcePath, options)
+
+Express middleware for serving compiled client-side templates to the browser.
+For example, if you visit the URL "/views/homepage.blade" on your server, you
+can compile the view stored at `sourcePath + "/homepage.blade"`
+
+- `sourcePath` - the path on the server where your views are stored
+- `options` include:
+	- `mount` - the URL path where you can request compiled views (defaults to
+		"/views/")
+	- `clientNamespace` - the variable where downloaded client-side templates
+		are stored (defaults to "blade.templates"). `blade.templates` is
+		not defined by the Blade runtime, so be sure to define it yourself.
+	- `clientCache` - turns on client-side caching of views (defaults to
+		`process.env.NODE_ENV == "production"`). Caching works until the user
+		navigates to another page. Then, you have to rely on the middleware
+		to do things like [weak and strong caching]
+		(https://developers.google.com/speed/docs/best-practices/caching).
+	- `compileOptions` - options passed to `blade.compile()`. Defaults to:
+
+```javascript
+{
+	'cache': process.env.NODE_ENV == "production",
+	'minify': process.env.NODE_ENV == "production",
+	'includeSource': process.env.NODE_ENV == "development"
+};
+````
+
 ### blade.Compiler
 
 The compiler itself. It has some useful methods and properties.
@@ -787,6 +817,59 @@ var blade = require('blade');
 blade.compile("string of blade", options, function(err, tmpl) {
 	tmpl(locals, function(err, html) {
 		console.log(html);
+	});
+});
+```
+
+Here is a sample Express application that uses Blade for server-side and client-side
+templates:
+
+```javascript
+var express = require('express'),
+	blade = require('blade');
+var app = express.createServer();
+app.use(blade.middleware(__dirname + '/views') );
+app.use(express.static(__dirname + "/public") );
+app.set('views', __dirname + '/views');
+app.set('view engine', 'blade');
+app.get('/', function(req, res, next) {
+	res.render('homepage');
+});
+app.listen(8000);
+```
+
+Browser Usage
+-------------
+
+The Blade compiler doesn't work on browsers yet, but the runtime should work
+on every browser. That means that you can compile your templates on the server
+and serve them up to any browser. Blade provides a built-in Express middleware
+to do just that (see above).
+
+Once you have the middleware setup, you can now serve your compiled Blade views
+to the client. Simply include the blade-runtime.js file in your `<script>`
+tags, and then call `blade.runtime.loadTemplate`.
+
+### blade.runtime.loadTemplate(baseDir, filename, compileOptions, cb)
+
+- `baseDir` - just put an empty string here. This argument is ignored.
+- `filename` - the filename of the view you wish to retrieve, relative to the
+	`sourcePath` you setup in the Blade middleware.
+- `compileOptions` - just put an empty Object here. This argument is ignored for now.
+- `cb` - your callback of the form `cb(err, tmpl)`
+
+Your template will be stored in `blade.templates` or whatever you put as the
+`clientNamespace` when you setup the Blade middleware.
+
+Yes, included files work, too. Like magic.
+
+Example client-side JavaScript:
+
+```javascript
+blade.templates = {};
+blade.runtime.loadTemplate("", "homepage.blade", {}, function(err, tmpl) {
+	tmpl({}, function(err, html) {
+		console.log(html); //YAY! We have rendered HTML
 	});
 });
 ```
