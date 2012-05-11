@@ -33,6 +33,9 @@ Why use Blade instead of Jade?
 Here are the reasons Blade *might* be considered "better" than Jade:
 
 - Jade is an ornamental stone. Blade is a badass vampire hunter.
+- **Client-side templates** can be served to the browser, no problem.
+	See [Browser Usage](#browser-usage) and [Blade Middleware]
+	(#blademiddlewaresourcepath-options) for more info.
 - **In Blade, file includes happen dynamically at run-time, instead of at compile-time.**
 	This means that files compiled in Blade are generally smaller than Jade
 	files when you are using file includes. In addition, if you re-use the same
