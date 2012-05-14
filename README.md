@@ -293,16 +293,26 @@ renders as:
 
 Built-in text filters include:
 
-- :nl2br - Converts newline characters to `<br/>`
+- :nl2br - Escapes the content and converts newline characters to `<br/>`
 - :cdata - Surrounds text like this: `<![CDATA[` ...text goes here... `]]>`
 	Text should not contain `]]>`.
 - :markdown (must have [markdown-js](https://github.com/evilstreak/markdown-js) installed)
 - :md (alias for :markdown)
+- :coffeescript - Generates a `<script>` tag for the generated JavaScript.
+	(must have [coffee-script](https://github.com/jashkenas/coffee-script) installed)
+- :cs (alias for :coffeescript)
+- :stylus - Generates a `<style>` tag for the generated CSS.
+	(must have [stylus](https://github.com/LearnBoost/stylus) installed)
+- :less - Generates a `<style>` tag for the generated CSS.
+	(must have [less](https://github.com/cloudhead/less.js) installed)
+- :sass - Generates a `<style>` tag for the generated CSS.
+	(must have [sass](https://github.com/visionmedia/sass.js) installed)
 
 Filters are essentially functions that accept a text string and return HTML. They
-cannot modify the AST directly.
+cannot modify the AST directly. Also, you cannot inject JavaScript code into
+filters.
 
-And, you can add custom filters at runtime using the API.
+You can add custom filters at compile-time using the API.
 
 ### Code
 
