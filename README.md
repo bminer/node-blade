@@ -25,6 +25,7 @@ Table of Contents
 - [API](#api)
 - [Browser Usage](#browser-usage)
 - [Implementation Details](#implementation-details)
+- [Benchmarks](#benchmarks)
 - [License](#license)
 
 Why use Blade instead of Jade?
@@ -904,6 +905,17 @@ and the new parser will be automatically built the next time you run tests.
 
 To install all devDependencies, just do: `npm link` or install manually.
 To run tests, ensure devDependencies are installed, then run: `npm test`
+
+Benchmarks
+----------
+
+I haven't done much benchmarking, but from preliminary tests, the compiler is a bit
+slow.  That's probably okay because Express automatically caches compiled views.
+Most importantly, the runtime is pretty darn fast. On my computer, I can render a
+reasonably complex template with file includes in less than 1ms. This test was
+performed on Google Chrome v18 on Windows 7 on a two-year-old laptop (i7 processor).
+I got around 12,000 renders per second. I would greatly appreciate any metrics other
+users could provide; I will post them here and give you credit. :)
 
 License
 -------
