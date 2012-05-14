@@ -1,0 +1,11 @@
+head
+	block header(pageTitle)
+		title= pageTitle
+body
+	h1 Hello
+	render header("Page Title")
+	append header
+		script(type="text/javascript")
+	render header("Page Title")
+	prepend header
+		meta

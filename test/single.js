@@ -18,7 +18,7 @@ locals.debug = true;
 				if(err) throw err;
 				if(path.existsSync(outPath) )
 				{
-					var compare = child_process.spawn('diff', ['-', outPath]);
+					var compare = child_process.spawn('diff', ['-u', outPath, '-']);
 					var diff = "";
 					compare.stdout.on('data', function(chunk) {
 						diff += chunk;

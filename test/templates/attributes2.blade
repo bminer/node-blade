@@ -1,0 +1,11 @@
+p
+p(foo="bar" bar="foo")
+#foo(foo="bar")
+input(name="author", value=author)
+input(name="author" value=author+"test")
+input(name="author" value="test"+author)
+input(name=author value=author+" foo bar!()")
+input(name=author value=" foo bar!()"+author)
+input(unescaped!="unescaped & text")
+input(unescaped!="unescaped \"code\":"+escape)
+input(escaped="escaped \"code\":"+escape)

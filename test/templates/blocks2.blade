@@ -1,0 +1,28 @@
+| Before block A (old)
+block A
+	p This is a test
+| After block A (old)
+append block A
+	p Test 2
+| Before block B
+block B
+	p Now we have block B (unaffected)
+| After block B
+| Before new block A
+block A
+	p Some text
+append A
+	p Append A
+replace A
+	p This is the new block A
+append A
+	p Appended to block A
+		| ... cool?
+	p Yes?
+append A
+	p Appended to block A
+		| ... really cool?
+	p No?
+prepend A
+	p Prepended to block A?
+	p Alright?
