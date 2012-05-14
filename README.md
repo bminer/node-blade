@@ -863,16 +863,20 @@ Once you have the middleware setup, you can now serve your compiled Blade views
 to the client. Simply include the blade-runtime.js file in your `<script>`
 tags, and then call `blade.runtime.loadTemplate`.
 
-### blade.runtime.loadTemplate(baseDir, filename, compileOptions, cb)
+### blade.runtime.loadTemplate(filename, [compileOptions,] cb)
 
-- `baseDir` - just put an empty string here. This argument is ignored.
 - `filename` - the filename of the view you wish to retrieve, relative to the
 	`sourcePath` you setup in the Blade middleware.
-- `compileOptions` - just put an empty Object here. This argument is ignored for now.
-- `cb` - your callback of the form `cb(err, tmpl)`
+- `compileOptions` - arguments to be passed to the compiler (these are ignored
+	for now).
+- `cb` - your callback of the form `cb(err, tmpl)` where `tmpl` is your compiled
+	Blade template. Call the template like this:
+	`tmpl(locals, function(err, html) {...});`
 
 Your template will be stored in `blade.templates` or whatever you put as the
-`clientNamespace` when you setup the Blade middleware.
+`clientNamespace` when you setup the Blade middleware. In addition, if
+`clientCache` is set in the Blade middleware, then your templates will be stored
+at `blade.cachedViews`.
 
 Yes, included files work, too. Like magic.
 
@@ -880,12 +884,15 @@ Example client-side JavaScript:
 
 ```javascript
 blade.templates = {};
-blade.runtime.loadTemplate("", "homepage.blade", {}, function(err, tmpl) {
-	tmpl({}, function(err, html) {
+blade.runtime.loadTemplate("homepage.blade", function(err, tmpl) {
+	tmpl({'users': ['John', 'Joe']}, function(err, html) {
 		console.log(html); //YAY! We have rendered HTML
 	});
 });
 ```
+
+As a side note, you can override the `blade.runtime.loadTemplate` function with
+your own implementation.
 
 Implementation Details
 ----------------------
