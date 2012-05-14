@@ -895,7 +895,7 @@ Thanks to the PEG.js team for making this project much easier than I had
 anticipated! To modify the parser, simply change `./lib/parser/blade-grammer.pegjs`,
 and the new parser will be automatically built the next time you run tests.
 
-To install all devDependencies, just do: `npm link` or install manually
+To install all devDependencies, just do: `npm link` or install manually.
 To run tests, ensure devDependencies are installed, then run: `npm test`
 
 License
