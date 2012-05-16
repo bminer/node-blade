@@ -2,15 +2,28 @@
   "author": "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
   "name": "blade",
   "description": "Blade - HTML Template Compiler, inspired by Jade & Haml",
-  "version": "0.11.3",
+  "keywords": [
+  	"html",
+  	"compiler",
+  	"view",
+  	"template engine",
+  	"view template",
+  	"jade",
+  	"haml"
+  ],
+  "version": "0.12.0",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
     "url": "https://github.com/bminer/node-blade"
   },
   "main": "lib/blade.js",
-  "dependencies": {},
+  "bin": { "blade": "./bin/blade" },
+  "dependencies": {
+  	"commander": ">=0.6"
+  },
   "devDependencies": {
-  	"pegjs": ">=0.7"
+  	"pegjs": ">=0.7",
+  	"uglify-js": ">=1.2"
   },
   "optionalDependencies": {
   	"uglify-js": ">=1.2"

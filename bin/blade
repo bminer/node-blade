@@ -1,0 +1,103 @@
+#!/usr/bin/env node
+
+var fs = require('fs'),
+	path = require('path'),
+	blade = require('../'),
+	program = require('commander');
+
+var opts = {};
+
+try {
+	var package = JSON.parse(fs.readFileSync(__dirname + "/../package.json") );
+	program.version(package.version);
+} catch(e) {}
+
+program
+	.usage("[options] source_file destination_file")
+	.option("-R, --render", "renders the template and outputs HTML (default)")
+	.option("-C, --compile", "compile-only: output the compiled template")
+	.option("-l, --locals <str>", "JSON string to be used as the locals object")
+	.option("-L, --locals-file <file>", "path to a Node module exporting a locals object")
+	.option("-o, --compile-opts <str>", "JSON string to be used as the compiler's options")
+	.option("-d, --debug", "sets the compiler's debug option")
+	.option("-m, --minify", "sets the compiler's minify option")
+	.option("--no-include-source", "clears the compiler's includeSource option")
+
+program.on('--help', function() {
+	var x = function() {console.log.apply(console, arguments);};
+	x("Renders or compiles Blade templates.");
+	x("\nIf a filename is `-` instead of an actual path, read from standard input or\nwrite to standard output.");
+	x("includeSource compiler option is set by default.");
+	x("\nExamples:");
+	x("\n\tRender a Blade template to stdout from stdin using the local variables\n\texported a Node module:");
+	x("\t$ blade -L locals.js - -");
+});
+
+program.parse(process.argv);
+
+//Process arguments
+var cOpts = program.compileOpts ? JSON.parse(program.compileOpts) : {'includeSource': program.includeSource};
+var render = !program.compile || program.render;
+if(program.debug) cOpts.debug = true;
+if(program.minify) cOpts.minify = true;
+if(program.includeSource === false)
+	cOpts.includeSource = false;
+
+var locals;
+if(render)
+{
+	if(program.locals)
+		locals = JSON.parse(program.locals);
+	else if(program.localsFile)
+	{
+		if(path.existsSync(program.localsFile) )
+			locals = require(program.localsFile);
+		else
+			console.error("Locals file not found:", program.localsFile);
+	}
+	else
+		locals = {};
+}
+
+var inFile = program.args[0];
+var outFile = program.args[1];
+
+var input = inFile == null || inFile == "-" ?
+	process.stdin :
+	(cOpts.filename = inFile, fs.createReadStream(inFile) );
+var output = outFile == null || outFile == "-" ?
+	process.stdout :
+	fs.createWriteStream(outFile, {flags: 'w', encoding: 'utf8'});
+
+input.resume();
+input.setEncoding('utf8');
+
+var str = "";
+input.on('data', function(chunk) {
+	str += chunk;
+});
+input.on('end', function() {
+	//Compile the template
+	blade.compile(str, cOpts, function(err, tmpl) {
+		if(err) throw err;
+		if(render)
+		{
+			tmpl(locals, function(err, html) {
+				if(err) throw err;
+				output.write(html);
+				if(output != process.stdout)
+					output.end();
+				else
+					output.write('\n');
+			});
+		}
+		else
+		{
+			output.write(tmpl.toString() );
+			if(output != process.stdout)
+				output.end();
+			else
+				output.write('\n');
+		}
+	});
+});
