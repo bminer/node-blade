@@ -4,10 +4,12 @@
   "description": "Blade - HTML Template Compiler, inspired by Jade & Haml",
   "keywords": [
   	"html",
+  	"compile",
   	"compiler",
+  	"render",
   	"view",
-  	"template engine",
-  	"view template",
+  	"template",
+  	"engine",
   	"jade",
   	"haml"
   ],
