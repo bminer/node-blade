@@ -75,6 +75,7 @@ Features
 - Supports Express.JS
 - HTML Comments and block comments
 - Text filters
+- Command-line tool to compile/render templates (try `blade --help`)
 
 Blade does more than Jade, and it does less than Jade. Your Jade templates
 will probably need some modifications before they will work with Blade.
@@ -200,6 +201,16 @@ renders as:
 ```html
 <html><head></head><body><div id="content"></div></body></html>
 ```
+
+You can start a tag name with a bashslash to escape Blade keywords.
+Normally, `include test` would include a file, but `\include test` renders as:
+
+```xml
+<include>test</include>
+```
+
+This allows you to be flexible with tag names, so you are not restricted to rendering
+HTML, for example. You can render any XML document with Blade.
 
 ### Text
 
