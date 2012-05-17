@@ -391,10 +391,11 @@ Add a doctype using the `doctype` keyword or `!!!` like this:
 Use the list of built-in doctypes or pass your own like this:
 
 ```
-doctype html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN
+doctype html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN"
+html
 ```
 
-which renders as `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN>`
+which renders as `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN"><html></html>`
 
 Put the doctype at the top of your Blade files, please. Here is the list of built-in doctypes:
 
