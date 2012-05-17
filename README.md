@@ -329,6 +329,12 @@ filters.
 
 You can add custom filters at compile-time using the API.
 
+Variable interpolation is supported for certain text filters, as well.  If a text
+filter returns text in `#{var_name}` notation, then anything between the curly braces
+is replaced with vanilla JavaScript code. To avoid this behavior, text filters can
+either escape the `#{stuff}` with a backslash, or it can set its `interpolation`
+property to `false`.
+
 ### Code
 
 Use dash (`-`) to specify a code block.  Use equals (`=`) to specify code output.  A few examples, please?
