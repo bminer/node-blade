@@ -75,6 +75,7 @@ Features
 - Supports Express.JS
 - HTML Comments and block comments
 - Text filters
+- Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
 
 Blade does more than Jade, and it does less than Jade. Your Jade templates
