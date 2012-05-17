@@ -257,6 +257,8 @@ anything between the curly braces is treated as vanilla JavaScript code.
 
 For example, you can write:
 
+(caution: indents are **required** on line 3 even though it is blank)
+
 ```
 p
 	|
