@@ -13,11 +13,11 @@ try {
 } catch(e) {}
 
 program
-	.usage("[options] source_file destination_file")
+	.usage("[options] source_path destination_path")
 	.option("-R, --render", "renders the template and outputs HTML (default)")
 	.option("-C, --compile", "compile-only: output the compiled template")
 	.option("-l, --locals <str>", "JSON string to be used as the locals object")
-	.option("-L, --locals-file <file>", "path to a Node module exporting a locals object")
+	.option("-L, --locals-file <file>", "require() path to a module exporting locals obj")
 	.option("-o, --compile-opts <str>", "JSON string to be used as the compiler's options")
 	.option("-d, --debug", "sets the compiler's debug option")
 	.option("-m, --minify", "sets the compiler's minify option")
@@ -29,8 +29,15 @@ program.on('--help', function() {
 	x("\nIf a filename is `-` instead of an actual path, read from standard input or\nwrite to standard output.");
 	x("includeSource compiler option is set by default.");
 	x("\nExamples:");
-	x("\n\tRender a Blade template to stdout from stdin using the local variables\n\texported a Node module:");
-	x("\t$ blade -L locals.js - -");
+	x("\n\tRender a Blade template to stdout from stdin using the local variables\n\texported in a Node module (i.e. ./locals.js):");
+	x("\t$ blade -L ./locals - -");
+	x("\n\tRender a Blade template to stdout from stdin using the locals provided");
+	x("\t$ blade -l '{\"author\":\"Blake Miner\"}' - -");
+	x("\n\tCompile foo.blade and output the minified template to stdout:");
+	x("\t$ blade -C -m foo.blade -");
+	x("\n\tCompile and minify an entire directory of *.blade files:");
+	x("\t$ blade -C -m ./views ./public/views");
+	x();
 });
 
 program.parse(process.argv);
@@ -50,10 +57,13 @@ if(render)
 		locals = JSON.parse(program.locals);
 	else if(program.localsFile)
 	{
-		if(path.existsSync(program.localsFile) )
+		program.localsFile = path.resolve('.', program.localsFile);
+		try {
 			locals = require(program.localsFile);
-		else
+		}
+		catch(e) {
 			console.error("Locals file not found:", program.localsFile);
+		}
 	}
 	else
 		locals = {};
@@ -62,42 +72,78 @@ if(render)
 var inFile = program.args[0];
 var outFile = program.args[1];
 
-var input = inFile == null || inFile == "-" ?
-	process.stdin :
-	(cOpts.filename = inFile, fs.createReadStream(inFile) );
-var output = outFile == null || outFile == "-" ?
-	process.stdout :
-	fs.createWriteStream(outFile, {flags: 'w', encoding: 'utf8'});
+/* turn outFile into a function that accepts the input filename and generates
+	a Writable Stream */
+var getOutputStream, outStreams = {};
+if(outFile == null || outFile == "-")
+	getOutputStream = function() {return process.stdout;};
+else if(!path.existsSync(outFile) || !fs.statSync(outFile).isDirectory() )
+	getOutputStream = function() {
+		if(outStreams[outFile])
+			return outStreams[outFile];
+		return outStreams[outFile] = fs.createWriteStream(outFile);
+	};
+else
+	getOutputStream = function(inFile) {
+		var filename = outFile + "/" + (inFile == null ?
+			"blade" : path.basename(inFile, path.extname(inFile) )
+		) +	(render ? ".html" : ".js");
+		if(outStreams[filename])
+			return outStreams[filename];
+		return outStreams[filename] = fs.createWriteStream(filename);
+	};
 
-input.resume();
-input.setEncoding('utf8');
-
-var str = "";
-input.on('data', function(chunk) {
-	str += chunk;
-});
-input.on('end', function() {
-	//Compile the template
-	blade.compile(str, cOpts, function(err, tmpl) {
-		if(err) throw err;
-		if(render)
+//Get input ready
+var total = 1, done = 0;
+if(inFile == null || inFile == "-")
+	generate(process.stdin, getOutputStream(null) );
+else if(!path.existsSync(inFile) )
+	throw new Error("Could not find input file: " + inFile);
+else if(!fs.statSync(inFile).isDirectory() )
+	generate(fs.createReadStream(inFile), getOutputStream(inFile), path.normalize(inFile) );
+else
+{
+	var files = fs.readdirSync(inFile);
+	total = files.length;
+	for(var i in files)
+		if(path.extname(files[i]) == ".blade")
 		{
-			tmpl(locals, function(err, html) {
-				if(err) throw err;
-				output.write(html);
-				if(output != process.stdout)
-					output.end();
-				else
-					output.write('\n');
-			});
+			var file = inFile + "/" + files[i];
+			generate(fs.createReadStream(file),
+				getOutputStream(file), path.normalize(file) );
 		}
-		else
-		{
-			output.write(tmpl.toString() );
-			if(output != process.stdout)
-				output.end();
+}
+
+//Close all output streams
+function cleanup() {
+	for(var i in outStreams)
+		outStreams[i].end();
+}
+
+/* Compile/render the Blade template from the input stream
+	and write the output to the output stream, without closing it. */
+function generate(input, output, filename)
+{
+	cOpts.filename = filename;
+	var str = "";
+	input.resume();
+	input.setEncoding('utf8');
+	input.on('data', function(chunk) { str += chunk; });
+	input.on('end', function() {
+		//Compile the template
+		blade.compile(str, cOpts, function(err, tmpl) {
+			if(err) throw err;
+			if(render)
+				tmpl(locals, function(err, html) {
+					if(err) throw err;
+					output.write(html);
+					if(++done == total) cleanup();
+				});
 			else
-				output.write('\n');
-		}
+			{
+				output.write(tmpl.toString() );
+				if(++done == total) cleanup();
+			}
+		});
 	});
-});
+}
