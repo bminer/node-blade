@@ -1,0 +1,16 @@
+p Before foo
+block foo
+	h1 Inside foo
+p After foo
+
+include "functions_and_block_include.blade"
+
+p Before old bar
+block bar
+	h1 Inside old bar
+p After old bar
+call defineBar
+| Temp
+call defineBar()
+p The end
+render bar("idiot")
