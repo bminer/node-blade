@@ -84,10 +84,10 @@ will probably need some modifications before they will work with Blade.
 Project Status
 --------------
 
-I'd say that Blade is in **beta**. There are some [known issues]
-(https://github.com/bminer/node-blade/issues), and I would not recommend Blade
-for production environments. That being said, I am using Blade for a few
-projects, and it will be receiving more and more test coverage.
+I'd say that Blade is in the **release candidate** stage. There are very few
+(if any) [known issues](https://github.com/bminer/node-blade/issues), and I think
+that Blade is almost ready for production environments. I am using Blade for
+a few projects, and it will be receiving more and more test coverage.
 
 If you find a bug, please [report it here]
 (https://github.com/bminer/node-blade/issues). If you include the Blade code
