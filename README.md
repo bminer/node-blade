@@ -1003,13 +1003,35 @@ To run tests, ensure devDependencies are installed, then run: `npm test`
 Benchmarks
 ----------
 
-I haven't done much benchmarking, but from preliminary tests, the compiler is a bit
-slow.  That's probably okay because Express automatically caches compiled views.
-Most importantly, the runtime is pretty darn fast. On my computer, I can render a
-reasonably complex template with file includes in less than 1ms. This test was
-performed on Google Chrome v18 on Windows 7 on a two-year-old laptop (i7 processor).
-I got around 12,000 renders per second. I would greatly appreciate any metrics other
-users could provide; I will post them here and give you credit. :)
+The Blade compiler is a bit slow.  That's probably okay because Express automatically
+caches compiled views.  Most importantly, the runtime is pretty darn fast. On my
+computer, I can render a reasonably complex template with file includes in less than
+1ms. This test was performed on Google Chrome v18 on Windows 7 on a two-year-old
+laptop (i7 processor). I got around 12,000 renders per second.
+
+Blade Performance Summary on a "decent" computer:
+
+- Minified template render time: ~10,000 - 15,000 renders per second (pretty darn good)
+- Minified template compile time (no caching): ~350 - 450 small templates per second.
+	This is around 4,000 lines of Blade per second... like I said, quite slow.
+- Minified template compile time (with caching) ~100,000+ templates per second (yay caching!)
+
+Output of benchmark.js on EC2 m1.medium instance (Ubuntu 12.04, Node 0.6.17, Blade 1.0.1):
+
+```
+Blade performance:
+------------------
+Blade test suite statistics:
+        Files: 22
+        Total number of lines: 250
+
+Parse the entire test suite 40 times: 1416ms
+Compile (cache off, minify on) the entire test suite 40 times: 2260ms
+Render (cache off, minify on) the entire test suite 40 times: 2571ms
+Compile and cache the entire test suite 1 times: 47ms
+Compile (cache on, minify on) the entire test suite 1000 times: 197ms
+Render (cache on, minify on) the entire test suite 1000 times: 1495ms
+```
 
 License
 -------
