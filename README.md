@@ -4,6 +4,14 @@ Blade - HTML Template Compiler
 Blade is a HTML Template Compiler, inspired by Jade &amp; Haml, implemented in
 JavaScript, so it will run on your microwave oven.
 
+It works like this...
+
+1.) Write up your template in Blade (which is a Jade-like language)
+2.) Use the Blade compiler to generate a Blade template (which is a JavaScript function)
+3.) Pass variables into your generated template to produce HTML or XML
+
+[View a simple example](#simple-example)
+
 Never write HTML again. Please.
 
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
@@ -24,6 +32,7 @@ Table of Contents
 	- [Blocks](#blocks)
 - [API](#api)
 - [Browser Usage](#browser-usage)
+- [A Simple Example](#simple-example)
 - [Implementation Details](#implementation-details)
 - [Benchmarks](#benchmarks)
 - [License](#license)
@@ -915,6 +924,70 @@ blade.runtime.loadTemplate("homepage.blade", function(err, tmpl) {
 
 As a side note, you can override the `blade.runtime.loadTemplate` function with
 your own implementation.
+
+Simple Example
+--------------
+
+The following Blade document ...
+
+```blade
+!!! 5
+html
+	head
+		title Blade
+	body
+		#nav
+			ul
+				- for(var i in nav)
+					li
+						a(href=nav[i])= i
+		#content.center
+			h1 Blade is cool
+```
+
+... compiles to this JavaScript function ...
+
+```javascript
+function tmpl(locals,cb,__){var __=__||[];__.r=__.r||blade.runtime,__.blocks=__.blocks||{},__.func=__.func||{},__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>"),__.push("<html"),__.push(">"),__.push("<head"),__.push(">"),__.push("<title"),__.push(">"),__.push(__.r.escape("Blade")),__.push("</title>"),__.push("</head>"),__.push("<body"),__.push(">"),__.push("<div"),__.push(' id="nav"'),__.push(">"),__.push("<ul"),__.push(">");for(var i in nav)__.push("<li"),__.push(">"),__.push("<a"),__.r.attrs({href:{val:nav[i],escape:!0}},__,this),__.push(">"),__.push(__.r.escape(i)),__.push("</a>"),__.push("</li>");__.push("</ul>"),__.push("</div>"),__.push("<div"),__.push(' id="content"'),__.push(' class="center"'),__.push(">"),__.push("<h1"),__.push(">"),__.push(__.r.escape("Blade is cool")),__.push("</h1>"),__.push("</div>"),__.push("</body>"),__.push("</html>"),__.inc||__.r.done(__)}cb(null,__.join(""),__)}
+```
+
+... now you call the function like this...
+
+```javascript
+tmpl({
+	'nav': {
+		'Home': '/home',
+		'About Us': '/about',
+		'Contact': '/contact'
+	}
+}, function(err, html) {
+	if(err) throw err;
+	console.log(html);
+});
+```
+
+... and you get this:
+
+```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>Blade</title>
+	</head>
+	<body>
+		<div id="nav">
+			<ul>
+				<li><a href="/">Home</a></li>
+				<li><a href="/about">About Us</a></li>
+				<li><a href="/contact">Contact</a></li>
+			</ul>
+		</div>
+		<div id="content" class="center">
+			<h1>Blade is cool</h1>
+		</div>
+	</body>
+</html>
+```
 
 Implementation Details
 ----------------------

@@ -40,9 +40,16 @@ program.on('--help', function() {
 	x();
 });
 
-program.parse(process.argv);
+var x = {"--cows":"Q293cyBzYXksICJNb28hIg==",
+"--cake":"VGhlIGNha2UgaXMgYSBsaWUh",
+"--jade":"V2h5IHdvdWxkIHlvdSB3YW50IHRvIGRlY3JlbWVudCBqYWRlIGxpa2UgdGhhdD8gIFRyeSBgKytqYWRlYCBuZXh0IHRpbWUu",
+"--carla":"Q2FybGEgaXMgdGhlIGJlc3QgZ2lybCBpbiB0aGUgd2hvbGUgd2lkZSB3b3JsZCwgYW5kIEkgYW0gZ29pbmcgdG8gbWFycnkgaGVyIQ"};
+for(var i in x)
+	if(process.argv[2] == i) return console.log(new Buffer(x[i], "base64").toString());
+if(process.argv[2] == "++jade") throw new Error("This feature doesn't work yet.");
 
 //Process arguments
+program.parse(process.argv);
 var cOpts = program.compileOpts ? JSON.parse(program.compileOpts) : {'includeSource': program.includeSource};
 var render = !program.compile || program.render;
 if(program.debug) cOpts.debug = true;
