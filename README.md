@@ -6,9 +6,9 @@ JavaScript, so it will run on your microwave oven.
 
 It works like this...
 
-1.) Write up your template in Blade (which is a Jade-like language)
-2.) Use the Blade compiler to generate a Blade template (which is a JavaScript function)
-3.) Pass variables into your generated template to produce HTML or XML
+1. Write up your template in Blade (which is a Jade-like language)
+2. Use the Blade compiler to generate a Blade template (which is a JavaScript function)
+3. Pass variables into your generated template to produce HTML or XML
 
 [View a simple example](#simple-example)
 
@@ -956,7 +956,7 @@ function tmpl(locals,cb,__){var __=__||[];__.r=__.r||blade.runtime,__.blocks=__.
 ```javascript
 tmpl({
 	'nav': {
-		'Home': '/home',
+		'Home': '/',
 		'About Us': '/about',
 		'Contact': '/contact'
 	}
