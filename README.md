@@ -948,7 +948,7 @@ html
 ... compiles to this JavaScript function ...
 
 ```javascript
-function tmpl(locals,cb,__){var __=__||[];__.r=__.r||blade.runtime,__.blocks=__.blocks||{},__.func=__.func||{},__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>"),__.push("<html"),__.push(">"),__.push("<head"),__.push(">"),__.push("<title"),__.push(">"),__.push(__.r.escape("Blade")),__.push("</title>"),__.push("</head>"),__.push("<body"),__.push(">"),__.push("<div"),__.push(' id="nav"'),__.push(">"),__.push("<ul"),__.push(">");for(var i in nav)__.push("<li"),__.push(">"),__.push("<a"),__.r.attrs({href:{val:nav[i],escape:!0}},__,this),__.push(">"),__.push(__.r.escape(i)),__.push("</a>"),__.push("</li>");__.push("</ul>"),__.push("</div>"),__.push("<div"),__.push(' id="content"'),__.push(' class="center"'),__.push(">"),__.push("<h1"),__.push(">"),__.push(__.r.escape("Blade is cool")),__.push("</h1>"),__.push("</div>"),__.push("</body>"),__.push("</html>"),__.inc||__.r.done(__)}cb(null,__.join(""),__)}
+function tmpl(locals,cb,__){var __=__||[];__.r=__.r||blade.runtime,__.blocks=__.blocks||{},__.func=__.func||{},__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>","<html",">","<head",">","<title",">",__.r.escape("Blade"),"</title>","</head>","<body",">","<div",' id="nav"',">","<ul",">");for(var i in nav)__.push("<li",">","<a"),__.r.attrs({href:{val:nav[i],escape:!0}},__,this),__.push(">",__.r.escape(i),"</a>","</li>");__.push("</ul>","</div>","<div",' id="content"',' class="center"',">","<h1",">",__.r.escape("Blade is cool"),"</h1>","</div>","</body>","</html>"),__.inc||__.r.done(__)}cb(null,__.join(""),__)}
 ```
 
 ... now you call the function like this...
