@@ -738,6 +738,88 @@ render homepage.blade, you get:
 </html>
 ```
 
+### Chunks
+
+Chunks are simply functions that return HTML. They behave a bit differently than
+conventional Blade functions.
+
+Functions are called with `call` statements, and their contents are injected right
+into the AST. You can also capture the HTML they render by outputting to a variable,
+as described above. Chunks, on the other hand, always return HTML, and they cannot
+be called using `call` statements. The only way to render a chunk is to call it
+via your code (see example below).
+
+One reason you might define a chunk is to pass it to
+[Meteor's](http://meteor.com/) 
+[Meteor.ui.chunk function](http://docs.meteor.com/#meteor_ui_chunk); however,
+chunks can be used for other purposes, as well.
+You can also use chunks to work with [Meteor.ui.listChunk]
+(http://docs.meteor.com/#meteor_ui_listchunk).
+
+Example:
+
+```
+chunk header(text)
+	h1= text
+
+!= __.chunk.header("Hello")
+```
+
+The above example defines a named chunk `header` with one parameter. Then, the chunk
+is called by calling the `__.chunk.header` function. When defining a chunk, parameters
+are optional, and if you omit the name, the chunk is simply named `last`.
+
+Another example:
+
+```
+chunk
+	h1 Hello!
+div
+	!= __.chunk.last()
+```
+
+renders as `<div><h1>Hello!</h1></div>`
+
+If you override the `templateNamespace` compiler option, you will need to replace all
+instances of the double underscore (`__`) variable with the `templateNamespace` variable.
+
+### Meteor Support
+
+Blade also provides a Meteor smart package under the `meteor` directory. The easiest thing
+to do right now is to symlink that directory into your Meteor packages directory like this:
+
+`ln -s /path/to/blade/meteor /path/to/meteor/packages/blade`
+
+Also, Blade allows you to manually call `Meteor.ui.chunk` and `Meteor.ui.listChunk` as you
+see fit.
+
+The following example uses chunks and the special `__.chunk` reference. Remember, that
+unnamed chunks are simply named `last`.
+
+```
+chunk
+    h1= Session.get("counter")
+!=Meteor.ui.chunk(__.chunk.last);
+```
+
+Or, how about calling `Meteor.ui.listChunk`?
+
+```
+chunk else
+	.empty! No records were found
+chunk(post)
+	- var x = Session.equals("selected", post._id) ? "selected" : "";
+	div(class=x)= post.name
+!= Meteor.ui.listChunk(Posts.find({tags: "frontpage"}),
+	__.chunk.last, __.chunk.else, {
+		events: {
+			'click': function (event) {
+				Session.set("selected", this._id);
+			}
+		}
+	});
+```
+
 API
 ---
 
@@ -767,6 +849,9 @@ Asynchronously compiles a Blade template from a string.
 	- `templateNamespace` - the name of the reserved variable in the view
 		(defaults to two underscores: __). Other reserved names are
 		[listed here](#variable-names-to-avoid)
+	- `basedir` - the base directory where Blade templates are located. This option is
+		primarily used by the Blade middleware to allow the Blade runtime to properly
+		load file includes.
 - `cb` is a function of the form: `cb(err, tmpl)` where `err` contains
 	any parse or compile errors and `tmpl` is the compiled template.
 	If an error occurs, `err` may contain the following properties:
@@ -806,7 +891,9 @@ Asynchronously compile a Blade template from a filename on the filesystem.
 
 - `filename` is the filename
 - `options` - same as `blade.compile` above, except `filename` option is always
-	overwritten	with the `filename` specified.
+	overwritten	with the `filename` specified. There is also a `synchronous`
+	option that will tell Blade to read and compile the file synchronously
+	instead of asynchronously. This option, while documented, is not recommended.
 - `cb` - same as `blade.compile` above
 
 ### blade.renderFile(filename, options, cb)
@@ -999,6 +1086,13 @@ and the new parser will be automatically built the next time you run tests.
 
 To install all devDependencies, just do: `npm link` or install manually.
 To run tests, ensure devDependencies are installed, then run: `npm test`
+
+Also, I'd like to mention here that the Blade compiler and Blade runtime are rather
+closely coupled. Unfortunately, that means that templates compiled with an older
+Blade compiler might not be compatible with a newer runtime and vice versa.
+To avoid issues, be sure that your Blade templates were compiled with the compiler of
+the same version as the runtime on which they will run. If you think this is too
+inconvenient, please feel free to complain, but I probably will ignore you. :)
 
 Benchmarks
 ----------

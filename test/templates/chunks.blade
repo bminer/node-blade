@@ -1,0 +1,14 @@
+chunk
+	h1 Hello!
+div
+	!= __.chunk.last()
+- var i = 0
+chunk
+	h1= ++i
+div
+	!= __.chunk.last()
+	!= __.chunk.last()
+	!= __.chunk.last()
+chunk header(text)
+	h1= text
+!= __.chunk.header("Hello")
