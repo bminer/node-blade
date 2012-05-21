@@ -30,6 +30,7 @@ Table of Contents
 	- [Functions](#functions)
 	- [Dynamic File Includes](#dynamic-file-includes)
 	- [Blocks](#blocks)
+- [Meteor Support](#meteor-support)
 - [API](#api)
 - [Browser Usage](#browser-usage)
 - [A Simple Example](#simple-example)
@@ -86,6 +87,7 @@ Features
 - Text filters
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
+- Meteor smart package
 
 Blade does more than Jade, and it does less than Jade. Your Jade templates
 will probably need some modifications before they will work with Blade.
@@ -237,6 +239,7 @@ renders as:
 ```
 
 Want unescaped text?  Large blocks of text? Done.
+Start a line of text with a `|`.
 
 ```
 p! This will be <strong>unescaped</strong> text.
@@ -257,10 +260,14 @@ Neato.</p>
 
 Rules are:
 
-- Text is escaped by default
+- Text is escaped by default.
 - Want unescaped text? Precede with a `!`
+- Precede with a `=` to evaluate and output some JavaScript.
 - Large text block? Use `|` and indent properly.
 - Unescaped text block? Use `|!` or even just `!` works.
+- JavaScript code block? Use `|=` or even just `=` works.
+- Unescaped JavaScript code block? Yep. Use `|!=` or `!=`.
+- Newlines in text blocks are preserved.
 
 Variable interpolation is supported for text blocks.  Use `#{var_name}` notation, and
 anything between the curly braces is treated as vanilla JavaScript code.
@@ -287,7 +294,7 @@ p
 		"Relax..."
 ```
 
-Assuming a local variable `whatever` is passed to the value with value "Blade",
+Assuming a local variable `whatever` is passed to the template with value "Blade",
 both of the examples above will render to this:
 
 ```html
@@ -346,9 +353,10 @@ property to `false`.
 
 ### Code
 
-Use dash (`-`) to specify a code block.  Use equals (`=`) to specify code output.  A few examples, please?
+Use dash (`-`) to indicate that JavaScript code follows, which will not output into
+the template.  As before, use equals (`=`) to specify code output.  A few examples, please?
 
-Code blocks:
+Using dash (`-`):
 
 ```
 #taskStatus
@@ -358,14 +366,20 @@ Code blocks:
 		p Get to work, slave!
 ```
 
-Code that outputs (i.e. in a text block or at the end of a tag).
-It's just like a text block, except with an `=`.
+When inserting lines of code with `-`, curly braces or semicolons are inserted, as
+appropriate.  In the example above, we have an `if` statement followed by an indented
+paragraph tag.  In this case, Blade wraps the indented content with curly braces.
+If there is no indented content beneath the line of code, then a semicolon is appended
+instead.
+
+Code that outputs (i.e. a code block or at the end of a tag).
+As mentioned before, it's just like a text block, except with an `=`.
 
 ```
 #taskStatus= task.completed ? "Yay!" : "Awww... it's ok."
 p
 	| The task was due on
-	= task.dueDate
+	|= task.dueDate
 ```
 
 When using code that outputs, the default is to escape all text. To turn off escaping, just
@@ -373,15 +387,15 @@ prepend a "!", as before:
 
 ```
 p
-	!= some_var_containing_html
+	|!= some_var_containing_html
 ```
 
-Extra "|" characters are okay, too.  Just don't forget that stuff after the "="
-means JavaScript code!
+Missing "|" characters are okay, too.  Just don't forget that stuff after the "="
+needs to be valid JavaScript code!
 
 ```
 p
-	|= "escape me" + " away & away"
+	= "escape me" + " away & away"
 ```
 
 renders `<p>escape me away &amp; away</p>`
@@ -464,6 +478,16 @@ renders as:
 <head><!--[if lt IE 8]><script src="/ie-really-sux.js"></script><![endif]--></head>
 ```
 
+To comment out entire sections of Blade code, you can use non-rendering block comments
+with a text block.
+
+```
+//-
+	|
+		anything can go here... Blade code, JavaScript code, whatever...
+		just make sure that the indenting is right.
+```
+
 ### Functions
 
 Functions are reusable mini-templates. They are similar to 'mixins' in Jade.
@@ -544,7 +568,7 @@ child rendered by the function is not a tag.
 function dialog(msg)
 	= msg
 call dialog("Blade is awesome")#foobar.foo.bar
-//compiler will generate an error
+//compiler might generate an error, or it might just ignore the id and classes
 ```
 
 ### Dynamic file includes
@@ -555,7 +579,8 @@ This will dynamically (at runtime) insert "file.blade" right into the current vi
 was a single file.
 
 The include statement can also be followed by the name of a JavaScript variable containing
-the filename to be included.
+the filename to be included.  If you do not specifiy a file extension, ".blade" will be
+appended to your string internally.
 
 ```
 - var filename = "file.blade"
@@ -751,9 +776,9 @@ via your code (see example below).
 
 One reason you might define a chunk is to pass it to
 [Meteor's](http://meteor.com/) 
-[Meteor.ui.chunk function](http://docs.meteor.com/#meteor_ui_chunk); however,
+[`Meteor.ui.chunk` function](http://docs.meteor.com/#meteor_ui_chunk); however,
 chunks can be used for other purposes, as well.
-You can also use chunks to work with [Meteor.ui.listChunk]
+You can also use chunks to work with [`Meteor.ui.listChunk`]
 (http://docs.meteor.com/#meteor_ui_listchunk).
 
 Example:
@@ -783,10 +808,11 @@ renders as `<div><h1>Hello!</h1></div>`
 If you override the `templateNamespace` compiler option, you will need to replace all
 instances of the double underscore (`__`) variable with the `templateNamespace` variable.
 
-### Meteor Support
+## Meteor Support
 
-Blade also provides a Meteor smart package under the `meteor` directory. The easiest thing
-to do right now is to symlink that directory into your Meteor packages directory like this:
+Blade also provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
+under the `meteor` directory. The easiest thing to do right now is to symlink that
+directory into your Meteor packages directory like this:
 
 `ln -s /path/to/blade/meteor /path/to/meteor/packages/blade`
 
