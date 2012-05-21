@@ -822,7 +822,7 @@ directory into your Meteor packages directory like this:
 Also, Blade allows you to manually call `Meteor.ui.chunk` and `Meteor.ui.listChunk` as you
 see fit.
 
-The following example uses chunks and the special `__.chunk` reference. Remember, that
+The following example uses chunks and the special `__.chunk` reference. Remember that
 unnamed chunks are simply named `last`.
 
 ```
