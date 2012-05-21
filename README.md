@@ -579,13 +579,15 @@ This will dynamically (at runtime) insert "file.blade" right into the current vi
 was a single file.
 
 The include statement can also be followed by the name of a JavaScript variable containing
-the filename to be included.  If you do not specifiy a file extension, ".blade" will be
-appended to your string internally.
+the filename to be included.
 
 ```
 - var filename = "file.blade"
 include filename
 ```
+
+If you do not specifiy a file extension, `.blade` will be appended to your string
+internally.
 
 ### Blocks
 
