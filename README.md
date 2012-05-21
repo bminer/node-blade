@@ -633,7 +633,8 @@ append regular_block
 Replacing a block is somewhat confusing, so I will explain further. If you replace
 a block, you are not changing the location of the defined block; you are only
 replacing the content of the block at its pre-defined location. If you want to change
-the location of a block, simply re-define a new block (see below).
+the location of a block, simply re-define a new block ([see below]
+(#what-happens-if-i-define-the-same-block-more-than-once)).
 
 In addition, when you replace a block, all previously appended and prepended content is
 lost. The behavior is usually desired, but it can sometimes be a source of confusion.
