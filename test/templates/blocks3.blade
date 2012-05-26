@@ -1,0 +1,22 @@
+block a
+	h1 Testing
+replace block a(foo)
+	h1=foo
+
+block b
+	h2 Testing
+replace block b(foo)
+	h2=foo
+
+block c(foo)
+	h5= foo
+
+render b("This should render")
+
+append c
+	h1 start c
+
+render c("c2")
+render replace c("c1")
+render append c("c3")
+render prepend c("prepend render c")

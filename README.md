@@ -639,18 +639,18 @@ the location of a block, simply re-define a new block ([see below]
 In addition, when you replace a block, all previously appended and prepended content is
 lost. The behavior is usually desired, but it can sometimes be a source of confusion.
 
-If you replace a parameterized block (described below), you cannot call "render" on
-that block anymore.
+If you replace a parameterized block (described below) with a regular block, you cannot
+call "render" on that block.
 
-At this time, you cannot replace any defined block with a parameterized block.
-The "replace" command will not accept parameters.
+You can replace a regular block with a parameterized block (described below). This will
+also clear the contents of the block, as expected.
 
 #### Parameterized blocks
 
 The other type of block is called a parameterized block, and it looks like this:
 
 ```
-block regular_block(headerText, text)
+block param_block_yo(headerText, text)
 	h1= headerText
 	p= text
 ```
@@ -662,7 +662,7 @@ at all.
 To render a block, use the "render" keyword like this:
 
 ```
-render regular_block("Some header text", 'Some "paragraph" text')
+render param_block_yo("Some header text", 'Some "paragraph" text')
 ```
 
 Now, assuming nothing else happens to the block, the block will be rendered as:
@@ -671,9 +671,18 @@ Now, assuming nothing else happens to the block, the block will be rendered as:
 <h1>Some header text</h1><p>Some &quot;paragraph&quot; text</p>
 ```
 
-Parameterized blocks are really cool because "append", "prepend", and "replace"
-all work, too. Just remember that order matters. A render call always "appends"
-to the block, and you can render as many times as you wish.
+You can `render` as many times as you wish, and by default, the rendered content will
+be appended to the block. You can also prepend the rendered content to the block or
+replace the contents of the block with rendered content. Here are the variations:
+
+- `render param_block_yo("Some header text", 'Some "paragraph" text')`
+- `render append param_block_yo("Some header text", 'Some "paragraph" text')`
+	(same as above)
+- `render prepend param_block_yo("Some header text", 'Some "paragraph" text')`
+- `render replace param_block_yo("Some header text", 'Some "paragraph" text')`
+
+Parameterized blocks are really cool because regular "append", "prepend", and "replace"
+all work, too. Just remember that order matters.
 
 Another example:
 
