@@ -103,7 +103,7 @@ else
 //Get input ready
 var total = 1, done = 0;
 if(inFile == null || inFile == "-")
-	generate(process.stdin, getOutputStream(null) );
+	generate(process.stdin, getOutputStream(null), cOpts.filename);
 else if(!path.existsSync(inFile) )
 	throw new Error("Could not find input file: " + inFile);
 else if(!fs.statSync(inFile).isDirectory() )
