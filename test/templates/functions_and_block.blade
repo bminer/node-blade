@@ -12,5 +12,12 @@ p After old bar
 call defineBar
 | Temp
 call defineBar()
-p The end
+p After call define bar
 render bar("idiot")
+
+block text
+	h1 Text before
+p The end
+replace text
+	call text
+p The very end
