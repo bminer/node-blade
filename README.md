@@ -589,6 +589,10 @@ include filename
 If you do not specifiy a file extension, `.blade` will be appended to your string
 internally.
 
+Due to various complications, you may *NOT* place an `include` inside of a `function`,
+`block`, or `chunk`. This limitation is a bummer, and if you don't like it, you should
+complain by opening an issue.
+
 ### Blocks
 
 Blocks allow you to mark places in your template with code that may or may not be
