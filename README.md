@@ -47,6 +47,9 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
+- **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
+	an awesome templating language, and if you are already familiar with it, getting
+	started with Blade should take you very little time.
 - **In Blade, file includes happen dynamically at run-time, instead of at compile-time.**
 	This means that files compiled in Blade are generally smaller than Jade
 	files when you are using file includes. In addition, if you re-use the same
