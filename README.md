@@ -872,12 +872,15 @@ Asynchronously compiles a Blade template from a string.
 
 - `string` is a string of Blade
 - `options` include:
-	- `filename` - the filename being compiled (required when using includes
-		or the `cache` option)
+	- `filename` - the filename being compiled (required when using [includes]
+		(#dynamic-file-includes) or the `cache` option)
 	- `cache` - if true, the compiled template will be cached (defaults to false)
-	- `debug` - outputs debug info to the console (defaults to false)
+	- `debug` - outputs debugging information to the console (defaults to false)
 	- `minify` - if true, Blade generates a minified template without debugging
 		information (defaults to true if `cache` option is set; false, otherwise)
+		If [UglifyJS](https://github.com/mishoo/UglifyJS) is installed, Blade
+		may automatically compress or prettify the template depending on whether
+		`minify` is true or false.
 	- `includeSource` - if true, Blade inserts the Blade source file directly into
 		the compiled template, which can further improve error reporting, although
 		the size of the template is increased significantly. (defaults to true if
@@ -923,7 +926,7 @@ In addition, a compiled template has these properties and methods:
 - `filename` - the filename of the compiled template (if provided)
 - `toString()` - a function that converts the view template function into a string
 	of JavaScript code. If you need a client-side template for example, you can
-	use this function. [Uglify-JS](https://github.com/mishoo/UglifyJS) is now used
+	use this function. [UglifyJS](https://github.com/mishoo/UglifyJS) is now used
 	if you have it installed.
 
 ### blade.compileFile(filename, [options,] cb)
@@ -943,7 +946,9 @@ Convenience function to asynchronously compile a template and render it.
 
 - `filename` is the filename
 - `options` - same as `blade.compileFile` above. This object is also passed
-	directly to the view, so it should also contain your view's local variables.
+	to the view, so it should also contain your view's local variables.
+	A few [reserved local variables](#variable-names-to-avoid) are removed
+	before passing the locals to the view.
 - `cb` - a function of the form `function(err, html)`
 
 ### blade.middleware(sourcePath, options)
