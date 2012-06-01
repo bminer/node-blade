@@ -834,6 +834,9 @@ directory into your Meteor packages directory like this:
 
 `ln -s /path/to/blade/meteor /path/to/meteor/packages/blade`
 
+#### Documentation for Meteor + Blade can be found [on this wiki page]
+(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)
+
 Also, Blade allows you to manually call `Meteor.ui.chunk` and `Meteor.ui.listChunk` as you
 see fit.
 
