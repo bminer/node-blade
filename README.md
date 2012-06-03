@@ -829,12 +829,15 @@ instances of the double underscore (`__`) variable with the `templateNamespace` 
 ## Meteor Support
 
 Blade also provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
-under the `meteor` directory. The easiest thing to do right now is to symlink that
+under the `meteor` directory. At the time of this writing, Blade is not a part of the
+Meteor core smart package list. The easiest thing to do right now is to symlink that
 directory into your Meteor packages directory like this:
 
 `ln -s /path/to/blade/meteor /path/to/meteor/packages/blade`
 
-**Documentation for Meteor + Blade can be found [on this wiki page]
+Then, execute `meteor add blade` in your Meteor project directory.
+
+**More documentation and examples for Meteor + Blade can be found [on this wiki page]
 (https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)**
 
 Also, Blade allows you to manually call `Meteor.ui.chunk` and `Meteor.ui.listChunk` as you
