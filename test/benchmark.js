@@ -33,7 +33,7 @@ console.timeEnd('Array concat with fewer push() calls');
 console.log("\nBlade performance:\n------------------");
 var fs = require('fs');
 var files = fs.readdirSync(__dirname + "/templates");
-var blade = require('blade');
+var blade = require('../');
 var numLines = 0;
 for(var i in files)
 {
