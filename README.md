@@ -1158,7 +1158,7 @@ inconvenient, please feel free to complain, but I probably will ignore you. :)
 Benchmarks
 ----------
 
-See [the Benchmark wiki page](https://github.com/bminer/node-blade/wiki/Benchmarks)
+See the [Benchmark wiki page](https://github.com/bminer/node-blade/wiki/Benchmarks)
 for more information.
 
 License
