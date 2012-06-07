@@ -18,7 +18,7 @@ Never write HTML again. Please.
 alt="Blade" width="150" height="169"/>
 "Blade's blood is the key" :P Sorry... I had to...
 
-### Migrating to Blade 1.3.1
+### Migrating to Blade 1.3
 
 The latest version of Blade makes several changes to the Meteor smart package. You may need
 to reorganize your Meteor project to migrate to the new version. See the [Meteor wiki page]
