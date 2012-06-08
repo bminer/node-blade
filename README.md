@@ -16,6 +16,7 @@ Never write HTML again. Please.
 
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
+
 "Blade's blood is the key" :P Sorry... I had to...
 
 ### Migrating to Blade 1.3
@@ -53,6 +54,8 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
+- **Meteor support** - Blade works well with [Meteor](http://meteor.com/) 0.3.6. See the
+	[documentation below](#meteor-support).
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
 	started with Blade should take you very little time.
@@ -63,21 +66,23 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 	be re-compiled. This can significantly decrease the size of client-side templates,
 	and reduce the overall bandwidth required to transfer the templates over the
 	Internet.
-- **Blocks in Blade are awesome.** We removed features from Jade like explicit template
+- **[Blocks](#blocks) in Blade are awesome.** We removed features from Jade like explicit template
 	inheritance and static file includes and then added features like blocks and
 	parameterized blocks. You might find our idea of a block to be similar to Jade's,
 	but just wait until you realize how much more flexible they are!
-- **Just Functions, not mixins or partials.** In Blade, there are no "mixins" or partial
-	templates. There are only functions, and they work just like regular JavaScript
+- **Just [Functions](#functions), not mixins or partials.** In Blade, there are no "mixins"
+	or partial templates. There are only functions, and they work just like regular JavaScript
 	functions that you've come to know and love. You can put your functions into separate
 	files and include them into other templates, you can take advantage of the `arguments`
 	Array-like Object, closures (not necessarily recommended), or whatever you want!
-	Can you define functions within other functions? Yep.
 - **Load function output into a variable.** Blade has a built-in syntax for taking
-	content rendered by a function and loading into a variable within your view template.
+	content rendered by a function and loading it into a variable within your view template.
 	Then, you can pass the rendered HTML content to another function, for example.
 
-## <img src="http://www.pbs.org/wgbh/nova/diamond/images/gp08jade.jpg" alt="Jade" width="226" height="169"/> Jade vs. Blade <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
+```
+				Jade				vs.					Blade
+```
+<img src="http://www.pbs.org/wgbh/nova/diamond/images/gp08jade.jpg" alt="Jade" width="226" height="169"/> <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
 
 OK... it's admittedly not as funny as I thought it would be. But, I tried.
 
