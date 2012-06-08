@@ -80,7 +80,7 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 	Then, you can pass the rendered HTML content to another function, for example.
 
 ```
-				Jade				vs.					Blade
+			Jade			vs.				Blade
 ```
 <img src="http://www.pbs.org/wgbh/nova/diamond/images/gp08jade.jpg" alt="Jade" width="226" height="169"/> <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
 
