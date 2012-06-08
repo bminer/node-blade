@@ -341,10 +341,14 @@ Built-in text filters include:
 	Text should not contain `]]>`.
 - :markdown (must have [markdown-js](https://github.com/evilstreak/markdown-js) installed)
 - :md (alias for :markdown)
+- :javascript - Generates a `<script>` tag for your JavaScript code. If `minify` compiler
+	option is set and UglifyJS is installed, your code is uglified automatically.
+- :js (alias for :javascript)
 - :coffeescript - Generates a `<script>` tag for the generated JavaScript.
 	(must have [coffee-script](https://github.com/jashkenas/coffee-script) installed)
 - :cs (alias for :coffeescript)
-- :stylus - Generates a `<style>` tag for the generated CSS.
+- :stylus - Generates a `<style>` tag for the generated CSS. If `minify` compiler
+	option is set, your CSS is compressed automatically.
 	(must have [stylus](https://github.com/LearnBoost/stylus) installed)
 - :less - Generates a `<style>` tag for the generated CSS.
 	(must have [less](https://github.com/cloudhead/less.js) installed)
