@@ -124,7 +124,7 @@ might want to contact me first or submit an issue before getting started.
 Installation
 ------------
 
-for Node (via npm): `npm install blade`
+for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
 
@@ -847,7 +847,10 @@ under the `meteor` directory. At the time of this writing, Blade is not a part o
 Meteor core smart package list. The easiest thing to do right now is to symlink that
 directory into your Meteor packages directory like this:
 
-`ln -s /path/to/blade/meteor /path/to/meteor/packages/blade`
+`ln -s /path/to/.../blade/meteor /path/to/.../meteor/packages/blade`
+
+Of course, the actual path where Blade and Meteor are installed on your system may vary.
+You need to replace the above command with the correct paths, as appropriate.
 
 Then, execute `meteor add blade` in your Meteor project directory.
 
