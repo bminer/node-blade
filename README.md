@@ -54,7 +54,7 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
-- **Meteor support** - Blade works well with [Meteor](http://meteor.com/) 0.3.6. See the
+- **Meteor support** - Blade works well with [Meteor](http://meteor.com/). See the
 	[documentation below](#meteor-support).
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
