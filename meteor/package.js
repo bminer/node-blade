@@ -1,5 +1,15 @@
 var path = require('path');
-var blade = require('blade');
+var blade;
+//Hopefully, sometime soon I'll be able to get rid of this horrible hack...
+try {
+	blade = require('blade');
+}
+catch(e) {
+	//XXX super lame! we actually have to give paths relative to
+	// app/inner/app.js, since that's who's evaling us.
+	blade = require('../../packages/blade/node_modules/blade');
+}
+//-- end of horrible hack
 
 Package.describe({
 	summary: "Blade - HTML Template Compiler, inspired by Jade & Haml"
@@ -17,7 +27,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 	//the location of meteor project = srcPath.substr(0, srcPath.length - servePath.length)
 	var basedir = srcPath.substr(0, srcPath.length - servePath.length) + "/views";
 	blade.compileFile(srcPath, {
-		'synchronous': true, //undocumented Blade property
+		'synchronous': true, //undocumented Blade property, but I'm okay with this hack
 		'basedir': basedir,
 		'cache': false, //disabled because we only compile each file once anyway?
 		'minify': false, //for debugging
