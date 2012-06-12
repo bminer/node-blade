@@ -13,7 +13,7 @@
   	"jade",
   	"haml"
   ],
-  "version": "1.3.5",
+  "version": "1.3.6",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
     "url": "https://github.com/bminer/node-blade"
@@ -37,7 +37,7 @@
   	"pretest": "./lib/parser/build.sh",
   	"test": "node ./test/test.js",
   	"prepublish": "./lib/parser/build.sh; ./dist/build.sh",
-	"postinstall": "ln -s ../.. ./meteor/node_modules/blade"
+	"postinstall": "./postinstall.sh"
   },
   "contributors": [
 	"Michel Löhr (https://github.com/mlohr)"
