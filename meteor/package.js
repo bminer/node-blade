@@ -1,6 +1,5 @@
 var path = require('path');
 var blade = require('blade');
-var runtimePath = path.dirname(require.resolve('blade')) + "/runtime.js";
 
 Package.describe({
 	summary: "Blade - HTML Template Compiler, inspired by Jade & Haml"
@@ -79,7 +78,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 
 Package.on_use(function(api) {
 	//The plain-old Blade runtime
-	api.add_files(runtimePath, 'client');
+	api.add_files('runtime.js', 'client');
 	//The Blade runtime with overridden loadTemplate function, designed for Meteor
 	api.add_files('runtime-meteor.js', 'client');
 });
