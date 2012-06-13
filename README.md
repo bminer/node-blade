@@ -913,7 +913,6 @@ Asynchronously compiles a Blade template from a string.
 		and only if `process.env.NODE_ENV` is "development" and minify is false;
 		defaults to false, otherwise)
 	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
-	- `inlineTags` - use this array instead of `blade.Compiler.inlineTags`
 	- `selfClosingTags` - use this array instead of `blade.Compiler.selfClosingTags`
 	- `filters` - use this Object instead of `blade.Compiler.filters`
 	- `templateNamespace` - the name of the reserved variable in the view
