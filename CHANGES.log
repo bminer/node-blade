@@ -3,6 +3,14 @@ made to Blade, please review the Git commit logs.
 
 Blade was born on May 3, 2012.
 
+- Version 1.4 (June 13, 2012)
+	- Added support for c-style block comments to comment out Blade code
+	- Removed lib/inline-tags.js
+	- Fixed a lot of Meteor-related bugs
+	- Parsing tag attribute values is much more stable now
+	- Improved test suite
+	- Bugfixes
+	- Updated docs
 - Version 1.3 (June 2, 2012)
 	- Improved text filters
 	- Improved error reporting

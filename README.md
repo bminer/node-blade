@@ -504,6 +504,27 @@ with a text block.
 		just make sure that the indenting is right.
 ```
 
+or... even better... just use C-style block comments.  Begin with `/*` to generate
+a non-rendering block comment, or begin with `/**` to generate a regular comment.
+End the comment with `*/`.  These comments are not parsed like `//` comments.
+
+```
+/* h1 Testing */
+/**
+#header
+	h3 Notice that this chunk of Blade code is not parsed
+*/
+```
+
+renders as:
+
+```html
+<!--
+#header
+	h3 Notice that this chunk of Blade code is not parsed
+-->
+```
+
 ### Functions
 
 Functions are reusable mini-templates. They are similar to 'mixins' in Jade.
