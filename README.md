@@ -1007,6 +1007,9 @@ can compile the view stored at `sourcePath + "/homepage.blade"`
 - `options` include:
 	- `mount` - the URL path where you can request compiled views (defaults to
 		"/views/")
+	- `runtimeMount` - the URL path where the minified Blade runtime is served
+		to the browser (defaults to "/blade/blade.js"). Use `null` to disable
+		this functionality.
 	- `clientNamespace` - the variable where downloaded client-side templates
 		are stored (defaults to "blade.templates"). `blade.templates` is
 		not defined by the Blade runtime, so be sure to define it yourself.
