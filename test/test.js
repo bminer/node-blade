@@ -4,6 +4,8 @@ var blade = require('../lib/blade'),
 	path = require('path'),
 	locals = require('./locals'),
 	child_process = require('child_process');
+if(!fs.existsSync)
+	fs.existsSync = path.existsSync; //Node 0.6 compatibility
 
 locals.includeSource = true;
 //locals.debug = true;
@@ -23,7 +25,7 @@ for(var i in files)
 				copy[i] = locals[i];
 			blade.renderFile(inPath, copy, function(err, html, info) {
 				if(err) throw err;
-				if(path.existsSync(outPath) )
+				if(fs.existsSync(outPath) )
 				{
 					var compare = child_process.spawn('diff', ['-u', outPath, '-']);
 					var diff = "";

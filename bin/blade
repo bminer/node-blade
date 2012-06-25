@@ -4,6 +4,8 @@ var fs = require('fs'),
 	path = require('path'),
 	blade = require('../'),
 	program = require('commander');
+if(!fs.existsSync)
+	fs.existsSync = path.existsSync; //Node 0.6 compatibility
 
 var opts = {};
 
@@ -84,7 +86,7 @@ var outFile = program.args[1];
 var getOutputStream, outStreams = {};
 if(outFile == null || outFile == "-")
 	getOutputStream = function() {return process.stdout;};
-else if(!path.existsSync(outFile) || !fs.statSync(outFile).isDirectory() )
+else if(!fs.existsSync(outFile) || !fs.statSync(outFile).isDirectory() )
 	getOutputStream = function() {
 		if(outStreams[outFile])
 			return outStreams[outFile];
@@ -104,7 +106,7 @@ else
 var total = 1, done = 0;
 if(inFile == null || inFile == "-")
 	generate(process.stdin, getOutputStream(null), cOpts.filename);
-else if(!path.existsSync(inFile) )
+else if(!fs.existsSync(inFile) )
 	throw new Error("Could not find input file: " + inFile);
 else if(!fs.statSync(inFile).isDirectory() )
 	generate(fs.createReadStream(inFile), getOutputStream(inFile), path.normalize(inFile) );

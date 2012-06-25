@@ -1,6 +1,0 @@
-# Installs symlinks in ./meteor smart package directory since Meteor does not ship
-# with Blade just yet...
-# I'm hoping that I can get rid of this script someday...
-[ -d ./meteor/node_modules ] || mkdir ./meteor/node_modules
-[ -h ./meteor/node_modules/blade ] || ln -s ../.. ./meteor/node_modules/blade
-[ -h ./meteor/runtime.js ] || ln -s ../lib/runtime.js ./meteor/runtime.js
