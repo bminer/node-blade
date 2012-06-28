@@ -13,7 +13,7 @@
   	"jade",
   	"haml"
   ],
-  "version": "2.0.0beta",
+  "version": "2.0.0beta2",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
     "url": "https://github.com/bminer/node-blade"

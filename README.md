@@ -989,12 +989,6 @@ can compile the view stored at `sourcePath + "/homepage.blade"`
 	- `runtimeMount` - the URL path where the minified Blade runtime is served
 		to the browser (defaults to "/blade/blade.js"). Use `null` to disable
 		this functionality.
-	- `clientNamespace` - the variable where downloaded client-side templates
-		are stored (defaults to "blade.templates"). `blade.templates` is
-		not defined by the Blade runtime, so be sure to define it yourself.
-	- `clientCache` - turns on client-side caching of views (defaults to
-		`process.env.NODE_ENV == "production"`). Caching works until the user
-		navigates to another page.
 	- `compileOptions` - options passed to `blade.compile()`. Defaults to:
 
 ```javascript
@@ -1050,30 +1044,25 @@ and serve them up to any browser. Blade provides a built-in Express middleware
 to do just that (see above).
 
 Once you have the middleware setup, you can now serve your compiled Blade views
-to the client. Simply include the blade-runtime.js file in your `<script>`
+to the client. Simply include the /blade/blade.js file in your `<script>`
 tags, and then call `blade.runtime.loadTemplate`.
 
-### blade.runtime.loadTemplate(filename, [compileOptions,] cb)
+### blade.runtime.loadTemplate(filename, cb)
 
 - `filename` - the filename of the view you wish to retrieve, relative to the
 	`sourcePath` you setup in the Blade middleware.
-- `compileOptions` - arguments to be passed to the compiler (these are ignored
-	for now).
 - `cb` - your callback of the form `cb(err, tmpl)` where `tmpl` is your compiled
 	Blade template. Call the template like this:
 	`tmpl(locals, function(err, html) {...});`
 
-Your template will be stored in `blade.templates` or whatever you put as the
-`clientNamespace` when you setup the Blade middleware. In addition, if
-`clientCache` is set in the Blade middleware, then your templates will be stored
-at `blade.cachedViews`.
+Your template will be stored in `blade.cachedViews` and will be cached until the
+user reloads the page or navigates to another page.
 
 Yes, included files work, too. Like magic.
 
 Example client-side JavaScript:
 
 ```javascript
-blade.templates = {};
 blade.runtime.loadTemplate("homepage.blade", function(err, tmpl) {
 	tmpl({'users': ['John', 'Joe']}, function(err, html) {
 		console.log(html); //YAY! We have rendered HTML
