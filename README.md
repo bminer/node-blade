@@ -19,7 +19,7 @@ alt="Blade" width="150" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
-### Migrating to Blade 1.3
+### Migrating to Blade 1.3 or higher
 
 The latest version of Blade makes several changes to the Meteor smart package. You may need
 to reorganize your Meteor project to migrate to the new version. See the [Meteor wiki page]
@@ -59,25 +59,24 @@ Here are the reasons Blade *might* be considered "better" than Jade:
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
 	started with Blade should take you very little time.
-- **In Blade, file includes happen dynamically at run-time, instead of at compile-time.**
-	This means that files compiled in Blade are generally smaller than Jade
-	files when you are using file includes. In addition, if you re-use the same
-	included file among multiple parent views, the included file does not need to
-	be re-compiled. This can significantly decrease the size of client-side templates,
-	and reduce the overall bandwidth required to transfer the templates over the
-	Internet.
-- **[Blocks](#blocks) in Blade are awesome.** We removed features from Jade like explicit template
-	inheritance and static file includes and then added features like blocks and
-	parameterized blocks. You might find our idea of a block to be similar to Jade's,
-	but just wait until you realize how much more flexible they are!
+- **Smarter file includes**
+	Files compiled in Blade can be much smaller than Jade files when you are using file
+	includes because file includes happen at runtime instead of at compile-time. If you
+	re-use the same included file among multiple views, the included file does not need to
+	be reloaded.
+- **[Blocks](#blocks) in Blade are awesome.** We removed features from Jade like explicit
+	template inheritance and then added features like blocks and parameterized blocks.
+	You might find our idea of a block to be similar to Jade's, but just wait until you
+	realize how much more flexible they are!
 - **Just [Functions](#functions), not mixins or partials.** In Blade, there are no "mixins"
 	or partial templates. There are only functions, and they work just like regular JavaScript
 	functions that you've come to know and love. You can put your functions into separate
 	files and include them into other templates, you can take advantage of the `arguments`
-	Array-like Object, closures (not necessarily recommended), or whatever you want!
-- **Load function output into a variable.** Blade has a built-in syntax for taking
-	content rendered by a function and loading it into a variable within your view template.
-	Then, you can pass the rendered HTML content to another function, for example.
+	Array-like Object, or whatever you want!
+- **Other cool features** For example, Blade provides a built-in syntax for taking
+	content rendered by a function and loading it into a variable within your view template,
+	allowing you to pass rendered HTML content to another function. This is just one of
+	the many new features you can utilize when you make the switch to Blade.
 
 ```
 			Jade			vs.				Blade
@@ -102,9 +101,6 @@ Features
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
 - Meteor smart package
-
-Blade does more than Jade, and it does less than Jade. Your Jade templates
-will probably need some modifications before they will work with Blade.
 
 Project Status
 --------------
@@ -443,23 +439,11 @@ html
 
 which renders as `<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN"><html></html>`
 
-Put the doctype at the top of your Blade files, please. Here is the list of built-in doctypes:
+Put the doctype at the top of your Blade files, please. Please refer to [doctypes.js]
+(https://github.com/bminer/node-blade/blob/master/lib/doctypes.js) for the list of built-in
+doctypes.
 
-```javascript
-exports.doctypes = {
-  '5': '<!DOCTYPE html>',
-  'xml': '<?xml version="1.0" encoding="utf-8" ?>',
-  'default': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-  'transitional': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">',
-  'strict': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">',
-  'frameset': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Frameset//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-frameset.dtd">',
-  '1.1': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN" "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd">',
-  'basic': '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML Basic 1.1//EN" "http://www.w3.org/TR/xhtml-basic/xhtml-basic11.dtd">',
-  'mobile': '<!DOCTYPE html PUBLIC "-//WAPFORUM//DTD XHTML Mobile 1.2//EN" "http://www.openmobilealliance.org/tech/DTD/xhtml-mobile12.dtd">'
-};
-```
-
-Yes, you can modify the list of built-in doctypes through the API. Why would you, though?
+You can modify the list of built-in doctypes through the API, if you insist.
 
 ### Comments
 
@@ -485,13 +469,13 @@ Conditional comments work like this:
 ```
 head
 	//if lt IE 8
-		script(src="/ie-really-sux.js")
+		script(src="/dear-microsoft-plz-stop-making-browsers-kthxbye.js")
 ```
 
 renders as:
 
 ```html
-<head><!--[if lt IE 8]><script src="/ie-really-sux.js"></script><![endif]--></head>
+<head><!--[if lt IE 8]><script src="/dear-microsoft-plz-stop-making-browsers-kthxbye"></script><![endif]--></head>
 ```
 
 To comment out entire sections of Blade code, you can use non-rendering block comments
@@ -612,23 +596,44 @@ call dialog("Blade is awesome")#foobar.foo.bar
 
 `include "file.blade"`
 
-This will dynamically (at runtime) insert "file.blade" right into the current view, as if it
-was a single file.
+This will insert "file.blade" right into the current view at runtime, as if the contents
+of the included file were copied right into the current view.
 
-The include statement can also be followed by the name of a JavaScript variable containing
-the filename to be included.
+If you don't know the name of the file to be included until runtime, that's no problem.
+The include statement can also be followed by the name of a JavaScript variable
+containing the filename to be included.  These are called *dynamic filename includes*.
 
 ```
 - var filename = "file.blade"
 include filename
 ```
 
+**CAUTION:** When using *dynamic filename includes* in the browser, be sure that you
+have properly loaded all views that might be included into the browser's cache before
+executing the view containing the *dynamic filename include*. See the [implementation
+details](#fileIncludeDetails) for a more detailed explanation.
+
 If you do not specifiy a file extension, `.blade` will be appended to your string
 internally.
 
-Due to various complications, you may *NOT* place an `include` inside of a `function`,
-`block`, or `chunk`. This limitation is a bummer, and if you don't like it, you should
-complain by opening an issue.
+You may also place an `include` inside of a `function`, `block`, or `chunk`.
+
+Finally, you can specify which local variables should be passed to the included view
+template by using the `exposing` keyword.  By default, Blade will pass the parent's
+local variables to the included template; however, when using the `exposing` keyword,
+you can specify exactly which variables are to be exposed to the included template.
+
+For example:
+
+```
+- header = "Header: 1, 2, 3"
+- text = "This is some text: 1, 2, 3"
+- for(var i = 0; i < 10; i++)
+	include "foobar" exposing i, text
+```
+
+In the example above, variables `i` and `text` are exposed to "foobar.blade";
+the `header` variable will not be accessible from "foobar.blade".
 
 ### Blocks
 
@@ -821,10 +826,10 @@ render homepage.blade, you get:
 Chunks are simply functions that return HTML. They behave a bit differently than
 conventional Blade functions.
 
-Functions are called with `call` statements, and their contents are injected right
-into the AST. You can also capture the HTML they render by outputting to a variable,
-as described above. Chunks, on the other hand, always return HTML, and they cannot
-be called using `call` statements. The only way to render a chunk is to call it
+Functions are called with `call` statements, and their rendered content is injected
+right into a template. You can also capture the HTML they render by outputting to a
+variable, as described above. Chunks, on the other hand, always return HTML, and they
+cannot be called using `call` statements. The only way to render a chunk is to call it
 via your code (see example below).
 
 One reason you might define a chunk is to pass it to
@@ -878,36 +883,6 @@ Then, execute `meteor add blade` in your Meteor project directory.
 **More documentation and examples for Meteor + Blade can be found [on this wiki page]
 (https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)**
 
-Also, Blade allows you to manually call `Meteor.ui.chunk` and `Meteor.ui.listChunk` as you
-see fit.
-
-The following example uses chunks and the special `__.chunk` reference. Remember that
-unnamed chunks are simply named `last`.
-
-```
-chunk
-    h1= Session.get("counter")
-!=Meteor.ui.chunk(__.chunk.last);
-```
-
-Or, how about calling `Meteor.ui.listChunk`?
-
-```
-chunk else
-	.empty! No records were found
-chunk(post)
-	- var x = Session.equals("selected", post._id) ? "selected" : "";
-	div(class=x)= post.name
-!= Meteor.ui.listChunk(Posts.find({tags: "frontpage"}),
-	__.chunk.last, __.chunk.else, {
-		events: {
-			'click': function (event) {
-				Session.set("selected", this._id);
-			}
-		}
-	});
-```
-
 API
 ---
 
@@ -915,7 +890,7 @@ API
 
 ### blade.compile(string, [options,] cb)
 
-Asynchronously compiles a Blade template from a string.
+Compiles a Blade template from a string.
 
 - `string` is a string of Blade
 - `options` include:
@@ -970,6 +945,10 @@ In addition, a compiled template has these properties and methods:
 	`tmpl.template(locals, runtime, cb)`. This simply allows you to use a custom
 	runtime environment, if you choose to do so.
 - `filename` - the filename of the compiled template (if provided)
+- `dependencies` - an array of files that might be included by this template at
+	runtime
+- `unknownDependencies` - if true, this template uses *dynamic filename includes*
+	and may include any file at any time.
 - `toString()` - a function that converts the view template function into a string
 	of JavaScript code. If you need a client-side template for example, you can
 	use this function. [UglifyJS](https://github.com/mishoo/UglifyJS) is now used
@@ -983,12 +962,12 @@ Asynchronously compile a Blade template from a filename on the filesystem.
 - `options` - same as `blade.compile` above, except `filename` option is always
 	overwritten	with the `filename` specified. There is also a `synchronous`
 	option that will tell Blade to read and compile the file synchronously
-	instead of asynchronously. This option, while documented, is not recommended.
+	instead of asynchronously.
 - `cb` - same as `blade.compile` above
 
 ### blade.renderFile(filename, options, cb)
 
-Convenience function to asynchronously compile a template and render it.
+Convenience function to compile a template and render it.
 
 - `filename` is the filename
 - `options` - same as `blade.compileFile` above. This object is also passed
@@ -1015,9 +994,7 @@ can compile the view stored at `sourcePath + "/homepage.blade"`
 		not defined by the Blade runtime, so be sure to define it yourself.
 	- `clientCache` - turns on client-side caching of views (defaults to
 		`process.env.NODE_ENV == "production"`). Caching works until the user
-		navigates to another page. Then, you have to rely on the middleware
-		to do things like [weak and strong caching]
-		(https://developers.google.com/speed/docs/best-practices/caching).
+		navigates to another page.
 	- `compileOptions` - options passed to `blade.compile()`. Defaults to:
 
 ```javascript
@@ -1174,13 +1151,19 @@ tmpl({
 Implementation Details
 ----------------------
 
+**PEG.js**
+
 The Blade parser is built using [PEG.js](https://github.com/dmajda/pegjs).
 Thanks to the PEG.js team for making this project much easier than I had
 anticipated! To modify the parser, simply change `./lib/parser/blade-grammer.pegjs`,
 and the new parser will be automatically built the next time you run tests.
 
+**Running tests**
+
 To install all devDependencies, just do: `npm link` or install manually.
 To run tests, ensure devDependencies are installed, then run: `npm test`
+
+**Compiler-runtime relationship**
 
 Also, I'd like to mention here that the Blade compiler and Blade runtime are rather
 closely coupled. Unfortunately, that means that templates compiled with an older
@@ -1188,6 +1171,26 @@ Blade compiler might not be compatible with a newer runtime and vice versa.
 To avoid issues, be sure that your Blade templates were compiled with the compiler of
 the same version as the runtime on which they will run. If you think this is too
 inconvenient, please feel free to complain, but I probably will ignore you. :)
+
+<span id="fileIncludeDetails"></span>
+**File Includes**
+
+Included Blade templates MUST be loaded synchronously, and if this is not possible, an
+error will be thrown.  Obviously, when rendering views on the server, this is not a
+problem since Node provides synchronous file system calls; however, on the client, it is
+only possible to include a file synchronously when the file is already in the browser's
+cache.  When the name of the file to be included is known at compile-time (i.e. you are
+not using a *dynamic filename include*), the compiler will notify the Blade middleware
+of a particular view's dependencies.  This allows the client-side template loader to
+also load and cache any dependent views in advance, preventing any issues from occurring.
+Nevertheless, when *dynamic filename includes* are used, the compiler has no way of
+determining which views will be included at runtime, and if a dynamically included view
+is not loaded into the browser's cache when the include statement is reached, the
+included view must be be loaded asynchronously and, as such, an error will be thrown.
+
+Loading and compiling files synchronously may temporarily reduce your application's
+responsiveness, but because compiled views are often cached, this is not really much
+of an issue.
 
 Benchmarks
 ----------

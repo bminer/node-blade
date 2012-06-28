@@ -3,6 +3,16 @@ made to Blade, please review the Git commit logs.
 
 Blade was born on May 3, 2012.
 
+- Version 2.0 (June 27, 2012)
+	- File includes now happen synchronously
+	- File includes are now supported in blocks, functions, or chunks
+	- File includes now support "exposing" keyword
+	- Improve Blade middleware
+	- Added `runtimeMount` option to Blade middleware
+	- Migrated postinstall script from Bash to JavaScript
+	- Improved test suite
+	- Bugfixes
+	- Updated docs
 - Version 1.4 (June 13, 2012)
 	- Added support for c-style block comments to comment out Blade code
 	- Removed lib/inline-tags.js

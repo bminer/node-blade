@@ -1,0 +1,18 @@
+- for(var i = 1; i <= 10; i++)
+	include "include2"
+- for(var i = 1; i <= 10; i++)
+	include "include2" exposing i
+- for(var i = 1; i <= 10; i++)
+	include "include2"
+p The end: #{typeof locals.i} #{typeof i}
+
+p Before test block
+block test
+	p This will be replaced
+p After test block
+
+function replaceIt(includeFile)
+	replace block test
+		include includeFile
+
+call replaceIt("include2")
