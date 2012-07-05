@@ -7,12 +7,11 @@ Blade was born on May 3, 2012.
 	- File includes now happen synchronously
 	- File includes are now supported in blocks, functions, or chunks
 	- File includes now support "exposing" keyword
-	- Improve Blade middleware
-	- Added `runtimeMount` option to Blade middleware
+	- Improved Blade middleware (including new `runtimeMount` property)
 	- Removed `clientNamespace` and `clientCache` options from Blade middleware
 	- Migrated postinstall script from Bash to JavaScript
 	- Improved test suite
-	- Bugfixes
+	- Bugfixes (including Node 0.8 compatibility)
 	- Updated docs
 - Version 1.4 (June 13, 2012)
 	- Added support for c-style block comments to comment out Blade code
