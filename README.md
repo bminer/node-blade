@@ -19,12 +19,11 @@ alt="Blade" width="150" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
-### Version 2.0 Beta is out!
+### Version 2.0 is out!
 
 Version 2.0 features the ability to include files within functions, blocks, and chunks.
-It's not quite ready for primetime yet, but you can feel free to install and test it.
-
-`sudo npm -g install blade@beta`
+See the [changelog](https://github.com/bminer/node-blade/blob/master/CHANGES.log)
+for more details.
 
 ### Migrating to Blade 1.3 or higher
 
