@@ -27,7 +27,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 	//The location of meteor project = srcPath.substr(0, srcPath.length - servePath.length)
 	var basedir = srcPath.substr(0, srcPath.length - servePath.length) + "/views";
 	blade.compileFile(srcPath, {
-		'synchronous': true, //undocumented Blade property, but I'm okay with this hack
+		'synchronous': true,
 		'basedir': basedir,
 		'cache': false, //disabled because we only compile each file once anyway
 		'minify': false, //would be nice to have access to `no_minify` bundler option
