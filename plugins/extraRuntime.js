@@ -16,7 +16,7 @@
 				Live UI plugin, then the Model's `observable` property is passed
 				to the view
 			- cb of the form cb(err, html [, info])
-		- renderTo(element, viewName, locals, cb)
+		- renderTo(element, viewName, locals [, cb])
 			Same as render(), except the output of the view is immediately passed
 			to the specified element.  In addition, any event handlers created by
 			the view are bound.
@@ -51,7 +51,7 @@ blade.runtime.render = function(viewName, locals, cb) {
 };
 blade.runtime.renderTo = function(el, viewName, locals, cb) {
 	blade.runtime.render(viewName, locals, function(err, html, info) {
-		if(err) return cb(err);
+		if(err) {if(cb) cb(err); return;}
 		el.html(html);
 		//Register event handlers
 		for(var i in info.eventHandlers)
@@ -63,7 +63,7 @@ blade.runtime.renderTo = function(el, viewName, locals, cb) {
 			//Delete comment before element
 			elem.parentNode.removeChild(elem.previousSibling);
 		}
-		cb(null);
+		if(cb) cb(null, html, info);
 	});
 };
 
