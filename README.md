@@ -101,11 +101,12 @@ Features
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
 - Meteor smart package
+- Write DOM event handlers right into your views
 
 Project Status
 --------------
 
-I'd say that Blade 1.3 and above is **stable**. There are very few (if any)
+I'd say that Blade is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
 is ready for production environments. I use Blade for many of my projects.
 
@@ -508,6 +509,34 @@ renders as:
 	h3 Notice that this chunk of Blade code is not parsed
 -->
 ```
+
+### Event Handlers
+
+You can write event handlers right into your Blade templates.  Here's an
+example:
+
+```
+form(method="post" action="/login")
+	input(type="text" name="username")
+		{change}
+			//javascript code goes here
+			//this refers to this DOM element
+			//e refers to the browser's event Object
+			validate(this.value);
+	input(type="password" name="password")
+		{change}
+			checkPasswordStrength(this.value);
+```
+
+The above code will automatically register the 'onchange' event handler with
+the corresponding `input` tags.
+
+As shown in the example, your event handler may reference `this` (the DOM
+element that triggered the event) or `e` (the browser's event Object). Be
+aware that every browser's event Object might be slightly different,
+especially in legacy browsers. In addition, if you are rendering the template
+in the browser (i.e. using client-side templates), your event handler will
+have access to the view's locals.
 
 ### Functions
 

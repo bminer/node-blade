@@ -3,6 +3,11 @@ made to Blade, please review the Git commit logs.
 
 Blade was born on May 3, 2012.
 
+- Version 2.1 (July 6, 2012)
+	- Added support for event handlers
+	- Improved test suite
+	- Minor optimizations
+	- Updated docs
 - Version 2.0 (June 28, 2012)
 	- File includes now happen synchronously
 	- File includes are now supported in blocks, functions, or chunks
