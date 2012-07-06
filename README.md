@@ -1018,6 +1018,9 @@ can compile the view stored at `sourcePath + "/homepage.blade"`
 	- `runtimeMount` - the URL path where the minified Blade runtime is served
 		to the browser (defaults to "/blade/blade.js"). Use `null` to disable
 		this functionality.
+	- `pluginsMount` - the URL path where Blade plugins will be served to the
+		browser (defaults to "/blade/plugins/"). Use `null` to disable this
+		functionality.
 	- `compileOptions` - options passed to `blade.compile()`. Defaults to:
 
 ```javascript
