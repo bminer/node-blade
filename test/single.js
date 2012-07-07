@@ -5,7 +5,7 @@ var blade = require('../lib/blade'),
 	locals = require('./locals'),
 	child_process = require('child_process');
 if(!fs.existsSync)
-	fs.existsSync = path.existsSync; //Node 0.6 compatibility
+	fs.existsSync = fs.existsSync; //Node 0.6 compatibility
 
 locals.includeSource = true;
 locals.debug = true;
