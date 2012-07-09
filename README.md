@@ -125,7 +125,7 @@ for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
 
-Minified runtime is about 4-5 KB, uncompressed.
+Minified runtime is about 5-6 KB, uncompressed.
 
 Syntax
 ------
