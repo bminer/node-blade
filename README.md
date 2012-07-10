@@ -37,10 +37,11 @@ Table of Contents
 	- [Functions](#functions)
 	- [Dynamic File Includes](#dynamic-file-includes)
 	- [Blocks](#blocks)
-- [Meteor Support](#meteor-support)
 - [API](#api)
 - [Browser Usage](#browser-usage)
 - [A Simple Example](#simple-example)
+- [Plugins](#plugins)
+- [Meteor Support](#meteor-support)
 - [Implementation Details](#implementation-details)
 - [Benchmarks](#benchmarks)
 - [License](#license)
@@ -102,6 +103,7 @@ Features
 - Command-line tool to compile/render templates (try `blade --help`)
 - Meteor smart package
 - Write DOM event handlers right into your views
+- Cool plugins (including [Live UI](https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin))
 
 Project Status
 --------------
@@ -895,23 +897,6 @@ renders as `<div><h1>Hello!</h1></div>`
 If you override the `templateNamespace` compiler option, you will need to replace all
 instances of the double underscore (`__`) variable with the `templateNamespace` variable.
 
-## Meteor Support
-
-Blade also provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
-under the `meteor` directory. At the time of this writing, Blade is not a part of the
-Meteor core smart package list. The easiest thing to do right now is to symlink that
-directory into your Meteor packages directory like this:
-
-`ln -s /path/to/.../blade/meteor /path/to/.../meteor/packages/blade`
-
-Of course, the actual path where Blade and Meteor are installed on your system may vary.
-You need to replace the above command with the correct paths, as appropriate.
-
-Then, execute `meteor add blade` in your Meteor project directory.
-
-**More documentation and examples for Meteor + Blade can be found [on this wiki page]
-(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)**
-
 API
 ---
 
@@ -1168,6 +1153,53 @@ tmpl({
 	</body>
 </html>
 ```
+
+Plugins
+-------
+
+** Live UI **
+
+Blade provides a Live UI plugin that allows Blade to support live binding. Live binding
+provides automatic two-way synchronization between your models and views on a given web
+page.  That is, when data in your Model is updated, the rendered Blade views on the
+client's browser are automatically updated with the new content, and similarly, when a
+Blade view is rendered in the browser, the Blade [event handlers](#event-handlers) can
+update data in the model.
+
+Complete documentation for the Live UI plugin (including several examples) can be found
+on the [Live UI Plugin wiki page]
+(https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).
+
+Eventually, the Live UI plugin might live in a separate repository and work for any
+templating language.
+
+** definePropertyIE8 **
+
+This plugin is a prerequisite for the Live UI plugin if you plan on using Live UI in
+Internet Explorer 8.
+
+** Extra Runtime **
+
+Adds some additional functions to the Blade runtime that help support the Live UI plugin.
+The Extra Runtime may be merged with the Live UI plugin at a later date.
+
+Meteor Support
+--------------
+
+Blade also provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
+under the `meteor` directory. At the time of this writing, Blade is not a part of the
+Meteor core smart package list. The easiest thing to do right now is to symlink that
+directory into your Meteor packages directory like this:
+
+`ln -s /path/to/.../blade/meteor /path/to/.../meteor/packages/blade`
+
+Of course, the actual path where Blade and Meteor are installed on your system may vary.
+You need to replace the above command with the correct paths, as appropriate.
+
+Then, execute `meteor add blade` in your Meteor project directory.
+
+**More documentation and examples for Meteor + Blade can be found [on this wiki page]
+(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)**
 
 Implementation Details
 ----------------------
