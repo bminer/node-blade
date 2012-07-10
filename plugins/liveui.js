@@ -135,7 +135,7 @@
 	Model.prototype.get = function(key) {
 		var self = this;
 		var context = Context.current;
-		if(context && !self._keyDeps[key][context.id]) {
+		if(context && self._keyDeps[key] && !self._keyDeps[key][context.id]) {
 			//Store the current context and setup invalidation callback
 			self._keyDeps[key][context.id] = context;
 			context.on_invalidate(function() {
@@ -194,5 +194,9 @@
 				for(var cid in this._keyDeps[key])
 					this._keyDeps[key][cid].invalidate();
 		return invalidate;
+	};
+	//Serializes the Model using JSON.stringify
+	Model.prototype.serialize = function() {
+		return JSON.stringify(this._rawData);
 	};
 })();

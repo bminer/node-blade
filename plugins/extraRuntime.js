@@ -19,7 +19,9 @@
 		- renderTo(element, viewName, locals [, cb])
 			Same as render(), except the output of the view is immediately passed
 			to the specified element.  In addition, any event handlers created by
-			the view are bound.
+			the view are bound.  Finally, if jQuery is available, element preservation
+			is used for elements with an 'id' attribute.
+			(element preservation feature coming soon)
 	Adds the following functions to jQuery.fn:
 		- render(viewName, locals [, cb])
 			Asynchronously renders the specified view using the specified locals.
@@ -52,7 +54,13 @@ blade.runtime.render = function(viewName, locals, cb) {
 blade.runtime.renderTo = function(el, viewName, locals, cb) {
 	blade.runtime.render(viewName, locals, function(err, html, info) {
 		if(err) {if(cb) cb(err); return;}
-		el.html(html);
+		if(var $ = jQuery)
+		{
+			//TODO: Implement element preservation...
+			$(el).html(html);
+		}
+		else
+			el.innerHTML = html;
 		//Register event handlers
 		for(var i in info.eventHandlers)
 		{
