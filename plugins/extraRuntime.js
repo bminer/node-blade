@@ -54,7 +54,8 @@ blade.runtime.render = function(viewName, locals, cb) {
 blade.runtime.renderTo = function(el, viewName, locals, cb) {
 	blade.runtime.render(viewName, locals, function(err, html, info) {
 		if(err) {if(cb) cb(err); return;}
-		if(var $ = jQuery)
+		var $ = jQuery;
+		if($)
 		{
 			//TODO: Implement element preservation...
 			$(el).html(html);
