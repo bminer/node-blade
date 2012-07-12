@@ -1245,6 +1245,31 @@ Loading and compiling files synchronously may temporarily reduce your applicatio
 responsiveness, but because compiled views are often cached, this is not really much
 of an issue.
 
+**Event Handlers**
+
+Event handlers in Blade work by injecting the event handler function as an HTML comment
+directly before the bound element.  Then, the appropriate event attribute (i.e.
+onclick, onchange, etc.) on the element is set to call `blade.runtime.trigger`.  The
+`trigger` function basically grabs the HTML comment, passes the contents through eval(),
+and binds the event handler directly to the element.  This means that the event handlers
+work on templates rendered on the browser or on the server. Everything gets wired up the
+first time that the event occurs on the browser.
+
+The Blade runtime also keeps track of any event handlers bound to a specific element
+by assigning each element an 'id' attribute, if necessary.  When the view has
+finished rendering, the Blade runtime will pass a bunch of information (chunks, blocks,
+functions, or event handlers that were defined, etc.) to the 3rd (undocumented) argument
+of the render callback function.  If you are rendering Blade templates on the browser,
+you can access the list of event handlers and bind the defined event handler directly
+to the element by looking up the element by its 'id' instead of letting the `trigger`
+function do its magic.  The advantage of binding direclty to the defined event handler is
+that (thanks to closures) you can still reference the locals that were passed to your
+view and modify them, as needed... directly from your event handler. This allows your view
+code to automatically synchronize with your model, providing one-way view-to-model
+synchronization capabilties. Very cool!  For examples of this and for more information,
+check out the [Live UI plugin]
+(https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).
+
 Benchmarks
 ----------
 
