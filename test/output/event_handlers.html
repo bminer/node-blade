@@ -1,7 +1,9 @@
-<input id="foo" class="bar foobar" onchange="return blade.eventHandlers[0].apply(this,arguments);"/><input class="foo bar" onchange="return blade.eventHandlers[1].apply(this,arguments);" onclick="return blade.eventHandlers[1].apply(this,arguments);"/><input onclick="return blade.eventHandlers[2].apply(this,arguments);"/><script type="text/javascript">blade.eventHandlers.push(function (e){//test1
-});blade.eventHandlers.push(function (e){alert("Test2");
+<!--i["change"]=function (e){//test1
+}--><input id="foo" class="bar foobar" onchange="return blade.runtime.trigger(this,arguments);"/><!--i["change click"]=function (e){alert("Test2");
 //test2
 alert("Still test 2");
 /* More of test 2 */
-});blade.eventHandlers.push(function (e){//test3
-});</script>
+}--><input class="foo bar" onchange="return blade.runtime.trigger(this,arguments);" onclick="return blade.runtime.trigger(this,arguments);" id="blade_0"/><!--i["click"]=function (e){//test3 - click
+};i["change"]=function (e){//test4 - change
+};i["keyup"]=function (e){//test5 - keyup
+}--><input onclick="return blade.runtime.trigger(this,arguments);" onchange="return blade.runtime.trigger(this,arguments);" onkeyup="return blade.runtime.trigger(this,arguments);" id="blade_1"/>

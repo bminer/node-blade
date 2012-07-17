@@ -27,6 +27,8 @@
 	<!--[if IE 8]>
 		<script type="text/javascript" src="/blade/plugins/definePropertyIE8.js"></script>
 	<![endif]-->
+	
+	For element preservation support, please add jQuery 1.7+ to your project.
 */
 (function() {
 	if(!window.blade) return; //Nothing to expose, so just quit
@@ -132,8 +134,10 @@
 	//Stop tracking this property completely, without invoking any invalidations
 	Model.prototype.remove = function(key) {
 		delete this.observable[key];
-		delete this._rawData[key];
 		delete this._keyDeps[key];
+		var val = this._rawData[key];
+		delete this._rawData[key];
+		return val;
 	};
 	//Get the value of the specified key, and add an invalidation callback to
 	//the current Context
@@ -332,7 +336,7 @@
 		});
 	};
 
-	if(jQuery)
+	if(window.jQuery)
 		jQuery.fn.render = function(viewName, locals, cb) {
 			blade.runtime.renderTo(this, viewName, locals, cb);
 		};
