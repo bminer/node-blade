@@ -1157,7 +1157,7 @@ tmpl({
 Plugins
 -------
 
-** Live UI **
+**Live UI**
 
 Blade provides a Live UI plugin that allows Blade to support live binding. Live binding
 provides automatic two-way synchronization between your models and views on a given web
@@ -1173,7 +1173,7 @@ on the [Live UI Plugin wiki page]
 Eventually, the Live UI plugin might live in a separate repository and work for any
 templating language.
 
-** definePropertyIE8 **
+**definePropertyIE8**
 
 This plugin is a prerequisite for the Live UI plugin if you plan on using Live UI in
 Internet Explorer 8.
