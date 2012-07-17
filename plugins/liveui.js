@@ -18,8 +18,8 @@
 	Browser Support:
 		-Chrome
 		-Firefox 4+ (not tested)
-		-IE 9+ - NOT WORKING!!!  Causes browser to freeze (probably a resursive loop).
-		-IE 8 - (not tested - requires definePropertyIE8 plugin; IE is dumb)
+		-IE 9+
+		-IE 8 (requires definePropertyIE8 plugin; IE is dumb)
 		-Safari 5.1+ (not tested)
 		-Opera 12+ (not tested)
 	If using the definePropertyIE8 plugin, include it into your HTML document
@@ -257,36 +257,28 @@
 						$(focus).parents().index(el) >= 0;
 				if(preserve)
 				{
-					//Save the ID and value of this element
-					var id = focus.id, oldValue, tmpValue,
-						newElementQuery = id ? "#" + id :
-							"#" + focus.parentNode.id + " > [name=" + focus.name + "]";
+					//Setup the new element query now because the 'id' attribute will be deleted soon
+					var newElementQuery = focus.id ? "#" + focus.id :
+						"#" + focus.parentNode.id + " > [name=" + focus.name + "]"
 					//Save the selection, if needed
 					if($(focus).is("input[type=text],input[type=password],textarea"))
-					{
 						var selectionStart = focus.selectionStart,
 							selectionEnd = focus.selectionEnd;
-					}
 					//Remove event handlers and attributes; in Chrome, 'blur' and possibly 'change'
 					//events are fired when an in-focus element is removed from the DOM
-					while(focus.attributes.length > 0)
-						focus.removeAttributeNode(focus.attributes.item(0) );
-					//Add a "change" event handler. When in-focus elements are removed from,
-					//the DOM, 'blur' or 'change' might be triggered.
-					focus.onchange = function(e) {
-						tmpValue = focus.value;
-						return false; //prevent the change from occurring
-					};
-					//Remove all children and any leftover event handlers
-					//(although blur might still fire if the event handler could not be removed)
-					focus = focus.cloneNode();
+					$(focus).off();
+					for(var i = focus.attributes.length - 1; i >= 0; i--)
+						focus.removeAttributeNode(focus.attributes.item(i) );
+					focus.onchange = focus.onblur = null;
+					//Now it's safe to call blur and remove this element from the DOM
+					focus.blur();
 				}
 				//Insert newly rendered content (jQuery is not required here)
 				if(el.html)
 					el.html(html);
 				else
 					el.innerHTML = html;
-				//Preserve element focus, cursor position, etc.
+				//Preserve element value, focus, cursor position, etc.
 				if(preserve)
 				{
 					//Find new element in newly rendered content
@@ -294,41 +286,20 @@
 					//If found, do element preservation stuff...
 					if(newElement.length == 1)
 					{
-						//Replace newElement
-						newElement.replaceWith(focus);
-						newElement = newElement[0];
-						oldValue = newElement.value;
-						//Add new child nodes and attributes
-						while(newElement.childNodes.length > 0)
-						{
-							var child = newElement.childNodes.item(i);
-							newElement.removeChild(child);
-							focus.appendChild(child);
-						}
-						while(newElement.attributes.length > 0)
-						{
-							var attr = newElement.attributes.item(i);
-							newElement.removeAttributeNode(attr);
-							focus.setAttributeNode(attr);
-						}
+						var oldValue = newElement.val(); //Save the value that's currently in the model
 						//Set value if a change event was previously triggered
-						if(tmpValue)
-						{
-							focus.value = tmpValue;
-							//Setup a one-time blur event handler to ensure
-							//that a 'change' event is triggered
-							$(focus).blur(function(e) {
-								if(this.value !== oldValue)
-									$(this).trigger('change');
-								$(this).unbind(e);
-							});
-						}
+						newElement.val(focus.value).blur(function(e) {
+							if(this.value !== oldValue)
+								$(this).trigger('change');
+							$(this).unbind(e);
+						});
 						//Set focus and cursor
-						focus.focus();
-						if($(focus).is("input[type=text],input[type=password],textarea"))
+						newElement = newElement[0];
+						newElement.focus();
+						if($(newElement).is("input[type=text],input[type=password],textarea"))
 						{
-							focus.selectionStart = selectionStart;
-							focus.selectionEnd = selectionEnd;
+							newElement.selectionStart = selectionStart;
+							newElement.selectionEnd = selectionEnd;
 						}
 					}
 				}
@@ -338,7 +309,20 @@
 					var events = info.eventHandlers[i].events.split(" "),
 						elem = document.getElementById(i);
 					for(var j = 0; j < events.length; j++)
-						elem['on' + events[j]] = info.eventHandlers[i].handler;
+						if(elem === newElement && events[j] == "change")
+							(function(elem, handler) {
+								elem['on' + events[j]] = function() {
+									setTimeout(function() {
+										elem['on' + events[j]] = handler; //put everything back
+									}, 1);
+									//intercept event, if needed
+									if(this.value !== oldValue)
+										//call original handler
+										return handler.apply(this, arguments);
+								};
+							})(elem, info.eventHandlers[i].handler);
+						else
+							elem['on' + events[j]] = info.eventHandlers[i].handler;
 					//Delete comment before element
 					elem.parentNode.removeChild(elem.previousSibling);
 				}

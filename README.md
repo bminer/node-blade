@@ -1178,11 +1178,6 @@ templating language.
 This plugin is a prerequisite for the Live UI plugin if you plan on using Live UI in
 Internet Explorer 8.
 
-** Extra Runtime **
-
-Adds some additional functions to the Blade runtime that help support the Live UI plugin.
-The Extra Runtime may be merged with the Live UI plugin at a later date.
-
 Meteor Support
 --------------
 
