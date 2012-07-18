@@ -13,7 +13,7 @@
   	"jade",
   	"haml"
   ],
-  "version": "2.4.1",
+  "version": "2.5.0",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
 	"type": "git",
@@ -37,7 +37,7 @@
   "scripts": {
   	"pretest": "./lib/parser/build.sh",
   	"test": "node ./test/test.js",
-  	"prepublish": "./lib/parser/build.sh; ./dist/build.sh",
+  	"prepublish": "./lib/parser/build.sh",
 	"postinstall": "node ./postinstall.js"
   },
   "contributors": [

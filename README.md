@@ -125,7 +125,7 @@ Installation
 
 for Node (via npm): `sudo npm install -g blade`
 
-Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/dist/blade-runtime.min.js`
+Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/lib/runtime.js`
 
 Minified runtime is about 5-6 KB, uncompressed.
 
@@ -186,6 +186,16 @@ Classes (delimited by ".") from before will be merged with the value of the `cla
 For example:
 
 `div#foo.bar.dummy(class="another dude")` renders as: `<div id="foo" class="bar dummy another dude"></div>`
+
+Boolean attributes are allowed, as well. If the attribute value is boolean `true`, then
+the attribute is set; if the attribute value is boolean `false`, then the attribute is
+ignored entirely.  For example:
+
+`input(type="text" checked=true)` renders as: `<input type="text" checked="checked"/>`.
+
+Or... you can write it [HTML 5 style](http://dev.w3.org/html5/html-author/#empty-attr) like this:
+
+`input(type="text" checked)` which renders as: `<input type="text" checked="checked"/>`.
 
 div, div, div can get annoying... so, we can omit the tag specifier if we specify an
 id or some classes:
