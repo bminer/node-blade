@@ -37,7 +37,7 @@
 		// storing multiple copies of the same context in the
 		// invalidation list.
 		this.id = Context.next_id++;
-		this._callbacks = []; //called when invalidated
+		this._callbacks = []; //each of these are called when invalidated
 		this._invalidated = false;
 	};
 	blade.Context = Context; //expose this Object
@@ -70,9 +70,8 @@
 		return ret;
 	};
 
-	// we specifically guarantee that this doesn't call any
-	// invalidation functions (before returning) -- it just marks the
-	// context as invalidated.
+	//Just mark the Context as invalidated; do not call any invalidation functions
+	//just yet; instead, schedule them to be executed soon.
 	Context.prototype.invalidate = function () {
 		if (!this._invalidated) {
 			this._invalidated = true;
@@ -85,8 +84,8 @@
 		}
 	};
 
-	// Calls f immediately if this context was already
-	// invalidated. The callback receives one argument, the context.
+	//Calls f immediately if this context was already
+	//invalidated. The callback receives one argument, the Context.
 	Context.prototype.on_invalidate = function (f) {
 		if (this._invalidated)
 			f(this);
@@ -103,6 +102,8 @@
 		});
 		this._rawData = {}; //the raw model data
 		this._keyDeps = {}; //the key's dependent contexts - indexed by key.
+		this._invalid = {}; //list of keys that are invalid
+		this.validation = {}; //list of validation functions for each key
 		//this._keyDeps[key] is an Object of contexts, indexed by context ID
 		
 		//If data was passed into the constructor, add each property to the Model
@@ -113,11 +114,12 @@
 	blade.Model = Model; //expose this Object
 	
 	//Add a new key-value pair to the Model, if it doesn't already exist.
+	//If the key already exists, this is equivalent to calling Model.put(...)
 	Model.prototype.add = function(key, value) {
 		var self = this;
-		//If the key already is being tracked, just set the value
+		//If the key already is being tracked, just put the value
 		if(self._keyDeps[key])
-			return self.set(key, value);
+			return self.put(key, value);
 		
 		//Create dependent contexts
 		self._keyDeps[key] = {};
@@ -128,13 +130,14 @@
 			"configurable": true,
 			"enumerable": true
 		});
-		//Finally, set the value of the newly created property
-		return self.set(key, value);
+		//Finally, put the value of the newly created property
+		return self.put(key, value);
 	};
 	//Stop tracking this property completely, without invoking any invalidations
 	Model.prototype.remove = function(key) {
 		delete this.observable[key];
 		delete this._keyDeps[key];
+		delete this._invalid[key];
 		var val = this._rawData[key];
 		delete this._rawData[key];
 		return val;
@@ -144,7 +147,7 @@
 	Model.prototype.get = function(key) {
 		var self = this;
 		if(!self._keyDeps[key])
-			self.add(key);
+			self.add(key); //Add the key; the value is undefined
 		var context = Context.current;
 		if(context && !self._keyDeps[key][context.id]) {
 			//Store the current context and setup invalidation callback
@@ -166,17 +169,47 @@
 	//Set (or add, if necessary) the key to the specified value, invalidating
 	//any Contexts, as necessary
 	Model.prototype.set = function(key, value) {
-		var self = this;
-		if(self._rawData[key] === value)
-			return false; //The value is unchanged
-		if(!self._keyDeps[key])
-			return self.add(key, value); //The key needs to be added first
+		//Put the value and invalidate all dependent contexts
+		var ret;
+		if(ret = this.put(key, value) )
+			this.invalidate(key);
+		return ret;
+	};
+	//Set (or add, if necessary) the key to the specified value, without
+	//invalidating any Contexts
+	Model.prototype.put = function(key, value) {
+		if(!this._keyDeps[key])
+			return this.add(key, value); //The key needs to be added first
 		
-		//Set the value and invalidate all dependent contexts
-		self._rawData[key] = value;
-		for(var cid in self._keyDeps[key])
-			self._keyDeps[key][cid].invalidate();
+		//Validate
+		delete this._invalid[key];
+		var valid;
+		if(valid = this.validation[key])
+		{
+			valid = valid.call(this, value, key);
+			if(typeof valid == "object")
+			{
+				value = valid.value;
+				valid = valid.valid;
+			}
+			if(!valid)
+				this._invalid[key] = true;
+		}
+		if(this._rawData[key] === value)
+			return false; //The value is unchanged
+		//Set the raw value
+		this._rawData[key] = value;
 		return true;
+	};
+	//Invalidates any Contexts associated with the key or all keys (if
+	//key is not specified)
+	Model.prototype.invalidate = function(key) {
+		if(key)
+			for(var cid in this._keyDeps[key])
+				this._keyDeps[key][cid].invalidate();
+		else
+			for(var key in this._keyDeps)
+				this.invalidate(key); //recurse for each key
 	};
 	//Synchronizes with the 'observable' Object
 	//If properties are added/removed, all keys in the model are invalidated
@@ -201,10 +234,17 @@
 			}
 		//invalidate all contexts for all keys
 		if(invalidate)
-			for(var key in this._keyDeps)
-				for(var cid in this._keyDeps[key])
-					this._keyDeps[key][cid].invalidate();
+			this.invalidate();
 		return invalidate;
+	};
+	//Returns true if the data is valid; false otherwise
+	//Also returns false if the key has not been added to the Model
+	Model.prototype.validate = function(key) {
+		if(key)
+			return this._keyDeps[key] && !this._invalid[key];
+		else
+			for(key in this._invalid)
+				return false;
 	};
 	//Serializes the Model using JSON.stringify
 	Model.prototype.serialize = function() {
@@ -290,20 +330,24 @@
 					//If found, do element preservation stuff...
 					if(newElement.length == 1)
 					{
-						var oldValue = newElement.val(); //Save the value that's currently in the model
-						//Set value if a change event was previously triggered
-						newElement.val(focus.value).blur(function(e) {
-							if(this.value !== oldValue)
-								$(this).trigger('change');
-							$(this).unbind(e);
-						});
-						//Set focus and cursor
+						var oldValue = $(newElement).val(); //Save the value that's currently in the model
 						newElement = newElement[0];
-						newElement.focus();
-						if($(newElement).is("input[type=text],input[type=password],textarea"))
+						newElement.focus(); //Give the new element focus
+						if(document.activeElement === newElement)
 						{
-							newElement.selectionStart = selectionStart;
-							newElement.selectionEnd = selectionEnd;
+							//Set value to the temporary value and setup blur event handler to trigger `change`, if needed
+							$(newElement).val(focus.value).blur(function(e) {
+								$(this).unbind(e);
+								if(this.value !== oldValue)
+									$(this).trigger('change');
+							});
+							//Set focus again and set cursor & text selection
+							newElement.focus();
+							if($(newElement).is("input[type=text],input[type=password],textarea"))
+							{
+								newElement.selectionStart = selectionStart;
+								newElement.selectionEnd = selectionEnd;
+							}
 						}
 					}
 				}
