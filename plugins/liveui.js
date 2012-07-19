@@ -303,7 +303,8 @@
 				{
 					//Setup the new element query now because the 'id' attribute will be deleted soon
 					var newElementQuery = focus.id ? "#" + focus.id :
-						"#" + focus.parentNode.id + " > [name=" + focus.name + "]"
+						"#" + focus.parentNode.id + " > [name=" + focus.name + "]",
+						tmpValue = focus.value;
 					//Save the selection, if needed
 					if($(focus).is("input[type=text],input[type=password],textarea"))
 						var selectionStart = focus.selectionStart,
@@ -336,7 +337,7 @@
 						if(document.activeElement === newElement)
 						{
 							//Set value to the temporary value and setup blur event handler to trigger `change`, if needed
-							$(newElement).val(focus.value).blur(function(e) {
+							$(newElement).val(tmpValue).blur(function(e) {
 								$(this).unbind(e);
 								if(this.value !== oldValue)
 									$(this).trigger('change');
