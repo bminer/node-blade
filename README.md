@@ -1224,7 +1224,8 @@ To avoid issues, be sure that your Blade templates were compiled with the compil
 the same version as the runtime on which they will run. If you think this is too
 inconvenient, please feel free to complain, but I probably will ignore you. :)
 
-<strong id="fileIncludeDetails">File Includes</strong>
+<a name="fileIncludeDetails"></a>
+**File Includes**
 
 Included Blade templates MUST be loaded synchronously, and if this is not possible, an
 error will be thrown.  Obviously, when rendering views on the server, this is not a
