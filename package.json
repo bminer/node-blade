@@ -11,7 +11,9 @@
   	"template",
   	"engine",
   	"jade",
-  	"haml"
+  	"haml",
+	"live binding",
+	"meteor"
   ],
   "version": "2.6.0",
   "homepage": "https://github.com/bminer/node-blade",

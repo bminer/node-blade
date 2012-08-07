@@ -19,12 +19,6 @@ alt="Blade" width="150" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
-### Version 2.0 is out!
-
-Version 2.0 features the ability to include files within functions, blocks, and chunks.
-See the [changelog](https://github.com/bminer/node-blade/blob/master/CHANGES.log)
-for more details.
-
 Table of Contents
 -----------------
 
@@ -488,7 +482,7 @@ head
 renders as:
 
 ```html
-<head><!--[if lt IE 8]><script src="/dear-microsoft-plz-stop-making-browsers-kthxbye"></script><![endif]--></head>
+<head><!--[if lt IE 8]><script src="/dear-microsoft-plz-stop-making-browsers-kthxbye.js"></script><![endif]--></head>
 ```
 
 To comment out entire sections of Blade code, you can use non-rendering block comments
@@ -954,8 +948,8 @@ Compiles a Blade template from a string.
 
 Note: if there is a problem with the Blade compiler, or more likely, if there
 is a syntax error with the JavaScript code in your template, Node.js will not
-provide any line number or other information about the error. At the time of this
-writing, this is a limitation of the Google V8 engine.
+provide any line number or other information about the error. See issue #40 for
+more details.
 
 You can render a compiled template by calling the function: `tmpl(locals, cb)`
 
@@ -1052,10 +1046,10 @@ templates:
 var express = require('express'),
 	blade = require('blade');
 var app = express.createServer();
-app.use(blade.middleware(__dirname + '/views') );
-app.use(express.static(__dirname + "/public") );
-app.set('views', __dirname + '/views');
-app.set('view engine', 'blade');
+app.use(blade.middleware(__dirname + '/views') ); //for client-side templates
+app.use(express.static(__dirname + "/public") ); //maybe we have some static files
+app.set('views', __dirname + '/views'); //tells Express where our views are stored
+app.set('view engine', 'blade'); //Yes! Blade works with Express out of the box!
 app.get('/', function(req, res, next) {
 	res.render('homepage');
 });
@@ -1065,10 +1059,10 @@ app.listen(8000);
 Browser Usage
 -------------
 
-The Blade compiler doesn't work on browsers yet, but the runtime should work
-on every browser. That means that you can compile your templates on the server
-and serve them up to any browser. Blade provides a built-in Express middleware
-to do just that (see above).
+The Blade runtime should work on every browser, and since Blade provides an
+Express middleware for serving compiled templates to the browser ([see above]
+(#blademiddlewaresourcepath-options)), rendering Blade templates in the browser
+is a breeze.
 
 Once you have the middleware setup, you can now serve your compiled Blade views
 to the client. Simply include the /blade/blade.js file in your `<script>`
@@ -1176,9 +1170,9 @@ client's browser are automatically updated with the new content, and similarly, 
 Blade view is rendered in the browser, the Blade [event handlers](#event-handlers) can
 update data in the model.
 
-Complete documentation for the Live UI plugin (including several examples) can be found
-on the [Live UI Plugin wiki page]
-(https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).
+**Complete documentation for the Live UI plugin (including several examples)
+can be found on the [Live UI Plugin wiki page]
+(https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).**
 
 Eventually, the Live UI plugin might live in a separate repository and work for any
 templating language.
@@ -1204,7 +1198,7 @@ You need to replace the above command with the correct paths, as appropriate.
 Then, execute `meteor add blade` in your Meteor project directory.
 
 **More documentation and examples for Meteor + Blade can be found [on this wiki page]
-(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor)**
+(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).**
 
 Implementation Details
 ----------------------
@@ -1230,8 +1224,7 @@ To avoid issues, be sure that your Blade templates were compiled with the compil
 the same version as the runtime on which they will run. If you think this is too
 inconvenient, please feel free to complain, but I probably will ignore you. :)
 
-<span id="fileIncludeDetails"></span>
-**File Includes**
+<strong id="fileIncludeDetails">File Includes</strong>
 
 Included Blade templates MUST be loaded synchronously, and if this is not possible, an
 error will be thrown.  Obviously, when rendering views on the server, this is not a
