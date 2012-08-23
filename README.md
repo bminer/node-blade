@@ -1,3 +1,4 @@
+[![build status](https://secure.travis-ci.org/bminer/node-blade.png)](http://travis-ci.org/bminer/node-blade)
 Blade - HTML Template Compiler
 ==============================
 
