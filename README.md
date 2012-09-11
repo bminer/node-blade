@@ -14,6 +14,9 @@ It works like this...
 
 Never write HTML again. Please.
 
+**UPDATE:** Meteor 0.4.0 support is coming soon! Thanks for your patience! If
+anyone wants to help implement support for Meteor 0.4.0, please contact me.
+
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
 
