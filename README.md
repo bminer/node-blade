@@ -967,9 +967,10 @@ In addition, a compiled template has these properties and methods:
 	runtime environment, if you choose to do so.
 - `filename` - the filename of the compiled template (if provided)
 - `dependencies` - an array of files that might be included by this template at
-	runtime
+	runtime, relative to the path of this template
 - `unknownDependencies` - if true, this template uses *dynamic filename includes*
 	and may include any file at any time.
+- `reldir` - the path to this template, relative to the base/root path
 - `toString()` - a function that converts the view template function into a string
 	of JavaScript code. If you need a client-side template for example, you can
 	use this function. [UglifyJS](https://github.com/mishoo/UglifyJS) is now used
