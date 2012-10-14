@@ -22,6 +22,9 @@ alt="Blade" width="150" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
+This is *not* the Blade templating engine developed by [Laravel](http://laravel.com/).
+I blame Laravel for choosing the same name and for creating any confusion.
+
 Table of Contents
 -----------------
 
@@ -929,9 +932,12 @@ Compiles a Blade template from a string.
 		the size of the template is increased significantly. (defaults to true if
 		and only if `process.env.NODE_ENV` is "development" and minify is false;
 		defaults to false, otherwise)
-	- `doctypes` - use this Object instead of `blade.Compiler.doctypes`
-	- `selfClosingTags` - use this array instead of `blade.Compiler.selfClosingTags`
-	- `filters` - use this Object instead of `blade.Compiler.filters`
+	- `doctypes` - an Object to specify additional doctypes or overwrite any built-in
+		ones. This object is merged with `blade.Compiler.doctypes`
+	- `selfClosingTags` - Array of self-closing tags to be used instead of
+		`blade.Compiler.selfClosingTags`
+	- `filters` - an Object to specify additional filters or overwrite any built-in
+		ones. This object is merged with `blade.Compiler.filters`
 	- `templateNamespace` - the name of the reserved variable in the view
 		(defaults to two underscores: __). Other reserved names are
 		[listed here](#variable-names-to-avoid)
