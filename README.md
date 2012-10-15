@@ -22,8 +22,10 @@ alt="Blade" width="150" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
-This is *not* the Blade templating engine developed by [Laravel](http://laravel.com/).
-I blame Laravel for choosing the same name and for creating any confusion.
+This is *NOT* the Blade templating engine developed by [Laravel](http://laravel.com/).
+Laravel Blade was added in Sept, 2011; whereas, I did not begin development on Blade
+until May, 2012. Nevertheless, I still blame Laravel for choosing the same name
+and for creating any confusion.
 
 Table of Contents
 -----------------
