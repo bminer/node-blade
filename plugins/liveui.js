@@ -79,7 +79,7 @@
 			// We may be inside a flush already, in which case this
 			// is unnecessary but harmless.
 			if (Context.pending_invalidate.length == 0)
-				setTimeout(Context.flush, 0);
+				setTimeout(Context.flush, 1);
 			Context.pending_invalidate.push(this);
 		}
 	};
@@ -295,15 +295,18 @@
 					preserve = jQuery && //jQuery is required
 						//if <body> is in focus, ignore preservation
 						! $(focus).is("body") &&
-						//the element must have an 'id' or a 'name' and a parent with an 'id'
-						(focus.id || (focus.parentNode.id && focus.name) ) &&
+						//the element must have an 'id' or a 'name'
+						(focus.id || focus.name) &&
 						//Make sure that this node is a descendant of `el`
 						$(focus).parents().index(el) >= 0;
 				if(preserve)
 				{
 					//Setup the new element query now because the 'id' attribute will be deleted soon
-					var newElementQuery = focus.id ? "#" + focus.id :
-						"#" + focus.parentNode.id + " > [name=" + focus.name + "]",
+					var newElementIDQuery = focus.id ? "#" + focus.id : null,
+						newElementNameQuery = focus.name ? (
+								$(focus).parent().closest("[id]").length > 0 ?
+								"#" + $(focus).parent().closest("[id]").attr("id") + " " : ""
+							) +	"[name=" + focus.name + "]" : null,
 						tmpValue = focus.value;
 					//Save the selection, if needed
 					if($(focus).is("input[type=text],input[type=password],textarea"))
@@ -327,7 +330,9 @@
 				if(preserve)
 				{
 					//Find new element in newly rendered content
-					var newElement = $(newElementQuery);
+					var newElement = $(newElementIDQuery);
+					if(newElement.length != 1)
+						newElement = $(newElementNameQuery);
 					//If found, do element preservation stuff...
 					if(newElement.length == 1)
 					{
