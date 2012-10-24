@@ -57,8 +57,8 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 		bundle.add_resource({
 			type: 'js',
 			path: "/views/" + templateName + ".js", //This can be changed to whatever
-			data: new Buffer("blade.cachedViews[" +
-				//just put the template itself in blade.cachedViews
+			data: new Buffer("blade._cachedViews[" +
+				//just put the template itself in blade._cachedViews
 				JSON.stringify(templateName + ".blade") + "]=" + tmpl.toString() + ";" +
 				//define a template with the proper name
 				"Meteor._def_template(" + JSON.stringify(templateName) +
@@ -72,7 +72,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 							`ret` is used to capture async results.
 							Note that since we are using caching for file includes,
 							there is no async. All code is ran synchronously. */
-						"var ret = ''; blade.cachedViews[" + JSON.stringify(templateName + ".blade") +
+						"var ret = ''; blade._cachedViews[" + JSON.stringify(templateName + ".blade") +
 						"](data, function(err,html) {" +
 							"if(err) throw err; ret = html;" +
 						"});\n" +

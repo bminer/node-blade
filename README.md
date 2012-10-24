@@ -905,9 +905,36 @@ render homepage.blade, you get:
 </html>
 ```
 
+### Isolates
+
+Isolates are only useful when using a live page update engine. Creating an isolate
+ensures that if data dependencies relating only to that isolate are updated, then only
+the part of the template within isolate will be re-rendered. All other parts of the
+Blade template will *not* be re-rendered.
+
+Example (using Meteor):
+
+```
+- console.log("Rendering header...")
+h1 This is a header
+isolate
+	p The current user is: #{Session.get("user")}
+```
+
+In the example above, "Rendering header..." will be printed to the console when the
+whole template is rendered, but if the reactive variable is updated using
+`Session.set("user", ...)`, only the isolate will be re-rendered. In this case,
+nothing will print to the console.
+
+Note: As with Blade functions, any [blocks](#blocks) defined within an isolate will be
+deleted and unaccessible outside the isolate block.
+
+See [Reactivity isolation](http://docs.meteor.com/#isolate) on the Meteor documentation
+for more details.
+
 ### Chunks
 
-#### Chunks are deprecated as of Blade 3.0
+#### Chunks are *deprecated* as of Blade 3.0. You should use [isolates](#isolates) instead.
 
 Chunks are simply functions that return HTML. They behave a bit differently than
 conventional Blade functions.

@@ -4,11 +4,14 @@ blade.Runtime.loadTemplate = function(baseDir, filename, compileOptions, cb) {
 		filename += ".blade";
 	//Either pull from the cache or return an error
 	filename = blade.Runtime.resolve(filename);
-	if(blade.cachedViews[filename])
+	if(blade._cachedViews[filename])
 	{
-		cb(null, blade.cachedViews[filename]);
+		cb(null, blade._cachedViews[filename]);
 		return true;
 	}
 	cb(new Error("Template '" + filename + "' could not be loaded.") );
 	return false;
 };
+if(Spark)
+	for(var i in Spark)
+		blade.LiveUpdate[i] = Spark[i];
