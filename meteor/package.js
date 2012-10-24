@@ -2,12 +2,19 @@ var path = require('path');
 var blade;
 //Hopefully, sometime soon I'll be able to get rid of this horrible hack...
 try {
-	blade = require('blade');
+	blade = require('blade')
 }
 catch(e) {
-	//XXX super lame! we actually have to give paths relative to
-	// app/inner/app.js, since that's who's evaling us.
-	blade = require('../../packages/blade/node_modules/blade');
+	try {
+		//XXX super lame! we actually have to give paths relative to
+		// app/lib/packages.js, since that's who's evaling us.
+		// The next line is for the core Meteor-installed package
+		blade = require('../../packages/blade/node_modules/blade');
+	}
+	catch(e) {
+		//XXX super lame! The next line is for the Meteorite-installed package
+		blade = require(process.cwd() + "/.meteor/meteorite/packages/blade/node_modules/blade");
+	}
 }
 //-- end of horrible hack
 

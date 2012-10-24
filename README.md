@@ -14,9 +14,6 @@ It works like this...
 
 Never write HTML again. Please.
 
-**UPDATE:** Meteor 0.4.0 support is coming soon! Thanks for your patience! If
-anyone wants to help implement support for Meteor 0.4.0, please contact me.
-
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
 
@@ -110,6 +107,9 @@ Features
 Project Status
 --------------
 
+**UPDATE:** Meteor 0.5 support is now available, and many more features are coming soon!
+Thanks for your patience!
+
 I'd say that Blade is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
 is ready for production environments. I use Blade for many of my projects.
@@ -129,7 +129,7 @@ for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/lib/runtime.js`
 
-Minified runtime is about 5-6 KB, uncompressed.
+Minified runtime is about 6-7 KB, uncompressed.
 
 Syntax
 ------
@@ -1292,7 +1292,12 @@ You need to replace the above command with the correct paths, as appropriate.
 
 Then, execute `meteor add blade` in your Meteor project directory.
 
-#### An Atmosphere smart package will be available soon!
+#### An Atmosphere smart package is also available.
+
+To install Blade using Atmosphere, simply [install Meteorite]
+(https://atmosphere.meteor.com/wtf/app), navigate to your Meteor project directory,
+and type `mrt add blade`. Then, don't forget to run your project using `mrt` instead
+of `meteor`.
 
 **More documentation and examples for Meteor + Blade can be found [on this wiki page]
 (https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).**
