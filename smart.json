@@ -1,0 +1,10 @@
+{
+	"name": "blade",
+	"author": "Blake Miner <miner.blake@gmail.com> (http://www.blakeminer.com/)",
+	"description": "Blade - HTML Template Compiler, inspired by Jade & Haml",
+	"homepage": "https://github.com/bminer/node-blade",
+	"version": "3.0.0-alpha2",
+	"git": "https://github.com/bminer/node-blade.git",
+	"packages": {
+	}
+}
