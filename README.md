@@ -1292,7 +1292,7 @@ You need to replace the above command with the correct paths, as appropriate.
 
 Then, execute `meteor add blade` in your Meteor project directory.
 
-#### An Atmosphere smart package is also available.
+#### An [Atmosphere smart package](https://atmosphere.meteor.com/package/blade) is also available.
 
 To install Blade using Atmosphere, simply [install Meteorite]
 (https://atmosphere.meteor.com/wtf/app), navigate to your Meteor project directory,
