@@ -64,7 +64,7 @@ function allDone() {
 	if(++done == files.length)
 	{
 		console.log("-----------------------------------------------");
-		console.log("Done - " + (done-failed) + " of " + total + " tests passed");
+		console.log("Done - " + (total-failed) + " of " + total + " tests passed");
 		console.timeEnd("Test");
 	}
 }
