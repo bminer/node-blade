@@ -32,7 +32,7 @@ for(var i in files)
 					compare.stdout.on('data', function(chunk) {
 						diff += chunk;
 					});
-					compare.on('exit', function(code) {
+					compare.on('close', function(code) {
 						if(diff != "")
 						{
 							failed++;

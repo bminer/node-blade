@@ -437,6 +437,47 @@ should avoid using these names in your view templates whenever possible:
 - `__` (that's two underscores)
 - Any of the compiler options (i.e. `debug`, `minify`, etc.)
 
+### Foreach block
+
+The exact syntax of a foreach block is the word "foreach", followed by the variable
+name of the JavaScript Array or [Cursor Object](http://docs.meteor.com/#observe),
+optionally followed by "as" and an item alias.  Finally, it is possible to follow the
+foreach block by an "else" block, which is only rendered if there were no items in the
+collection.
+
+As a side note, a Cursor Object, as described above, is an Object with an `observe()`
+method, as described by [`cursor.observe(callbacks)`](http://docs.meteor.com/#observe)
+
+For example:
+
+```
+ul
+	foreach users as user
+		li #{user.firstName} #{user.lastName} (#{user.age})
+	else
+		li No users were found
+```
+
+Assuming that `users` is an Array, the above would produce the same as:
+
+```
+ul
+	- for(var i = 0; i < users.length; i++)
+		- var user = users[i];
+		li #{user.firstName} #{user.lastName} (#{user.age})
+	- if(users.length == 0)
+		li No users were found
+```
+
+The foreach block is preferred over the example above not only because of readability
+and brevity, but because it also provides Blade with the ability to better integrate
+with live page updating engines (like [Meteor](http://www.meteor.com/),
+[Spark](https://github.com/meteor/meteor/wiki/Spark),
+[Live UI](https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin), etc.).
+That is, if the live page update engine supports tracking reactive collections, the most
+efficient DOM operations may occur to update the view's results in-place, without
+re-rendering the entire Blade template.
+
 ### Doctypes
 
 Don't forget a doctype!  Actually, you can, whatever...
@@ -659,7 +700,7 @@ details](#fileIncludeDetails) for a more detailed explanation.
 If you do not specifiy a file extension, `.blade` will be appended to your string
 internally.
 
-You may also place an `include` inside of a `function`, `block`, or `chunk`.
+You may also place an `include` inside of a `function` or `block`.
 
 Finally, you can specify which local variables should be passed to the included view
 template by using the `exposing` keyword.  By default, Blade will pass the parent's
@@ -866,6 +907,8 @@ render homepage.blade, you get:
 
 ### Chunks
 
+#### Chunks are deprecated as of Blade 3.0
+
 Chunks are simply functions that return HTML. They behave a bit differently than
 conventional Blade functions.
 
@@ -875,12 +918,13 @@ variable, as described above. Chunks, on the other hand, always return HTML, and
 cannot be called using `call` statements. The only way to render a chunk is to call it
 via your code (see example below).
 
-One reason you might define a chunk is to pass it to
+~~One reason you might define a chunk is to pass it to
 [Meteor's](http://meteor.com/) 
 [`Meteor.ui.chunk` function](http://docs.meteor.com/#meteor_ui_chunk); however,
 chunks can be used for other purposes, as well.
 You can also use chunks to work with [`Meteor.ui.listChunk`]
-(http://docs.meteor.com/#meteor_ui_listchunk).
+(http://docs.meteor.com/#meteor_ui_listchunk).~~
+As of Meteor 0.4.0, the Meteor functions above no longer exist.
 
 Example:
 
@@ -1078,9 +1122,9 @@ is a breeze.
 
 Once you have the middleware setup, you can now serve your compiled Blade views
 to the client. Simply include the /blade/blade.js file in your `<script>`
-tags, and then call `blade.runtime.loadTemplate`.
+tags, and then call `blade.Runtime.loadTemplate`.
 
-### blade.runtime.loadTemplate(filename, cb)
+### blade.Runtime.loadTemplate(filename, cb)
 
 - `filename` - the filename of the view you wish to retrieve, relative to the
 	`sourcePath` you setup in the Blade middleware.
@@ -1096,14 +1140,22 @@ Yes, included files work, too. Like magic.
 Example client-side JavaScript:
 
 ```javascript
-blade.runtime.loadTemplate("homepage.blade", function(err, tmpl) {
+blade.Runtime.loadTemplate("homepage.blade", function(err, tmpl) {
 	tmpl({'users': ['John', 'Joe']}, function(err, html) {
 		console.log(html); //YAY! We have rendered HTML
 	});
 });
 ```
 
-As a side note, you can override the `blade.runtime.loadTemplate` function with
+Additionally, you can set `blade.Runtime.options` to control how the templates are
+loaded:
+
+- `blade.Runtime.options.mount` - the URL path where you can request compiled views
+	(defaults to "/views/")
+- `blade.Runtime.options.loadTimeout` - the maximum number of milliseconds to wait
+	before `loadTemplate` throws an error (defaults to 15 seconds).
+
+As a side note, you can override the `blade.Runtime.loadTemplate` function with
 your own implementation.
 
 Simple Example
@@ -1129,7 +1181,7 @@ html
 ... compiles to this JavaScript function ...
 
 ```javascript
-function tmpl(locals,cb,__){var __=__||[];__.r=__.r||blade.runtime,__.blocks=__.blocks||{},__.func=__.func||{},__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>","<html",">","<head",">","<title",">",__.r.escape("Blade"),"</title>","</head>","<body",">","<div",' id="nav"',">","<ul",">");for(var i in nav)__.push("<li",">","<a"),__.r.attrs({href:{val:nav[i],escape:!0}},__,this),__.push(">",__.r.escape(i),"</a>","</li>");__.push("</ul>","</div>","<div",' id="content"',' class="center"',">","<h1",">",__.r.escape("Blade is cool"),"</h1>","</div>","</body>","</html>"),__.inc||__.r.done(__)}cb(null,__.join(""),__)}
+function tmpl(locals,cb,__){__=__||[],__.r=__.r||blade.Runtime,__.func||(__.func={},__.blocks={},__.chunk={}),__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>","<html",">","<head",">","<title",">","Blade","</title>","</head>","<body",">","<div",' id="nav"',">","<ul",">");for(var i in nav)__.push("<li",">","<a"),__.r.attrs({href:{v:nav[i],e:1}},__),__.push(">",__.r.escape(i),"</a>","</li>");__.push("</ul>","</div>","<div",' id="content"',' class="center"',">","<h1",">","Blade is cool","</h1>","</div>","</body>","</html>")}__.inc||__.r.done(__),cb(null,__.join(""),__)}
 ```
 
 ... now you call the function like this...
@@ -1175,7 +1227,11 @@ Plugins
 
 **Live UI**
 
-Blade provides a Live UI plugin that allows Blade to support live binding. Live binding
+#### As of Blade 3.0, the Live UI plugin has been moved to another repository.
+
+#### More information about the Live UI plugin is coming soon...
+
+~~Blade provides a Live UI plugin that allows Blade to support live binding. Live binding
 provides automatic two-way synchronization between your models and views on a given web
 page.  That is, when data in your Model is updated, the rendered Blade views on the
 client's browser are automatically updated with the new content, and similarly, when a
@@ -1187,12 +1243,12 @@ can be found on the [Live UI Plugin wiki page]
 (https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).**
 
 Eventually, the Live UI plugin might live in a separate repository and work for any
-templating language.
+templating language. More information coming soon...
 
 **definePropertyIE8**
 
 This plugin is a prerequisite for the Live UI plugin if you plan on using Live UI in
-Internet Explorer 8.
+Internet Explorer 8.~~
 
 Meteor Support
 --------------
@@ -1208,6 +1264,8 @@ Of course, the actual path where Blade and Meteor are installed on your system m
 You need to replace the above command with the correct paths, as appropriate.
 
 Then, execute `meteor add blade` in your Meteor project directory.
+
+#### An Atmosphere smart package will be available soon!
 
 **More documentation and examples for Meteor + Blade can be found [on this wiki page]
 (https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).**
@@ -1260,7 +1318,7 @@ of an issue.
 
 Event handlers in Blade work by injecting the event handler function as an HTML comment
 directly before the bound element.  Then, the appropriate event attribute (i.e.
-onclick, onchange, etc.) on the element is set to call `blade.runtime.trigger`.  The
+onclick, onchange, etc.) on the element is set to call `blade.Runtime.trigger`.  The
 `trigger` function basically grabs the HTML comment, passes the contents through eval(),
 and binds the event handler directly to the element.  This means that the event handlers
 work on templates rendered on the browser or on the server. Everything gets wired up the
@@ -1268,7 +1326,7 @@ first time that the event occurs on the browser.
 
 The Blade runtime also keeps track of any event handlers bound to a specific element
 by assigning each element an 'id' attribute, if necessary.  When the view has
-finished rendering, the Blade runtime will pass a bunch of information (chunks, blocks,
+finished rendering, the Blade runtime will pass a bunch of information (blocks,
 functions, or event handlers that were defined, etc.) to the 3rd (undocumented) argument
 of the render callback function.  If you are rendering Blade templates on the browser,
 you can access the list of event handlers and bind the defined event handler directly

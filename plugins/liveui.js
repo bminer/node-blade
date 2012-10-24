@@ -9,7 +9,7 @@
 	Adds the following to the `blade` global variable:
 		- Model
 		- Context
-	Adds the following to `blade.runtime`:
+	Adds the following to `blade.Runtime`:
 		- render(viewName, locals, cb)
 		- renderTo(element, viewName, locals [, cb])
 	Adds the following functions to jQuery.fn:
@@ -262,9 +262,9 @@
 		- cb - a callback of the form cb(err, html) where `html` is an string of
 			HTML produced by the view template
 	*/
-	blade.runtime.render = function(viewName, locals, cb) {
+	blade.Runtime.render = function(viewName, locals, cb) {
 		//Load and render the template
-		blade.runtime.loadTemplate(viewName, function(err, tmpl) {
+		blade.Runtime.loadTemplate(viewName, function(err, tmpl) {
 			if(err) return cb(err);
 			(function renderTemplate() {
 				function renderIt() {
@@ -284,8 +284,8 @@
 		attribute and a parent who has an 'id' attribute.
 		Also, from within the callback, `this` refers to the `element`.
 	*/
-	blade.runtime.renderTo = function(el, viewName, locals, cb) {
-		blade.runtime.render(viewName, locals, function(err, html, info) {
+	blade.Runtime.renderTo = function(el, viewName, locals, cb) {
+		blade.Runtime.render(viewName, locals, function(err, html, info) {
 			if(err) {if(cb) cb.call(el, err); return;}
 			try
 			{
@@ -388,7 +388,7 @@
 
 	if(window.jQuery)
 		jQuery.fn.render = function(viewName, locals, cb) {
-			blade.runtime.renderTo(this, viewName, locals, cb);
+			blade.Runtime.renderTo(this, viewName, locals, cb);
 		};
 
 })();

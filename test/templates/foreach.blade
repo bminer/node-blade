@@ -1,0 +1,13 @@
+- var users = ["Joe", "Bob", "Billy"]
+foreach users
+	p Welcome, #{this}
+foreach users as user
+	p Welcome again, #{user}
+	p But `this` == `user`, as well? #{this == user}
+else
+	p Users should not be empty?!?!
+- var empty = []
+foreach empty as foo
+	p This should not happen
+else
+	p Empty is definitely empty
