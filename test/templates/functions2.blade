@@ -11,3 +11,18 @@ function dialog(msg)
 		block temp
 			=msg
 call dialog("Blade is awesome")#foobar.foo.bar
+
+function idBug
+	#test.foo.bar
+call idBug
+call idBug#a.b.c
+
+function idBug2
+	.foo.bar(id="test")
+call idBug2
+call idBug2#foo.a.b.c
+
+function classBug
+	.dude(id="test" class="foo bar")
+call classBug
+call classBug#foo.a.b.c

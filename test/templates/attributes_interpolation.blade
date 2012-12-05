@@ -1,0 +1,9 @@
+- var a = 1, b = 2, c = 3, foo = "bar"
+#foo.a.b(class="#{a} #{b}")
+
+a.world(href="http://www.foo#{foo}.com/" class="hello" another=a again="#{b}") foobar.com
+
+span.dont.interpolate(class="me \\#{not interpolated}")
+
+p
+	span.interpolate.with_null(class="#{null} #{a}")
