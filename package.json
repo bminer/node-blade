@@ -15,7 +15,7 @@
 		"live binding",
 		"meteor"
 	],
-	"version": "3.0.0alpha6",
+	"version": "3.0.0alpha7",
 	"homepage": "https://github.com/bminer/node-blade",
 	"repository": {
 	"type": "git",
