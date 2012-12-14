@@ -56,7 +56,7 @@
 				var ctx = pending[i];
 				for(var j = 0; j < ctx._callbacks.length; j++)
 					ctx._callbacks[j](ctx);
-				delete ctx._callbacks; //maybe help the GC
+				ctx._callbacks.length = 0; //maybe help the GC
 			}
 		}
 	}
@@ -91,6 +91,18 @@
 			f(this);
 		else
 			this._callbacks.push(f);
+	};
+	
+	//Runs any invalidation callbacks that are named "clean" and then
+	//deletes all callbacks.  "clean()" callbacks are supposed to tell
+	//other resources to release their reference to this Context; however,
+	//calling this function does not guarantee that this Context will be
+	//released for garbage collection.
+	Context.prototype.destroy = function() {
+		for(var i = 0; i < this._callbacks.length; i++)
+			if(this._callbacks[i].name == "clean")
+				this._callbacks[i]();
+		this._callbacks.length = 0;
 	};
 
 	function Model(data) {
@@ -152,7 +164,7 @@
 		if(context && !self._keyDeps[key][context.id]) {
 			//Store the current context and setup invalidation callback
 			self._keyDeps[key][context.id] = context;
-			context.on_invalidate(function() {
+			context.on_invalidate(function clean() {
 				//Check to see if self._keyDeps[key] exists first,
 				//as this property might have been deleted
 				if(self._keyDeps[key])
@@ -253,36 +265,67 @@
 	
 	/* render(viewName, locals, cb)
 		Asynchronously loads (if necessary) and renders the specified template
-		using the specified locals in a new Context. If the Context is invalidated,
-		the template will be re-rendered and the callback will be called again.
+		using the specified locals.
 		- viewName - the name of the view to be loaded and rendered
 		- locals - the locals to be passed to the view. If a `Model` object is
 			passed to this method, the Model's `observable` Object will be passed
 			to the view.
 		- cb - a callback of the form cb(err, html) where `html` is an string of
 			HTML produced by the view template
+		- renderContextID - a unique identifier that identifies this render's
+			Context.  This can be used to ensure that certain Context's are
+			automatically cleaned up without being invalidated.  For example,
+			when a template is rendered and then taken off the screen, you may
+			not want that template to be automatically re-rendered when its data
+			dependencies are updated.  To do this, ensure that its render Context
+			is 
 	*/
-	blade.Runtime.render = function(viewName, locals, cb) {
+	var renderContexts = {};
+	blade.Runtime.render = function(viewName, locals, cb, renderContextID) {
 		//Load and render the template
 		blade.Runtime.loadTemplate(viewName, function(err, tmpl) {
 			if(err) return cb(err);
-			(function renderTemplate() {
-				function renderIt() {
-					tmpl(locals ? locals.observable || locals : {}, cb);
+			(function rerender() {
+				var ctx = new Context();
+				if(renderContextID)
+				{
+					//Run cleanup invalidation callbacks for any matching Contexts
+					if(renderContexts[renderContextID])
+						renderContexts[renderContextID].destroy();
+					//Assign new Context
+					renderContexts[renderContextID] = ctx;
 				}
-				var context = new Context();
-				context.on_invalidate(renderTemplate); //recurse
-				context.run(renderIt);
+				//Rerender if this Context is invalidated
+				ctx.on_invalidate(rerender);
+				//Now go ahead and render
+				ctx.run(function render() {
+					console.log("Rendering ", viewName);
+					tmpl(locals ? locals.observable || locals : {}, cb);
+				});
 			})();
 		});
 	};
+	
 	/* renderTo(element, viewName, locals [, cb])
-		Same as render(), except the output of the view is immediately injected
-		into the specified element.  In addition, any event handlers created by
+		Renders the specified view using the specified locals and injects the generated
+		HTML into the specified element. In addition, any event handlers created by
 		the view are bound.  Finally, the element in focus is "preserved" if jQuery
 		is available and if the element either has an 'id' attribute or has a 'name'
 		attribute and a parent who has an 'id' attribute.
-		Also, from within the callback, `this` refers to the `element`.
+		
+		Views are rendered within the context specific to the `element`, as expected.
+		That is, running renderTo against the same element will destroy (not invalidate)
+		all registered Contexts and their callbacks, running any "clean" invalidator
+		callbacks.
+		
+		- element - the element into which the generated HTML code will be injected
+		- viewName - the view template to be loaded and rendered
+		- locals - the locals to be passed to the view. If a `Model` object is
+			passed to this method, the Model's `observable` Object will be passed
+			to the view.
+		- cb - a callback of the form cb(err, html) where `html` is an string of
+			HTML produced by the view template. Inside the callback, `this`
+			refers to the `element`
 	*/
 	blade.Runtime.renderTo = function(el, viewName, locals, cb) {
 		blade.Runtime.render(viewName, locals, function(err, html, info) {
@@ -383,7 +426,7 @@
 				if(cb) cb.call(el, null, html, info);
 			}
 			catch(e) {if(cb) cb.call(el, e);}
-		});
+		}, el);
 	};
 
 	if(window.jQuery)
