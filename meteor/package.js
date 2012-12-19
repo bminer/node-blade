@@ -41,22 +41,12 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 		'includeSource': true //default to true for debugging
 	}, function(err, tmpl) {
 		if(err) throw err;
-		if(templateName == "head")
+		if(templateName == "head" || templateName == "body")
 			tmpl({}, function(err, html) {
 				//This should happen synchronously due to compile options set above
 				if(err) throw err;
 				bundle.add_resource({
-					type: 'head',
-					data: html,
-					where: where
-				});
-			});
-		else if(templateName == "body")
-			tmpl({}, function(err, html) {
-				//This should happen synchronously due to compile options set above
-				if(err) throw err;
-				bundle.add_resource({
-					type: 'body',
+					type: templateName, //either "head" or "body"
 					data: html,
 					where: where
 				});

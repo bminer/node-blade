@@ -93,14 +93,20 @@
 			this._callbacks.push(f);
 	};
 	
-	//Runs any invalidation callbacks that are named "clean" and then
-	//deletes all callbacks.  "clean()" callbacks are supposed to tell
+	//Registers f as a "clean" invalidation function
+	Context.prototype.on_invalidate_clean = function(f) {
+		f.name = "__clean";
+		this.on_invalidate(f);
+	};
+	
+	//Runs any invalidation callbacks that are named "__clean" and then
+	//deletes all callbacks.  "__clean()" callbacks are supposed to tell
 	//other resources to release their reference to this Context; however,
 	//calling this function does not guarantee that this Context will be
 	//released for garbage collection.
 	Context.prototype.destroy = function() {
 		for(var i = 0; i < this._callbacks.length; i++)
-			if(this._callbacks[i].name == "clean")
+			if(this._callbacks[i].name == "__clean")
 				this._callbacks[i]();
 		this._callbacks.length = 0;
 	};
@@ -164,7 +170,7 @@
 		if(context && !self._keyDeps[key][context.id]) {
 			//Store the current context and setup invalidation callback
 			self._keyDeps[key][context.id] = context;
-			context.on_invalidate(function clean() {
+			context.on_invalidate_clean(function () {
 				//Check to see if self._keyDeps[key] exists first,
 				//as this property might have been deleted
 				if(self._keyDeps[key])
@@ -299,7 +305,6 @@
 				ctx.on_invalidate(rerender);
 				//Now go ahead and render
 				ctx.run(function render() {
-					console.log("Rendering ", viewName);
 					tmpl(locals ? locals.observable || locals : {}, cb);
 				});
 			})();
