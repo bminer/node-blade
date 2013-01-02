@@ -1,19 +1,30 @@
 /** Blade Live UI plugin
-    (c) Copyright 2012. Blake Miner. All rights reserved.
-    https://github.com/bminer/node-blade
-    http://www.blakeminer.com/
+	(c) Copyright 2012-2013. Blake Miner. All rights reserved.
+	https://github.com/bminer/node-blade
+	http://www.blakeminer.com/
 
-    See the full license here:
-        https://raw.github.com/bminer/node-blade/master/LICENSE.txt
+	See the full license here:
+		https://raw.github.com/bminer/node-blade/master/LICENSE.txt
+	
+	Hard Dependencies:
+		- node-blade runtime
+	
+	Soft Dependencies (this plugin should still work without these):
+		- Spark (https://github.com/meteor/meteor/wiki/Spark)
+			- The easiest way to obtain Spark is to clone the Meteor Github repo
+			(git://github.com/meteor/meteor.git) and run `admin/spark-standalone.sh`
+			- Underscore.js is also a requirement for Spark at this time
+	
+	Works well with:
+		- jQuery
 	
 	Adds the following to the `blade` global variable:
 		- Model
 		- Context
 	Adds the following to `blade.Runtime`:
-		- render(viewName, locals, cb)
-		- renderTo(element, viewName, locals [, cb])
+		- renderTo(element, viewName, locals [,landmarkOptions] [, cb])
 	Adds the following functions to jQuery.fn:
-		- render(viewName, locals [, cb])
+		- render(viewName, locals [,landmarkOptions] [, cb])
 	
 	Browser Support:
 		-Chrome
@@ -24,93 +35,71 @@
 		-Opera 12+ (not tested)
 	If using the definePropertyIE8 plugin, include it into your HTML document
 	using a conditional comment like this:
+	
+	```html
 	<!--[if IE 8]>
 		<script type="text/javascript" src="/blade/plugins/definePropertyIE8.js"></script>
 	<![endif]-->
-	
-	For element preservation support, please add jQuery 1.7+ to your project.
+	```
 */
 (function() {
 	if(!window.blade) return; //Nothing to expose, so just quit
-	var Context = function () {
-		// Each context has a unique number. You can use this to avoid
-		// storing multiple copies of the same context in the
-		// invalidation list.
-		this.id = Context.next_id++;
-		this._callbacks = []; //each of these are called when invalidated
-		this._invalidated = false;
-	};
-	blade.Context = Context; //expose this Object
 	
-	//Global static variables
-	Context.next_id = 0;
-	Context.current = null;
-	Context.pending_invalidate = []; //list of Contexts that have been invalidated but not flushed
-
-	//Calls all Context _callbacks on each Context listed in Context.pending_invalidate
-	Context.flush = function() {
-		while (Context.pending_invalidate.length > 0) {
-			var pending = Context.pending_invalidate;
-			Context.pending_invalidate = [];
-			for(var i = 0; i < pending.length; i++) {
-				var ctx = pending[i];
-				for(var j = 0; j < ctx._callbacks.length; j++)
-					ctx._callbacks[j](ctx);
-				ctx._callbacks.length = 0; //maybe help the GC
+	//This plugin *can* work without Spark...
+	var Context = blade.Context = (window.Meteor && Meteor.deps) ? Meteor.deps.Context || {} : {};
+	
+	//Use Spark as the live update engine
+	if(window.Spark)
+	{
+		//--- Basically an excerpt from https://github.com/meteor/meteor/blob/master/packages/spark/utils.js ---
+		//--- Minor modification is to exclude id's starting with "blade_"
+		Spark._labelFromIdOrName = function(n) {
+			var label = null;
+			if (n.nodeType === 1 /*ELEMENT_NODE*/) {
+				if (n.id && n.id.substr(0, 6) != "blade_") {
+					label = '#' + n.id;
+				} else if (n.getAttribute("name")) {
+					label = n.getAttribute("name");
+					// Radio button special case:	radio buttons
+					// in a group all have the same name.	Their value
+					// determines their identity.
+					// Checkboxes with the same name and different
+					// values are also sometimes used in apps, so
+					// we treat them similarly.
+					if (n.nodeName === 'INPUT' &&
+							(n.type === 'radio' || n.type === 'checkbox') &&
+							n.value)
+						label = label + ':' + n.value;
+					// include parent names and IDs up to enclosing ID
+					// in the label
+					while (n.parentNode &&
+								 n.parentNode.nodeType === 1 /*ELEMENT_NODE*/) {
+						n = n.parentNode;
+						if (n.id) {
+							label = '#' + n.id + "/" + label;
+							break;
+						} else if (n.getAttribute('name')) {
+							label = n.getAttribute('name') + "/" + label;
+						}
+					}
+				}
 			}
-		}
+			return label;
+		};
+		//--- End
+		//--- Excerpt from https://github.com/meteor/meteor/blob/master/packages/preserve-inputs/preserve-inputs.js ---
+		var inputTags = 'input textarea button select option'.split(' ');
+		var selector = _.map(inputTags, function (t) {
+			return t.replace(/^.*$/, '$&[id], $&[name]');
+		}).join(', ');
+		Spark._globalPreserves[selector] = Spark._labelFromIdOrName;
+		//--- End
+		
+		//Copy stuff from Spark to blade.LiveUpdate
+		for(var i in Spark)
+			blade.LiveUpdate[i] = Spark[i];
 	}
-
-	//Run a function in this Context
-	Context.prototype.run = function (f) {
-		var previous = Context.current;
-		Context.current = this;
-		try { var ret = f(); }
-		finally { Context.current = previous; }
-		return ret;
-	};
-
-	//Just mark the Context as invalidated; do not call any invalidation functions
-	//just yet; instead, schedule them to be executed soon.
-	Context.prototype.invalidate = function () {
-		if (!this._invalidated) {
-			this._invalidated = true;
-			// If this is first invalidation, schedule a flush.
-			// We may be inside a flush already, in which case this
-			// is unnecessary but harmless.
-			if (Context.pending_invalidate.length == 0)
-				setTimeout(Context.flush, 1);
-			Context.pending_invalidate.push(this);
-		}
-	};
-
-	//Calls f immediately if this context was already
-	//invalidated. The callback receives one argument, the Context.
-	Context.prototype.on_invalidate = function (f) {
-		if (this._invalidated)
-			f(this);
-		else
-			this._callbacks.push(f);
-	};
 	
-	//Registers f as a "clean" invalidation function
-	Context.prototype.on_invalidate_clean = function(f) {
-		f.name = "__clean";
-		this.on_invalidate(f);
-	};
-	
-	//Runs any invalidation callbacks that are named "__clean" and then
-	//deletes all callbacks.  "__clean()" callbacks are supposed to tell
-	//other resources to release their reference to this Context; however,
-	//calling this function does not guarantee that this Context will be
-	//released for garbage collection.
-	Context.prototype.destroy = function() {
-		for(var i = 0; i < this._callbacks.length; i++)
-			if(this._callbacks[i].name == "__clean")
-				this._callbacks[i]();
-		this._callbacks.length = 0;
-	};
-
 	function Model(data) {
 		/*A proxy object that can be written to
 			or read from to invoke the Model's set and get functions */
@@ -170,7 +159,7 @@
 		if(context && !self._keyDeps[key][context.id]) {
 			//Store the current context and setup invalidation callback
 			self._keyDeps[key][context.id] = context;
-			context.on_invalidate_clean(function () {
+			context.onInvalidate(function () {
 				//Check to see if self._keyDeps[key] exists first,
 				//as this property might have been deleted
 				if(self._keyDeps[key])
@@ -269,174 +258,86 @@
 		return JSON.stringify(this._rawData);
 	};
 	
-	/* render(viewName, locals, cb)
-		Asynchronously loads (if necessary) and renders the specified template
-		using the specified locals.
-		- viewName - the name of the view to be loaded and rendered
-		- locals - the locals to be passed to the view. If a `Model` object is
-			passed to this method, the Model's `observable` Object will be passed
-			to the view.
-		- cb - a callback of the form cb(err, html) where `html` is an string of
-			HTML produced by the view template
-		- renderContextID - a unique identifier that identifies this render's
-			Context.  This can be used to ensure that certain Context's are
-			automatically cleaned up without being invalidated.  For example,
-			when a template is rendered and then taken off the screen, you may
-			not want that template to be automatically re-rendered when its data
-			dependencies are updated.  To do this, ensure that its render Context
-			is 
-	*/
-	var renderContexts = {};
-	blade.Runtime.render = function(viewName, locals, cb, renderContextID) {
-		//Load and render the template
-		blade.Runtime.loadTemplate(viewName, function(err, tmpl) {
-			if(err) return cb(err);
-			(function rerender() {
-				var ctx = new Context();
-				if(renderContextID)
-				{
-					//Run cleanup invalidation callbacks for any matching Contexts
-					if(renderContexts[renderContextID])
-						renderContexts[renderContextID].destroy();
-					//Assign new Context
-					renderContexts[renderContextID] = ctx;
-				}
-				//Rerender if this Context is invalidated
-				ctx.on_invalidate(rerender);
-				//Now go ahead and render
-				ctx.run(function render() {
-					tmpl(locals ? locals.observable || locals : {}, cb);
-				});
-			})();
-		});
-	};
-	
-	/* renderTo(element, viewName, locals [, cb])
-		Renders the specified view using the specified locals and injects the generated
-		HTML into the specified element. In addition, any event handlers created by
-		the view are bound.  Finally, the element in focus is "preserved" if jQuery
-		is available and if the element either has an 'id' attribute or has a 'name'
-		attribute and a parent who has an 'id' attribute.
+	/* Renders the specified view using the specified locals and injects the generated
+		DOM into the specified element. In addition, any event handlers created by
+		the view are bound.
+		
+		Finally, the element in focus is "preserved" and if the element either has an
+		'id' attribute or has a 'name' attribute and a parent who has an 'id' attribute.
 		
 		Views are rendered within the context specific to the `element`, as expected.
-		That is, running renderTo against the same element will destroy (not invalidate)
-		all registered Contexts and their callbacks, running any "clean" invalidator
-		callbacks.
+		That is, running renderTo against the same element will destroy all registered
+		Contexts and their callbacks.
 		
-		- element - the element into which the generated HTML code will be injected
+		- element - the DOM element into which the generated HTML code will be injected
 		- viewName - the view template to be loaded and rendered
 		- locals - the locals to be passed to the view. If a `Model` object is
 			passed to this method, the Model's `observable` Object will be passed
 			to the view.
-		- cb - a callback of the form cb(err, html) where `html` is an string of
-			HTML produced by the view template. Inside the callback, `this`
-			refers to the `element`
+		- [landmarkOptions] - the options passed to the created Landmark
+			(see https://github.com/meteor/meteor/wiki/Spark)
+		- [cb] - a callback of the form cb(err) where `err` is the Error object thrown
+			when the template was loaded (or null if no error occurred).  This callback is
+			called exactly once, when the template is loaded.
+		
+		It should also be noted that changing the contents of `el` or removing `el` from
+		the DOM may confuse Spark and cause errors. To remove `el` from the DOM or to
+		delete its child nodes, for example, it is best to call `Spark.finalize(el)` first.
+		
 	*/
-	blade.Runtime.renderTo = function(el, viewName, locals, cb) {
-		blade.Runtime.render(viewName, locals, function(err, html, info) {
-			if(err) {if(cb) cb.call(el, err); return;}
-			try
+	blade.Runtime.renderTo = function(el, viewName, locals, landmarkOptions, cb) {
+		//Reorganize args
+		if(typeof landmarkOptions == "function")
+			cb = landmarkOptions, landmarkOptions = {};
+		//Load blade template
+		blade.Runtime.loadTemplate(viewName, function(err, tmpl) {
+			//Call optional callback or throw error, if needed
+			if(cb)
+				cb(err);
+			if(err)
 			{
-				//Start preserving the element in focus, if necessary
-				var focus = document.activeElement,
-					$ = jQuery,
-					preserve = jQuery && //jQuery is required
-						//if <body> is in focus, ignore preservation
-						! $(focus).is("body") &&
-						//the element must have an 'id' or a 'name'
-						(focus.id || focus.name) &&
-						//Make sure that this node is a descendant of `el`
-						$(focus).parents().index(el) >= 0;
-				if(preserve)
-				{
-					//Setup the new element query now because the 'id' attribute will be deleted soon
-					var newElementIDQuery = focus.id ? "#" + focus.id : null,
-						newElementNameQuery = focus.name ? (
-								$(focus).parent().closest("[id]").length > 0 ?
-								"#" + $(focus).parent().closest("[id]").attr("id") + " " : ""
-							) +	"[name=" + focus.name + "]" : null,
-						tmpValue = focus.value;
-					//Save the selection, if needed
-					if($(focus).is("input[type=text],input[type=password],textarea"))
-						var selectionStart = focus.selectionStart,
-							selectionEnd = focus.selectionEnd;
-					//Remove event handlers and attributes; in Chrome, 'blur' and possibly 'change'
-					//events are fired when an in-focus element is removed from the DOM
-					$(focus).off();
-					for(var i = focus.attributes.length - 1; i >= 0; i--)
-						focus.removeAttributeNode(focus.attributes.item(i) );
-					focus.onchange = focus.onblur = null;
-					//Now it's safe to call blur and remove this element from the DOM
-					focus.blur();
-				}
-				//Insert newly rendered content (jQuery is not required here)
-				if(el.html)
-					el.html(html);
-				else
-					el.innerHTML = html;
-				//Preserve element value, focus, cursor position, etc.
-				if(preserve)
-				{
-					//Find new element in newly rendered content
-					var newElement = $(newElementIDQuery);
-					if(newElement.length != 1)
-						newElement = $(newElementNameQuery);
-					//If found, do element preservation stuff...
-					if(newElement.length == 1)
-					{
-						var oldValue = $(newElement).val(); //Save the value that's currently in the model
-						newElement = newElement[0];
-						newElement.focus(); //Give the new element focus
-						if(document.activeElement === newElement)
-						{
-							//Set value to the temporary value and setup blur event handler to trigger `change`, if needed
-							$(newElement).val(tmpValue).blur(function(e) {
-								$(this).unbind(e);
-								if(this.value !== oldValue)
-									$(this).trigger('change');
-							});
-							//Set focus again and set cursor & text selection
-							newElement.focus();
-							if($(newElement).is("input[type=text],input[type=password],textarea"))
-							{
-								newElement.selectionStart = selectionStart;
-								newElement.selectionEnd = selectionEnd;
-							}
-						}
-					}
-				}
-				//Register event handlers
-				for(var i in info.eventHandlers)
-				{
-					var events = info.eventHandlers[i].events.split(" "),
-						elem = document.getElementById(i);
-					for(var j = 0; j < events.length; j++)
-						if(elem === newElement && events[j] == "change")
-							(function(elem, handler) {
-								elem['on' + events[j]] = function() {
-									setTimeout(function() {
-										elem['on' + events[j]] = handler; //put everything back
-									}, 1);
-									//intercept event, if needed
-									if(this.value !== oldValue)
-										//call original handler
-										return handler.apply(this, arguments);
-								};
-							})(elem, info.eventHandlers[i].handler);
-						else
-							elem['on' + events[j]] = info.eventHandlers[i].handler;
-					//Delete comment before element
-					elem.parentNode.removeChild(elem.previousSibling);
-				}
-				if(cb) cb.call(el, null, html, info);
+				if(!cb) throw err;
+				return;
 			}
-			catch(e) {if(cb) cb.call(el, e);}
-		}, el);
+			//Destroy the LiveRanges in this element, if any
+			var LiveUpdate = blade.LiveUpdate;
+			LiveUpdate.finalize(el);
+			var dom = LiveUpdate.render(function() {
+				return LiveUpdate.labelBranch(viewName + "@" + el.id, function () {
+					return LiveUpdate.createLandmark(landmarkOptions, function (landmark) {
+						return LiveUpdate.isolate(function () {
+							var ret;
+							tmpl(locals ? locals.observable || locals : {}, function(err, html, info) {
+								//Remove event handler attributes
+								html = html.replace(/on[a-z]+\=\"return blade\.Runtime\.trigger\(this\,arguments\)\;\"/g, "");
+								//Return
+								ret = LiveUpdate.attachEvents(info.eventHandlers, html);
+							});
+							return ret;
+						});
+					});
+				});
+			});
+			if(window.jQuery)
+				//Use jQuery's empty() function to call `jQuery.cleanData` and prevent memory leaks
+				jQuery(el).empty();
+			else
+			{
+				while(el.firstChild)
+					el.removeChild(el.firstChild);
+			}
+			if(typeof dom == "string")
+				el.innerHTML = dom;
+			else
+				el.appendChild(dom);
+		});
 	};
 
 	if(window.jQuery)
-		jQuery.fn.render = function(viewName, locals, cb) {
-			blade.Runtime.renderTo(this, viewName, locals, cb);
+		jQuery.fn.render = function(viewName, locals, landmarkOptions, cb) {
+			this.each(function() {
+				blade.Runtime.renderTo(this, viewName, locals, landmarkOptions, cb);
+			});
 		};
 
 })();
