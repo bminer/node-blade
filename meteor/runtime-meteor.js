@@ -4,12 +4,12 @@
 		//Append .blade for filenames without an extension
 		if(filename.split("/").pop().indexOf(".") < 0)
 			filename += ".blade";
-		//Either pull from the cache or return an error
 		return blade.Runtime.resolve(filename);
 	}
 	//Overwrite blade.Runtime.loadTemplate and include functions
 	blade.Runtime.loadTemplate = function(baseDir, filename, compileOptions, cb) {
 		filename = resolveFilename(filename);
+		//Either pull from the cache or return an error
 		if(blade._cachedViews[filename])
 		{
 			cb(null, blade._cachedViews[filename]);
@@ -27,7 +27,7 @@
 		//Add helpers to info.locals
 		var tmpl = Template[name] || {};
 		var tmplData = tmpl._tmpl_data || {};
-		_.extend(info.locals, Meteor._partials[name], tmplData.helpers || {})
+		_.extend(info.locals, Meteor._partials[name], tmplData.helpers || {});
 		//Now call original "include" function
 		return oldInclude.apply(this, arguments);
 	};
