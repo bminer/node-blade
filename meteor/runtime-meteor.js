@@ -33,7 +33,5 @@
 	};
 	
 	//Use Spark as the live update engine
-	if(Spark)
-		for(var i in Spark)
-			blade.LiveUpdate[i] = Spark[i];
+	blade.LiveUpdate = Spark;
 })();

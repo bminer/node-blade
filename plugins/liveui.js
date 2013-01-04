@@ -96,8 +96,7 @@
 		//--- End
 		
 		//Copy stuff from Spark to blade.LiveUpdate
-		for(var i in Spark)
-			blade.LiveUpdate[i] = Spark[i];
+		blade.LiveUpdate = Spark;
 	}
 	
 	function Model(data) {

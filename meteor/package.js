@@ -73,7 +73,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 						"](data, function(err,html,info) {" +
 							"if(err) throw err;" +
 							//Remove event handler attributes
-							'html = html.replace(/on[a-z]+\=\"return blade\.Runtime\.trigger\(this\,arguments\)\;\"/g, "");' +
+							'html = html.replace(/on[a-z]+\\=\\"return blade\\.Runtime\\.trigger\\(this\\,arguments\\)\\;\\"/g, "");' +
 							//now bind any inline events and return
 							"ret = blade.LiveUpdate.attachEvents(info.eventHandlers, html);" +
 						"});\n" +
