@@ -29,10 +29,10 @@
 	},
 	"devDependencies": {
 		"pegjs": ">=0.7",
-		"uglify-js": ">=2.3 || >=1.2 <2"
+		"uglify-js": ">=2.2.3 || >=1.2 <2"
 	},
 	"optionalDependencies": {
-		"uglify-js": ">=2.3 || >=1.2 <2"
+		"uglify-js": ">=2.2.3 || >=1.2 <2"
 	},
 	"engines": {
 		"node": ">=0.6"
