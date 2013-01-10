@@ -996,7 +996,7 @@ for more details.
 
 ### Chunks
 
-#### Chunks are *no longer supported* as of Blade 3.0.0beta. You should use
+Chunks are *no longer supported* as of Blade 3.0.0beta. You should use
 [isolates](#isolates) instead.
 
 API
@@ -1036,6 +1036,9 @@ Compiles a Blade template from a string.
 	- `basedir` - the base directory where Blade templates are located. This option is
 		primarily used by the Blade middleware to allow the Blade runtime to properly
 		load file includes.
+	- `middleware` - option reserved for the Blade middleware. Passing `true` tells
+		the compiler that the template to be compiled is for client-side use, allowing
+		it to mask the basedir (see issue #112 for details).
 - `cb` is a function of the form: `cb(err, tmpl)` where `err` contains
 	any parse or compile errors and `tmpl` is the compiled template.
 	If an error occurs, `err` may contain the following properties:
@@ -1245,7 +1248,7 @@ tmpl({
 });
 ```
 
-... and you get this:
+... and you get this (indented for readability):
 
 ```html
 <!DOCTYPE html>
