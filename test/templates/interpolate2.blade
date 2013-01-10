@@ -1,0 +1,22 @@
+- var obj = JSON.stringify({"foo":"bar"});
+:javascript
+	var obj = !{obj};
+	alert(obj.foo);
+:nl2br
+	This is some text that
+	should have some <br/>
+	crap in it.
+	What do you think of that?
+	
+	#{escape}
+	!{escape}
+	\#{escape} is escaped
+	\!{escape} is escaped
+- var str = "cool"
+:javascript
+	var str = "This is a !{str} test";
+	var madness = "This is a bit " + (!{str == "cool" ? "\"weird\"" : "\"uncool\""});
+	window.alert(madness);
+	var x = "\#{foo}"; //escaped interpolation
+	var y = "\!{foo}"; //escaped interpolation
+	var z = "\\\#{foo}"; //escaped interpolation

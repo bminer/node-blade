@@ -1,0 +1,20 @@
+<script type="text/javascript">
+var obj = {"foo":"bar"};
+
+alert(obj.foo);
+</script>
+This is some text that<br/>should have some &lt;br/&gt;<br/>crap in it.<br/>What do you think of that?<br/><br/>This &quot;text&quot; 'might' &lt;need&gt; some &quot;escaping&quot; &amp; stuff<br/>This "text" 'might' <need> some "escaping" & stuff<br/>#{escape} is escaped<br/>!{escape} is escaped<script type="text/javascript">
+var str = "This is a cool test";
+
+var madness = "This is a bit " + "weird";
+
+window.alert(madness);
+
+var x = "#{foo}";
+
+//escaped interpolation
+var y = "!{foo}";
+
+//escaped interpolation
+var z = "\\#{foo}";
+</script>

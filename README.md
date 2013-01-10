@@ -14,6 +14,13 @@ It works like this...
 
 Never write HTML again. Please.
 
+**NOTE:** Users updating to Blade 3.0.0beta5 will notice that string interpolation has
+changed.  There is now an escaped `#{foo}` and unescaped `!{foo}` syntax.
+[Check it out](#interpolation).
+
+**NOTE:** Users updating to Blade 3.0.0beta5 may notice that [chunk](#chunks) support
+has been removed.
+
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
 
@@ -22,7 +29,7 @@ alt="Blade" width="150" height="169"/>
 This is *NOT* the Blade templating engine developed by [Laravel](http://laravel.com/).
 Laravel Blade was added in Sept, 2011; whereas, I did not begin development on Blade
 until May, 2012. Nevertheless, I still blame Laravel for choosing the same name
-and for creating any confusion.
+and for creating any confusion. :)
 
 Table of Contents
 -----------------
@@ -36,11 +43,11 @@ Table of Contents
 	- [Functions](#functions)
 	- [Dynamic File Includes](#dynamic-file-includes)
 	- [Blocks](#blocks)
+- [Meteor Support](#meteor-support)
 - [API](#api)
 - [Browser Usage](#browser-usage)
 - [A Simple Example](#simple-example)
 - [Plugins](#plugins)
-- [Meteor Support](#meteor-support)
 - [Implementation Details](#implementation-details)
 - [Benchmarks](#benchmarks)
 - [License](#license)
@@ -48,18 +55,16 @@ Table of Contents
 Why use Blade instead of Jade?
 -----------------------
 
-Here are the reasons Blade *might* be considered "better" than Jade:
-
 - Jade is an ornamental stone. Blade is a badass vampire hunter.
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
-- **Meteor support** - Blade works well with [Meteor](http://meteor.com/). See the
-	[documentation below](#meteor-support).
+- **Meteor support** - Blade works well with [Meteor](http://meteor.com/) and Spark.
+	See the	[documentation below](#meteor-support).
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
 	started with Blade should take you very little time.
-- **Smarter file includes**
+- **[Smarter](#fileIncludeDetails) file includes** - 
 	Files compiled in Blade can be much smaller than Jade files when you are using file
 	includes because file includes happen at runtime instead of at compile-time. If you
 	re-use the same included file among multiple views, the included file does not need to
@@ -88,27 +93,25 @@ OK... it's admittedly not as funny as I thought it would be. But, I tried.
 Features
 --------
 
-- Write extremely readable short-hand HTML
+- Write extremely readable [short-hand HTML](#syntax)
 - Insert escaped and unescaped text and vanilla JavaScript code
 - Code and text are escaped by default for security/convenience
-- Functions (like Jade mixins)
-- Dynamic file includes
-- Regular blocks and Parameterized blocks (aids in supporting template inheritance)
-- True client-side template support with caching, etc.
-- Supports Express.JS
-- HTML Comments and block comments
-- Text filters
+- [Functions](#functions) (like Jade mixins)
+- [Dynamic file includes](#dynamic-file-includes)
+- [Regular blocks](#blocks) and [Parameterized blocks](#parameterized-blocks)
+	(aids in supporting template inheritance)
+- [True client-side template support](##browser-usage) with caching, etc.
+- Supports Express.JS - just write `app.set("view engine", "blade");`
+- [HTML Comments and block comments](#comments)
+- [Text filters](#text-filters)
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
-- Meteor smart package
-- Write DOM event handlers right into your views
+- [Meteor smart package](#meteor-support)
+- Write DOM [event handlers right into your views](#event-handlers)
 - Cool plugins (including [Live UI](https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin))
 
 Project Status
 --------------
-
-**UPDATE:** Meteor 0.5 support is now available, and many more features are coming soon!
-Thanks for your patience!
 
 I'd say that Blade is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
@@ -128,8 +131,9 @@ Installation
 for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/lib/runtime.js`
-
 Minified runtime is about 6-7 KB, uncompressed.
+
+Using Blade in a Meteor project? Check out [Meteor support](#meteor-support).
 
 Syntax
 ------
@@ -154,7 +158,8 @@ div.task-details.container
 
 which renders as `<div class="task-details container"></div>`.
 
-Tag attributes?  Yep, they work pretty much like Jade, too.
+Tag attributes?  Yep, they work pretty much like Jade, too.  Even string [interpolation]
+(#interpolation) works.
 Put attributes in parenthesis, separate attributes with a comma, space, newline, or whatever.
 
 `a(href="/homepage", onclick="return false;")` renders as:
@@ -292,8 +297,10 @@ Rules are:
 - Unescaped JavaScript code block? Yep. Use `|!=` or `!=`.
 - Newlines in text blocks are preserved.
 
-Variable interpolation is supported for text blocks.  Use `#{var_name}` notation, and
-anything between the curly braces is treated as vanilla JavaScript code.
+<a name="interpolation"></a>
+String interpolation is supported for text blocks (and text attributes and text filters).
+Use `#{var_name}` notation, and anything between the curly braces is treated as
+vanilla JavaScript code.
 
 For example, you can write:
 
@@ -325,7 +332,11 @@ both of the examples above will render to this:
 
 Relax...</p>
 ```
-		
+
+Interpolation comes in two forms: escaped and unescaped.  If you want escaped (i.e.
+the resulting string has &gt; &lt; &quot; and other HTML characters escaped), use
+`#{foo}`; if you want unescaped, use `!{foo}`.  If you literally want to insert
+"#{foo}" in your text, just prepend with a backslash like this: `\#{foo}`.
 
 ### Text filters
 
@@ -373,10 +384,11 @@ filters.
 You can add custom filters at compile-time using the API.
 
 Variable interpolation is supported for certain text filters, as well.  If a text
-filter returns text in `#{var_name}` notation, then anything between the curly braces
-is replaced with vanilla JavaScript code. To avoid this behavior, text filters can
-either escape the `#{stuff}` with a backslash, or it can set its `interpolation`
-property to `false`.
+filter returns text in `#{var_name}` or `!{var_name}` notation, then anything
+between the curly braces is replaced with vanilla JavaScript code. To avoid this
+behavior, text filters can either escape the `#{stuff}` with a backslash, or it
+can set its `interpolation` property to `false`.  See `lib/filters.js` for some
+examples if you want to write your own filter.
 
 ### Code
 
@@ -436,47 +448,6 @@ should avoid using these names in your view templates whenever possible:
 - `cb`
 - `__` (that's two underscores)
 - Any of the compiler options (i.e. `debug`, `minify`, etc.)
-
-### Foreach block
-
-The exact syntax of a foreach block is the word "foreach", followed by the variable
-name of the JavaScript Array or [Cursor Object](http://docs.meteor.com/#observe),
-optionally followed by "as" and an item alias.  Finally, it is possible to follow the
-foreach block by an "else" block, which is only rendered if there were no items in the
-collection.
-
-As a side note, a Cursor Object, as described above, is an Object with an `observe()`
-method, as described by [`cursor.observe(callbacks)`](http://docs.meteor.com/#observe)
-
-For example:
-
-```
-ul
-	foreach users as user
-		li #{user.firstName} #{user.lastName} (#{user.age})
-	else
-		li No users were found
-```
-
-Assuming that `users` is an Array, the above would produce the same as:
-
-```
-ul
-	- for(var i = 0; i < users.length; i++)
-		- var user = users[i];
-		li #{user.firstName} #{user.lastName} (#{user.age})
-	- if(users.length == 0)
-		li No users were found
-```
-
-The foreach block is preferred over the example above not only because of readability
-and brevity, but because it also provides Blade with the ability to better integrate
-with live page updating engines (like [Meteor](http://www.meteor.com/),
-[Spark](https://github.com/meteor/meteor/wiki/Spark),
-[Live UI](https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin), etc.).
-That is, if the live page update engine supports tracking reactive collections, the most
-efficient DOM operations may occur to update the view's results in-place, without
-re-rendering the entire Blade template.
 
 ### Doctypes
 
@@ -565,19 +536,64 @@ renders as:
 -->
 ```
 
+### Foreach
+
+The exact syntax of a foreach region is the word "foreach", followed by the variable
+name of the JavaScript Array or [Cursor Object](http://docs.meteor.com/#observe),
+optionally followed by "as" and an item alias.  Finally, it is possible to follow the
+foreach region by an "else" block, which is only rendered if there were no items in the
+collection.
+
+As a side note, a Cursor Object, as described above, is an Object with an `observe()`
+method, as described by [`cursor.observe(callbacks)`](http://docs.meteor.com/#observe)
+
+For example:
+
+```
+ul
+	foreach users as user
+		li #{user.firstName} #{user.lastName} (#{user.age})
+	else
+		li No users were found
+```
+
+Assuming that `users` is an Array, the above would produce the same as:
+
+```
+ul
+	- for(var i = 0; i < users.length; i++)
+		- var user = users[i];
+		li #{user.firstName} #{user.lastName} (#{user.age})
+	- if(users.length == 0)
+		li No users were found
+```
+
+The foreach region is preferred over the example above not only because of readability
+and brevity, but because it also provides Blade with the ability to better integrate
+with live page updating engines (specifically [Meteor](http://www.meteor.com/) and 
+[Spark](https://github.com/meteor/meteor/wiki/Spark)).
+That is, if the live page update engine supports tracking reactive collections, the most
+efficient DOM operations may occur to update the view's results in-place, without
+re-rendering the entire Blade template.
+
+Blocks don't work well inside of foreach regions.  Specifically, while inside of a
+foreach region: (1) you cannot access blocks declared outside of the foreach region;
+and (2) blocks within inside of the foreach region are not accessible once you leave
+the foreach region. If this causes a problem, just use regular JavaScript for loops.
+
 ### Event Handlers
 
-You can write event handlers right into your Blade templates.  Here's an
-example:
+You can write inline event handlers right into your Blade templates.
+Here's an example:
 
 ```
 form(method="post" action="/login")
 	input(type="text" name="username")
 		{change}
 			//javascript code goes here
-			//this refers to this DOM element
 			//e refers to the browser's event Object
-			validate(this.value);
+			//e.currentTarget refers to this DOM element
+			validate(e.currentTarget.value);
 	input(type="password" name="password")
 		{change}
 			checkPasswordStrength(this.value);
@@ -586,12 +602,13 @@ form(method="post" action="/login")
 The above code will automatically register the 'onchange' event handler with
 the corresponding `input` tags.
 
-As shown in the example, your event handler may reference `this` (the DOM
-element that triggered the event) or `e` (the browser's event Object). Be
-aware that every browser's event Object might be slightly different,
-especially in legacy browsers. In addition, if you are rendering the template
-in the browser (i.e. using client-side templates), your event handler will
-have access to the view's locals.
+As shown in the example, your event handler may reference `e` (the browser's
+event Object). Be aware that every browser's event Object might be slightly
+different, especially in legacy browsers.
+
+It is also worthwhile to note: If you are rendering the template in the browser
+(i.e. using client-side templates), your event handler will have access to the
+view's locals due to JavaScript closures. This can be rather convenient. :)
 
 ### Functions
 
@@ -718,6 +735,11 @@ For example:
 
 In the example above, variables `i` and `text` are exposed to "foobar.blade";
 the `header` variable will not be accessible from "foobar.blade".
+
+Note: when using Meteor or another live page update engine, [preserve and constant
+regions](#preserve-and-constant-regions) only work properly in an included template
+if and only if the template does *not* define any blocks.  In other words, don't
+include a template that declares blocks **and** has some preserve/constant regions.
 
 ### Blocks
 
@@ -905,6 +927,46 @@ render homepage.blade, you get:
 </html>
 ```
 
+### Preserve and constant regions
+
+Preserve and constant regions are only useful when using a live page update engine.
+Anything in a "constant" region is marked by the live page update engine as a
+region that is not subject to re-rendering.
+
+Example of constant region (using Meteor):
+
+```
+- console.log("Rendering header")
+h1 This is a header
+constant
+	- console.log("Rendering constant...")
+	p The current user is: #{Session.get("user")}
+```
+
+In the above example, "Rendering constant..." will only be printed once to the
+console, even if the Session variable changes.
+
+"Preserve" regions can be used to preserve certain DOM elements during re-rendering,
+leaving the existing element in place in the document while replacing the surrounding
+DOM nodes.  This means that re-rendering a template need not disturb text fields,
+iframes, and other sensitive elements it contains.
+
+Example of preserve region (using Meteor):
+
+```
+form
+	preserve {"input[id]": function (node) {return node.id;}}
+		label First Name
+		input#firstName(type="text")
+		label Last Name
+		input#lastName(type="text")
+```
+
+The example above will preserve the `<input>` DOM elements when the template is
+re-rendered. Notice that the text following the "preserve" keyword is passed
+directly to the Landmark's "preserve" option (see [the Meteor documentation]
+(http://docs.meteor.com/#template_preserve) for more info).
+
 ### Isolates
 
 Isolates are only useful when using a live page update engine. Creating an isolate
@@ -934,51 +996,8 @@ for more details.
 
 ### Chunks
 
-#### Chunks are *deprecated* as of Blade 3.0. You should use [isolates](#isolates) instead.
-
-Chunks are simply functions that return HTML. They behave a bit differently than
-conventional Blade functions.
-
-Functions are called with `call` statements, and their rendered content is injected
-right into a template. You can also capture the HTML they render by outputting to a
-variable, as described above. Chunks, on the other hand, always return HTML, and they
-cannot be called using `call` statements. The only way to render a chunk is to call it
-via your code (see example below).
-
-~~One reason you might define a chunk is to pass it to
-[Meteor's](http://meteor.com/) 
-[`Meteor.ui.chunk` function](http://docs.meteor.com/#meteor_ui_chunk); however,
-chunks can be used for other purposes, as well.
-You can also use chunks to work with [`Meteor.ui.listChunk`]
-(http://docs.meteor.com/#meteor_ui_listchunk).~~
-As of Meteor 0.4.0, the Meteor functions above no longer exist.
-
-Example:
-
-```
-chunk header(text)
-	h1= text
-
-!= __.chunk.header("Hello")
-```
-
-The above example defines a named chunk `header` with one parameter. Then, the chunk
-is called by calling the `__.chunk.header` function. When defining a chunk, parameters
-are optional, and if you omit the name, the chunk is simply named `last`.
-
-Another example:
-
-```
-chunk
-	h1 Hello!
-div
-	!= __.chunk.last()
-```
-
-renders as `<div><h1>Hello!</h1></div>`
-
-If you override the `templateNamespace` compiler option, you will need to replace all
-instances of the double underscore (`__`) variable with the `templateNamespace` variable.
+#### Chunks are *no longer supported* as of Blade 3.0.0beta. You should use
+[isolates](#isolates) instead.
 
 API
 ---
@@ -1208,7 +1227,7 @@ html
 ... compiles to this JavaScript function ...
 
 ```javascript
-function tmpl(locals,cb,__){__=__||[],__.r=__.r||blade.Runtime,__.func||(__.func={},__.blocks={},__.chunk={}),__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>","<html",">","<head",">","<title",">","Blade","</title>","</head>","<body",">","<div",' id="nav"',">","<ul",">");for(var i in nav)__.push("<li",">","<a"),__.r.attrs({href:{v:nav[i],e:1}},__),__.push(">",__.r.escape(i),"</a>","</li>");__.push("</ul>","</div>","<div",' id="content"',' class="center"',">","<h1",">","Blade is cool","</h1>","</div>","</body>","</html>")}__.inc||__.r.done(__),cb(null,__.join(""),__)}
+function tmpl(locals,cb,__){__=__||[],__.r=__.r||blade.Runtime,__.func||(__.func={},__.blocks={}),__.locals=locals||{};with(__.locals){__.push("<!DOCTYPE html>","<html",">","<head",">","<title",">","Blade","</title>","</head>","<body",">","<div",' id="nav"',">","<ul",">");for(var i in nav)__.push("<li",">","<a"),__.r.attrs({href:{v:nav[i],e:1}},__),__.push(">",__.r.escape(i),"</a>","</li>");__.push("</ul>","</div>","<div",' id="content"',' class="center"',">","<h1",">","Blade is cool","</h1>","</div>","</body>","</html>")}__.inc||__.r.done(__),cb(null,__.join(""),__)}
 ```
 
 ... now you call the function like this...
@@ -1254,50 +1273,44 @@ Plugins
 
 **Live UI**
 
-#### As of Blade 3.0, the Live UI plugin has been moved to another repository.
+Blade provides a Live UI plugin that allows Blade to use the [Spark live page update
+engine](https://github.com/meteor/meteor/wiki/Spark) independently from Meteor.
 
-#### More information about the Live UI plugin is coming soon...
-
-~~Blade provides a Live UI plugin that allows Blade to support live binding. Live binding
-provides automatic two-way synchronization between your models and views on a given web
-page.  That is, when data in your Model is updated, the rendered Blade views on the
-client's browser are automatically updated with the new content, and similarly, when a
-Blade view is rendered in the browser, the Blade [event handlers](#event-handlers) can
-update data in the model.
+Live UI provides automatic two-way synchronization between your models and views on a
+given web page.  That is, when data in your Model is updated, the rendered Blade views
+on the client's browser are automatically updated with the new content, and similarly,
+when a Blade view is rendered in the browser, the Blade [event handlers](#event-handlers)
+can update data in the model.
 
 **Complete documentation for the Live UI plugin (including several examples)
 can be found on the [Live UI Plugin wiki page]
 (https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin).**
 
-Eventually, the Live UI plugin might live in a separate repository and work for any
-templating language. More information coming soon...
-
 **definePropertyIE8**
 
 This plugin is a prerequisite for the Live UI plugin if you plan on using Live UI in
-Internet Explorer 8.~~
+Internet Explorer 8.
 
 Meteor Support
 --------------
 
-Blade also provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
+Blade provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
 under the `meteor` directory. At the time of this writing, Blade is not a part of the
-Meteor core smart package list. The easiest thing to do right now is to symlink that
-directory into your Meteor packages directory like this:
+Meteor core smart package list.
 
-`ln -s /path/to/.../blade/meteor /path/to/.../meteor/packages/blade`
+Forunately, an [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
+is available, which you can install using Meteorite.
 
-Of course, the actual path where Blade and Meteor are installed on your system may vary.
-You need to replace the above command with the correct paths, as appropriate.
-
-Then, execute `meteor add blade` in your Meteor project directory.
-
-#### An [Atmosphere smart package](https://atmosphere.meteor.com/package/blade) is also available.
-
-To install Blade using Atmosphere, simply [install Meteorite]
+To install Blade's smart package from Atmosphere, simply [install Meteorite]
 (https://atmosphere.meteor.com/wtf/app), navigate to your Meteor project directory,
 and type `mrt add blade`. Then, don't forget to run your project using `mrt` instead
 of `meteor`.
+
+Also check out these Blade features that work well with Meteor:
+
+- [Preserve and constant regions](#preserve-and-constant-regions)
+- [Isolates](#isolates)
+- [Foreach](#foreach)
 
 **More documentation and examples for Meteor + Blade can be found [on this wiki page]
 (https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).**
