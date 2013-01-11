@@ -9,11 +9,7 @@ if(!fs.existsSync)
 
 var opts = {};
 
-try {
-	var package = JSON.parse(fs.readFileSync(__dirname + "/../package.json") );
-	program.version(package.version);
-} catch(e) {}
-
+program.version(blade.version);
 program
 	.usage("[options] source_path destination_path")
 	.option("-R, --render", "renders the template and outputs HTML (default)")
