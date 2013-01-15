@@ -84,9 +84,9 @@ Why use Blade instead of Jade?
 	the many new features you can utilize when you make the switch to Blade.
 
 ```
-			Jade			vs.				Blade
+	Jade		vs.		Blade
 ```
-<img src="http://www.pbs.org/wgbh/nova/diamond/images/gp08jade.jpg" alt="Jade" width="226" height="169"/> &nbsp;&nbsp; <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
+<img src="http://i.imgur.com/je5Wd.png" alt="Jade" height="169"/> &nbsp;&nbsp; <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
 
 OK... it's admittedly not as funny as I thought it would be. But, I tried.
 
