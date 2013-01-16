@@ -15,7 +15,7 @@
 	"live binding",
 	"meteor"
   ],
-  "version": "2.6.4",
+  "version": "2.6.5",
   "homepage": "https://github.com/bminer/node-blade",
   "repository": {
 	"type": "git",
@@ -28,7 +28,7 @@
   },
   "devDependencies": {
   	"pegjs": ">=0.7",
-  	"uglify-js": ">=1.2"
+  	"uglify-js": ">=1.2 <2.0"
   },
   "optionalDependencies": {
   	"uglify-js": ">=1.2"
