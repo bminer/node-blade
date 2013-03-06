@@ -1,21 +1,28 @@
-var path = require('path');
+var path = require("path");
 var blade;
 //Hopefully, sometime soon I'll be able to get rid of this horrible hack...
-try {
-	blade = require('blade')
-}
-catch(e) {
+function requireBlade(path, requireFunc) {
+	if(blade) return;
+	if(!requireFunc) requireFunc = require;
 	try {
-		//XXX super lame! we actually have to give paths relative to
-		// app/lib/packages.js, since that's who's evaling us.
-		// The next line is for the core Meteor-installed package
-		blade = require('../../packages/blade/node_modules/blade');
-	}
-	catch(e) {
-		//XXX super lame! The next line is for the Meteorite-installed package
-		blade = require(process.cwd() + "/.meteor/meteorite/packages/blade/node_modules/blade");
-	}
+		blade = requireFunc(path);
+	} catch(e) {}
+};
+requireBlade("blade");
+//It's likely that `__meteor_bootstrap__` will go away
+if(global.__meteor_bootstrap__)
+{
+	requireBlade("blade", global.__meteor_bootstrap__.require);
+	requireBlade("../", global.__meteor_bootstrap__.require);
 }
+// This block is for the core Meteor-installed package.
+// We actually have to give paths relative to
+// app/lib/packages.js, since that's who's evaling us.
+requireBlade("../../packages/blade/node_modules/blade");
+//The following lines should handle the Meteorite-installed package.
+requireBlade(process.cwd() + "/.meteor/meteorite/packages/blade/node_modules/blade");
+requireBlade(process.cwd() + "/../");
+requireBlade("../");
 //-- end of horrible hack
 
 Package.describe({
@@ -27,9 +34,12 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 	//The template name does not contain ".blade" file extension or a beginning "/"
 	var templateName = path.dirname(servePath).substr(1);
 	templateName += (templateName.length > 0 ? "/" : "") + path.basename(servePath, ".blade");
-	//Templates are assumed to be stored in "views/", so remove this from the name, if needed
+	//Templates are assumed to be stored in "views/" or "client/views/"
+	//so remove this from the name, if needed
 	if(templateName.substr(0, 6) == "views/")
 		templateName = templateName.substr(6);
+	else if(templateName.substr(0, 13) == "client/views/")
+		templateName = templateName.substr(13);
 	//Finally, tell the Blade compiler where these views are stored, so that file includes work.
 	//The location of meteor project = srcPath.substr(0, srcPath.length - servePath.length)
 	var basedir = srcPath.substr(0, srcPath.length - servePath.length) + "/views";
@@ -61,10 +71,15 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 				"Meteor._def_template(" + JSON.stringify(templateName) +
 					//when the template is called...
 					", function(data, obj) {data = data || {};" +
-						//helpers work...
-						"for(var i in obj.helpers)\n" +
-							"if(typeof obj.helpers[i] == 'function') " +
-								"data[i]=obj.helpers[i]();" +
+						//helpers work... even functions, thanks to Object.defineProperty!
+						"for(var i in obj.helpers){" +
+							"if(typeof obj.helpers[i] != 'function' || !Object.defineProperty)\n" +
+								"data[i]=obj.helpers[i];\n" +
+							"else\n" +
+								"Object.defineProperty(data,i,{" +
+									"get:obj.helpers[i],configurable:true,enumerable:true" +
+								"});" +
+						"}" +
 						/*call the actual Blade template here, passing in data
 							`ret` is used to capture async results.
 							Note that since we are using caching for file includes,
