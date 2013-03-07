@@ -14,10 +14,6 @@ It works like this...
 
 Never write HTML again. Please.
 
-**NOTE:** Users updating to Blade 3.0.0beta5 will notice that string interpolation has
-changed.  There is now an escaped `#{foo}` and unescaped `!{foo}` syntax.
-[Check it out](#interpolation).
-
 **NOTE:** Users updating to Blade 3.0.0beta5 may notice that [chunk](#chunks) support
 has been removed.
 
@@ -67,21 +63,21 @@ Why use Blade instead of Jade?
 - **[Smarter](#fileIncludeDetails) file includes** - 
 	Files compiled in Blade can be much smaller than Jade files when you are using file
 	includes because file includes happen at runtime instead of at compile-time. If you
-	re-use the same included file among multiple views, the included file does not need to
-	be reloaded.
-- **[Blocks](#blocks) in Blade are awesome.** We removed features from Jade like explicit
+	re-use the same included file across multiple views, the included file does not need to
+	be reloaded multiple times.
+- **[Blocks](#blocks) are more flexible.** We removed features from Jade like explicit
 	template inheritance and then added features like blocks and parameterized blocks.
 	You might find our idea of a block to be similar to Jade's, but just wait until you
-	realize how much more flexible they are!
+	realize how much more flexible they are.
 - **Just [Functions](#functions), not mixins or partials.** In Blade, there are no "mixins"
 	or partial templates. There are only functions, and they work just like regular JavaScript
 	functions that you've come to know and love. You can put your functions into separate
 	files and include them into other templates, you can take advantage of the `arguments`
 	Array-like Object, or whatever you want!
-- **Other cool features** For example, Blade provides a built-in syntax for taking
-	content rendered by a function and loading it into a variable within your view template,
-	allowing you to pass rendered HTML content to another function. This is just one of
-	the many new features you can utilize when you make the switch to Blade.
+- **Other cool [features](#features)** For example, Blade provides built-in syntax
+	to capture content rendered by a function and store it into a variable within your
+	view template. This allows you to pass rendered HTML content to another function.
+	Checkout the [list of features](#features) below for a more complete list of features
 
 ```
 	Jade		vs.		Blade
@@ -104,6 +100,7 @@ Features
 - Supports Express.JS - just write `app.set("view engine", "blade");`
 - [HTML Comments and block comments](#comments)
 - [Text filters](#text-filters)
+- [String interpolation](#interpolation)
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
 - [Meteor smart package](#meteor-support)
@@ -113,13 +110,17 @@ Features
 Project Status
 --------------
 
-I'd say that Blade is **stable**. There are very few (if any)
+I'd say that Blade itself is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
 is ready for production environments. I use Blade for many of my projects.
+Meteor support for Blade is still in a **beta** or **release candidate**
+stage until the final release of Blade 3.0.0. Please test Blade with Meteor
+and report any bugs and/or weird behavior.
 
 If you find a bug, please [report it here]
 (https://github.com/bminer/node-blade/issues). If you include the Blade code
-that failed along with the expected HTML output, that is always splendid.
+that failed along with the expected HTML output, that is always splendid. Full
+stack traces for Errors are quite nice, too.
 
 By all means, please feel free to submit pull requests for new features,
 new tests, or whatever! For big changes, say ~100 lines of code, you
@@ -131,7 +132,7 @@ Installation
 for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/lib/runtime.js`
-Minified runtime is about 6-7 KB, uncompressed.
+Minified runtime is about 7-8 KB, uncompressed.
 
 Using Blade in a Meteor project? Check out [Meteor support](#meteor-support).
 
@@ -223,26 +224,9 @@ Blade just assumes anything without a tag name specifier is a `<div>` tag.
 
 Also, tags without matching ending tags like `<img/>` render properly.
 
-### Indenting
+#### Escaping Blade keywords
 
-It works. You can indent with any number of spaces or with a single tab character. The
-only rule is to be consistent within a given file.
-Jade gives you a lot of weird indent flexibility. Blade, by design, does not.
-
-```
-html
-	head
-	body
-		#content
-```
-
-renders as:
-
-```html
-<html><head></head><body><div id="content"></div></body></html>
-```
-
-You can start a tag name with a bashslash to escape Blade keywords.
+Finally, you can start a tag name with a bashslash to escape Blade keywords.
 Normally, `include test` would include a file, but `\include test` renders as:
 
 ```xml
@@ -252,9 +236,38 @@ Normally, `include test` would include a file, but `\include test` renders as:
 This allows you to be flexible with tag names, so you are not restricted to rendering
 HTML, for example. You can render any XML document with Blade.
 
+### Indenting
+
+Simply intent to put content inside of a tag.
+
+You can indent with any number of spaces or with a single tab character. The
+only rule is to be consistent within a given file.
+Jade gives you a lot of weird indent flexibility. Blade, by design, does not.
+
+```
+html
+	head
+		title Welcome
+	body
+		#content
+```
+
+renders as:
+
+```html
+<html>
+	<head>
+		<title>Welcome</title>
+	</head>
+	<body>
+		<div id="content"></div>
+	</body>
+</html>
+```
+
 ### Text
 
-It works, too. Simply place content after the tag like this:
+Simply place content after the tag like this:
 
 ```
 p This text is "escaped" by default. Kinda neat.
@@ -337,6 +350,48 @@ Interpolation comes in two forms: escaped and unescaped.  If you want escaped (i
 the resulting string has &gt; &lt; &quot; and other HTML characters escaped), use
 `#{foo}`; if you want unescaped, use `!{foo}`.  If you literally want to insert
 "#{foo}" in your text, just prepend with a backslash like this: `\#{foo}`.
+
+#### Whitespace between tags
+
+In Blade, whitespace is only added when it's explicitly needed.
+For example:
+
+```blade
+input(type="text")
+input(type="text")
+```
+
+renders as: `<input type="text"><input type="text">`
+
+If you need something like...
+`<input type="text"> <input type="text">` (notice the space between the elements),
+then you have some options...
+
+One way is to use a text block:
+
+```blade
+input(type="text")
+|  
+input(type="text")
+```
+
+Notice on line 2 that the `|` is followed by **two** spaces.
+
+Another way is to prepend a tag with a `<`:
+
+```blade
+input(type="text")
+<input(type="text")
+```
+
+Or append the tagname with a `>`:
+
+```blade
+input>(type="text")
+input(type="text")
+```
+
+Whatever you like!
 
 ### Text filters
 
@@ -578,7 +633,7 @@ re-rendering the entire Blade template.
 
 Blocks don't work well inside of foreach regions.  Specifically, while inside of a
 foreach region: (1) you cannot access blocks declared outside of the foreach region;
-and (2) blocks within inside of the foreach region are not accessible once you leave
+and (2) blocks declared inside of the foreach region are not accessible once you leave
 the foreach region. If this causes a problem, just use regular JavaScript for loops.
 
 ### Event Handlers
@@ -749,6 +804,12 @@ rendered later.
 You can do a lot with blocks, including template inheritance, etc. They behave quite
 differently from Jade.
 
+**STOP!** If you are planning on using blocks with Meteor, beware! First of all,
+blocks might not make much sense when building Meteor applications, and furthermore,
+blocks don't work well with reactive HTML.
+
+OK. I digress...
+
 There are two types of blocks: regular blocks and parameterized blocks.
 
 #### Regular blocks
@@ -839,32 +900,40 @@ all work, too. Just remember that order matters.
 Another example:
 
 ```
-head
-	block header(pageTitle)
-		title= pageTitle
-body
-	h1 Hello
-	render header("Page Title")
-	append header
-		script(type="text/javascript")
-	render header("Page Title")
-	prepend header
-		meta
+!!! 5
+html
+	head
+		block header(pageTitle)
+			title= pageTitle
+	body
+		h1 Hello
+		render header("Page Title")
+		append header
+			script(type="text/javascript")
+		render header("Page Title")
+		prepend header
+			meta
 ```
 
 Will output:
 
 ```html
-<head>
-	<meta/>
-	<title>Page Title</title>
-	<script type="text/javascript"></script>
-	<title>Page Title</title>
-</head>
-<body>
-	<h1>Hello</h1>
-</body>
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta/>
+		<title>Page Title</title>
+		<script type="text/javascript"></script>
+		<title>Page Title</title>
+	</head>
+	<body>
+		<h1>Hello</h1>
+	</body>
+</html>
 ```
+
+Obviously, the example above is rather contrived, but it shows how blocks work.
+A more [realistic example of using blocks](#template-inheritance) is below.
 
 #### What happens if I define the same block more than once?
 
@@ -896,10 +965,15 @@ There is no `extends` keyword.  Just use blocks and includes:
 layout.blade:
 
 ```
+!!! 5
 html
 	head
 		block title(pageTitle)
 			title=pageTitle
+		block scripts
+			script(type="text/javascript" src="/js/jquery.min.js")
+			script(type="text/javascript" src="/js/jquery-ui.min.js")
+		block stylesheets
 	body
 		block body
 ```
@@ -913,19 +987,39 @@ replace block body
 	h1 Hello, World
 ```
 
-If you render layout.blade, you get: `<html><head></head><body></body></html>`, but if you
-render homepage.blade, you get:
+If you render layout.blade, you get:
 
 ```html
+<!DOCTYPE html>
+<html>
+	<head>
+		<script type="text/javascript" src="/js/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
+	</head>
+	<body></body>
+</html>
+```
+
+but if you render homepage.blade, you get:
+
+```html
+<!DOCTYPE html>
 <html>
 	<head>
 		<title>Homepage</title>
+		<script type="text/javascript" src="/js/jquery.min.js"></script>
+		<script type="text/javascript" src="/js/jquery-ui.min.js"></script>
 	</head>
 	<body>
 		<h1>Hello, World</h1>
 	</body>
 </html>
 ```
+
+The idea here is that you can derive many pages in a website from a basic
+template. In this case, `layout.blade` provides the generic template for
+each page in your website. `homepage.blade` simply uses the layout and
+modifies some blocks to generate the actual page.
 
 ### Preserve and constant regions
 
@@ -963,9 +1057,26 @@ form
 ```
 
 The example above will preserve the `<input>` DOM elements when the template is
-re-rendered. Notice that the text following the "preserve" keyword is passed
+re-rendered. Notice that the code following the "preserve" keyword
+`{"input[id]": function (node) {return node.id;}}` is passed
 directly to the Landmark's "preserve" option (see [the Meteor documentation]
 (http://docs.meteor.com/#template_preserve) for more info).
+
+You must specify how elements in a preserve region are to be preserved. To do
+this, you need to tell Blade how to uniquely identify each element that you
+want to preserve in the block. In the example above, `<input>` fields with
+`id` attributes are preserved, and their `id` is used to uniquely identify
+them.
+
+The following is an example of preserving a single element. Since there is only one
+element in this preserve block, identifying it with the `*` selector is acceptable.
+
+```
+preserve ["*"]
+	input(type="text")
+```
+
+If the "preserve" keyword is not followed by any code, then nothing is preserved.
 
 ### Isolates
 
@@ -1301,7 +1412,7 @@ Blade provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
 under the `meteor` directory. At the time of this writing, Blade is not a part of the
 Meteor core smart package list.
 
-Forunately, an [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
+Fortunately, an [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
 is available, which you can install using Meteorite.
 
 To install Blade's smart package from Atmosphere, simply [install Meteorite]

@@ -340,4 +340,25 @@
 			});
 		};
 
+	//Override `runtime.include` to handle branch labels
+	var oldInclude = blade.Runtime.include;
+	blade.Runtime.include = function(relFilename, info) {
+		//Save old info
+		var bufLength = info.length,
+			branchLabel = info.filename + ":" + info.line + ":inc:" + relFilename;
+		//Run old `runtime.include`
+		var ret = oldInclude.apply(this, arguments);
+		//If no block definitions were found in the parent and child templates, we can use the reactive HTML
+		if(!info.bd)
+		{
+			//Remove non-reactive HTML
+			var html = blade.Runtime.capture(info, bufLength);
+			//Add reactive HTML
+			info.push(Spark.labelBranch(branchLabel, function() {
+				return html;
+			}));
+		}
+		//else... just use whatever is in `info` (non-reactive HTML)
+		return ret;
+	};
 })();
