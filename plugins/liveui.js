@@ -304,7 +304,7 @@
 			LiveUpdate.finalize(el);
 			var dom = LiveUpdate.render(function() {
 				return LiveUpdate.labelBranch(viewName + "@" + el.id, function () {
-					return LiveUpdate.createLandmark(landmarkOptions, function (landmark) {
+					return LiveUpdate.createLandmark(landmarkOptions || {}, function (landmark) {
 						return LiveUpdate.isolate(function () {
 							var ret;
 							tmpl(locals ? locals.observable || locals : {}, function(err, html, info) {
