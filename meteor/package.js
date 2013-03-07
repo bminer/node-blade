@@ -80,6 +80,10 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 									"get:obj.helpers[i],configurable:true,enumerable:true" +
 								"});" +
 						"}" +
+						//Get `info` Object from the parent template (if any) and its length
+						"var info = blade._includeInfo || [], startLen = info.length;" +
+						//Expose `partials`
+						"info.partials = obj.partials;" +
 						/*call the actual Blade template here, passing in data
 							`ret` is used to capture async results.
 							Note that since we are using caching for file includes,
@@ -87,11 +91,12 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 						"var ret = ''; blade._cachedViews[" + JSON.stringify(templateName + ".blade") +
 						"](data, function(err,html,info) {" +
 							"if(err) throw err;" +
+							"html = info.slice(startLen).join('');" +
 							//Remove event handler attributes
 							'html = html.replace(/on[a-z]+\\=\\"return blade\\.Runtime\\.trigger\\(this\\,arguments\\)\\;\\"/g, "");' +
 							//now bind any inline events and return
 							"ret = blade.LiveUpdate.attachEvents(info.eventHandlers, html);" +
-						"});\n" +
+						"},info);\n" +
 						//so... by here, we can just return `ret`, and everything works okay
 						"return ret;" +
 					"}" +
