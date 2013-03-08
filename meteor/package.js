@@ -1,35 +1,45 @@
-var path = require("path");
-var blade;
 //Hopefully, sometime soon I'll be able to get rid of this horrible hack...
-function requireBlade(path, requireFunc) {
-	if(blade) return;
-	if(!requireFunc) requireFunc = require;
-	try {
-		blade = requireFunc(path);
-	} catch(e) {}
-};
-requireBlade("blade");
-//It's likely that `__meteor_bootstrap__` will go away
-if(global.__meteor_bootstrap__)
-{
-	requireBlade("blade", global.__meteor_bootstrap__.require);
-	requireBlade("../", global.__meteor_bootstrap__.require);
+function requireHack() {
+	var blade;
+	function requireBlade(path, requireFunc) {
+		if(blade) return;
+		if(!requireFunc) requireFunc = require;
+		try {
+			blade = requireFunc(path);
+		} catch(e) {}
+	};
+	requireBlade("blade");
+	//It's likely that `__meteor_bootstrap__` will go away
+	if(global.__meteor_bootstrap__)
+	{
+		requireBlade("blade", global.__meteor_bootstrap__.require);
+		requireBlade("../", global.__meteor_bootstrap__.require);
+	}
+	// This block is for the core Meteor-installed package.
+	// We actually have to give paths relative to
+	// app/lib/packages.js, since that's who's evaling us.
+	requireBlade("../../packages/blade/node_modules/blade");
+	//The following lines should handle the Meteorite-installed package.
+	requireBlade(process.cwd() + "/.meteor/meteorite/packages/blade/node_modules/blade");
+	requireBlade(process.cwd() + "/../");
+	requireBlade("../");
+	return blade;
 }
-// This block is for the core Meteor-installed package.
-// We actually have to give paths relative to
-// app/lib/packages.js, since that's who's evaling us.
-requireBlade("../../packages/blade/node_modules/blade");
-//The following lines should handle the Meteorite-installed package.
-requireBlade(process.cwd() + "/.meteor/meteorite/packages/blade/node_modules/blade");
-requireBlade(process.cwd() + "/../");
-requireBlade("../");
 //-- end of horrible hack
 
 Package.describe({
 	summary: "Blade - HTML Template Compiler, inspired by Jade & Haml"
 });
 
+if(global.Npm)
+	Npm.depends({"blade": ">=3"});
+
 Package.register_extension("blade", function(bundle, srcPath, servePath, where) {
+	var path, blade;
+	if(global.Npm)
+		path = Npm.require("path"), blade = Npm.require("blade");
+	else
+		path = require("path"), blade = requireHack();
 	if(where !== "client") return; //get outta here, yo!
 	//The template name does not contain ".blade" file extension or a beginning "/"
 	var templateName = path.dirname(servePath).substr(1);
@@ -111,4 +121,6 @@ Package.on_use(function(api) {
 	api.add_files('runtime.js', 'client');
 	//The Blade runtime with overridden loadTemplate function, designed for Meteor
 	api.add_files('runtime-meteor.js', 'client');
+	//A hack to get Handlebars helpers to work with Blade
+	api.add_files('helpers-hack.js', 'client');
 });
