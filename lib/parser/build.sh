@@ -1,3 +1,3 @@
 #!/bin/bash
 cd $(dirname $0)
-pegjs --track-line-and-column blade-grammer.pegjs index.js
+pegjs --track-line-and-column blade-grammar.pegjs index.js
