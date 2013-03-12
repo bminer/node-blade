@@ -806,7 +806,11 @@ differently from Jade.
 
 **STOP!** If you are planning on using blocks with Meteor, beware! First of all,
 blocks might not make much sense when building Meteor applications, and furthermore,
-blocks don't work well with reactive HTML.
+blocks don't work well with reactive HTML. For more information about why blocks are
+not recommended for use with Meteor, checkout [this section]
+(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor#wiki-block_limitations)
+of the [Using Blade with Meteor wiki page]
+(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).
 
 OK. I digress...
 
