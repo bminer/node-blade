@@ -61,20 +61,19 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 		'includeSource': true //default to true for debugging
 	}, function(err, tmpl) {
 		if(err) throw err;
-		if(templateName == "head" || templateName == "body")
+		if(templateName == "head")
 			tmpl({}, function(err, html) {
 				//This should happen synchronously due to compile options set above
 				if(err) throw err;
 				bundle.add_resource({
-					type: templateName, //either "head" or "body"
+					type: templateName,
 					data: html,
 					where: where
 				});
 			});
-		bundle.add_resource({
-			type: 'js',
-			path: "/views/" + templateName + ".js", //This can be changed to whatever
-			data: new Buffer("blade._cachedViews[" +
+		else
+		{
+			var data = "blade._cachedViews[" +
 				//just put the template itself in blade._cachedViews
 				JSON.stringify(templateName + ".blade") + "]=" + tmpl.toString() + ";" +
 				//define a template with the proper name
@@ -110,9 +109,18 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 						//so... by here, we can just return `ret`, and everything works okay
 						"return ret;" +
 					"}" +
-				");"),
-			where: where
-		});
+				");";
+			if(templateName == "body")
+				data += "Meteor.startup(function(){" +
+						"document.body.appendChild(Spark.render(Template.body));" +
+					"});"
+			bundle.add_resource({
+				type: 'js',
+				path: "/views/" + templateName + ".js", //This can be changed to whatever
+				data: data,
+				where: where
+			});
+		}
 	});
 });
 
