@@ -52,7 +52,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 		templateName = templateName.substr(13);
 	//Finally, tell the Blade compiler where these views are stored, so that file includes work.
 	//The location of meteor project = srcPath.substr(0, srcPath.length - servePath.length)
-	var basedir = srcPath.substr(0, srcPath.length - servePath.length) + "/views";
+	var basedir = srcPath.substr(0, srcPath.length - servePath.length);
 	blade.compileFile(srcPath, {
 		'synchronous': true,
 		'basedir': basedir,
