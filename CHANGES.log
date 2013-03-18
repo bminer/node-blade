@@ -3,18 +3,39 @@ made to Blade, please review the Git commit logs.
 
 Blade was born on May 3, 2012.
 
+- Version 3.0 (March 12, 2013)
+	- Significantly improved Meteor support!
+		- preserve and constant regions
+		- isolates
+		- foreach
+		- Helpers
+		- Events
+		- Many, many bugfixes
+	- Changed runtime options and APIs on the browser
+	- Runtime.loadTemplate can now detect loading errors
+	- Live UI plugin has been re-worked significantly and now depends on Spark
+	- Tag attributes can now be interpolated (#105)
+	- Syntax now exists for unescaped and escaped interpolation
+	- Middleware no longer exposes base path information for templates (#122)
+	- Multiple doctypes are now permitted (#119)
+	- Blank lines are now permitted anywhere (#81, #149)
+	- Blade middleware is compatible with node-static-asset
+	- Blade chunks are now removed
+	- Updated to use UglifyJS 2
+	- Numerous bugfixes (will not list them all here)
+	- Updated docs
 - Version 2.6 (July 18, 2012)
-	-Improved Model class in Live UI plugin
-	-Added Model validation
-	-Other bugixes
-	-Updated docs
+	- Improved Model class in Live UI plugin
+	- Added Model validation
+	- Other bugfixes
+	- Updated docs
 - Version 2.5 (July 17, 2012)
-	-Blade runtime and Blade plugins are uglified by the Blade middleware
-	-Removed runtime distribution
-	-Added support for boolean attributes
-	-Support for multiple event handlers
-	-Other Bugfixes
-	-Updated docs
+	- Blade runtime and Blade plugins are uglified by the Blade middleware
+	- Removed runtime distribution
+	- Added support for boolean attributes
+	- Support for multiple event handlers
+	- Other Bugfixes
+	- Updated docs
 - Version 2.4 (July 17, 2012)
 	- Significantly improved Live UI plugin
 	- Added initial element preservation support for Live UI
