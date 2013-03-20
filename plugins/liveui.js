@@ -308,6 +308,7 @@
 						return LiveUpdate.isolate(function () {
 							var ret;
 							tmpl(locals ? locals.observable || locals : {}, function(err, html, info) {
+								if(err) throw err;
 								//Remove event handler attributes
 								html = html.replace(/on[a-z]+\=\"return blade\.Runtime\.trigger\(this\,arguments\)\;\"/g, "");
 								//Return

@@ -1230,6 +1230,12 @@ can compile the view stored at `sourcePath + "/homepage.blade"`
 	- `pluginsMount` - the URL path where Blade plugins will be served to the
 		browser (defaults to "/blade/plugins/"). Use `null` to disable this
 		functionality.
+	- `returnErrors` - if true, compilation errors are exposed to the client
+		(i.e. passed to the callback function that was passed to
+		`blade.Runtime.loadTemplate`); if false, compilation errors are passed
+		to the [error-handling middleware]
+		(http://expressjs.com/guide.html#error-handling). Defaults to
+		`process.env.NODE_ENV == "development"` if unspecified.
 	- `compileOptions` - options passed to `blade.compile()`. Defaults to:
 
 ```javascript
