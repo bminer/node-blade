@@ -29,11 +29,9 @@
 		blade._includeInfo = info;
 		//Get the name of the included Template
 		var name = resolveFilename(info.rel + "/" + relFilename);
-		//Remove views/ or client/views/ prefix
-		if(name.substr(0, 6) == "views/")
-			name = name.substr(6);
-		else if(name.substr(0, 13) == "client/views/")
-			name = name.substr(13);
+		//Remove directory prefix
+		if(name.indexOf("/") > -1)
+			name = name.substr(name.lastIndexOf("/") + 1);
 		//Remove .blade file extension
 		if(name.substr(-6) == ".blade")
 			name = name.substr(0, name.length - 6);
