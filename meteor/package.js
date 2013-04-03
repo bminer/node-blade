@@ -44,8 +44,15 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 	//The template name does not contain ".blade" file extension or a beginning "/"
 	var templateName = path.dirname(servePath).substr(1);
 	templateName += (templateName.length > 0 ? "/" : "") + path.basename(servePath, ".blade");
-	//Remove directory prefix
-	templateName = templateName.substr(templateName.lastIndexOf("/") + 1);
+	//Templates are assumed to be stored in "views/" or "client/views/"
+	//so remove this from the name, if needed
+	if(templateName.substr(0, 6) == "views/")
+		templateName = templateName.substr(6);
+	else if(templateName.substr(0, 13) == "client/views/")
+		templateName = templateName.substr(13);
+	//Remove directory prefix if not in views/ or client/views/
+	else
+		templateName = templateName.substr(templateName.lastIndexOf("/") + 1);
 	//Finally, tell the Blade compiler where these views are stored, so that file includes work.
 	//The location of meteor project = srcPath.substr(0, srcPath.length - servePath.length)
 	var basedir = srcPath.substr(0, srcPath.length - servePath.length);
