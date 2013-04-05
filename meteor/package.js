@@ -3,7 +3,7 @@ function requireHack() {
 	var blade;
 	function requireBlade(path, requireFunc) {
 		if(blade) return;
-		if(!requireFunc) requireFunc = require;
+		if(!requireFunc) requireFunc = Npm.require;
 		try {
 			blade = requireFunc(path);
 		} catch(e) {}
@@ -39,7 +39,7 @@ Package.register_extension("blade", function(bundle, srcPath, servePath, where) 
 	if(global.Npm)
 		path = Npm.require("path"), blade = Npm.require("blade");
 	else
-		path = require("path"), blade = requireHack();
+		path = Npm.require("path"), blade = requireHack();
 	if(where !== "client") return; //get outta here, yo!
 	//The template name does not contain ".blade" file extension or a beginning "/"
 	var templateName = path.dirname(servePath).substr(1);
