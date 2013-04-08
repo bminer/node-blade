@@ -3,7 +3,15 @@
 var fs = require('fs'),
 	path = require('path'),
 	blade = require('../'),
+	program;
+
+try {
 	program = require('commander');
+} catch(e) {
+	console.error("Error: `commander` package is required to run the command-line utility." +
+		"\nPlease run `npm install commander` to fix this problem.");
+	process.exit(1);
+}
 if(!fs.existsSync)
 	fs.existsSync = path.existsSync; //Node 0.6 compatibility
 
