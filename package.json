@@ -15,7 +15,7 @@
 		"live binding",
 		"meteor"
 	],
-	"version": "3.2.1",
+	"version": "3.2.2",
 	"homepage": "https://github.com/bminer/node-blade",
 	"repository": {
 	"type": "git",
@@ -40,8 +40,7 @@
 	"scripts": {
 		"pretest": "./lib/parser/build.sh",
 		"test": "node ./test/test.js",
-		"prepublish": "./lib/parser/build.sh",
-		"postinstall": "node ./postinstall.js"
+		"prepublish": "./lib/parser/build.sh"
 	},
 	"contributors": [
 		"Michel Löhr (https://github.com/mlohr)"
