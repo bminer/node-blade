@@ -1,0 +1,8 @@
+- var notExposed = "I am not available to the child"
+- locals.alsoNotExposed = "I am also not available to the child"
+- var text = "Testing 1, 2, 3"
+- for(var i = 0; i < 2; i++)
+	include "exposing_child" exposing text, i
+- var dynamic_include = "exposing_child"
+- for(var i = 0; i < 2; i++)
+	include dynamic_include exposing text, i
