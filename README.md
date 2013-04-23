@@ -39,11 +39,12 @@ Table of Contents
 	- [Functions](#functions)
 	- [Dynamic File Includes](#dynamic-file-includes)
 	- [Blocks](#blocks)
-- [Meteor Support](#meteor-support)
 - [API](#api)
 - [Browser Usage](#browser-usage)
 - [A Simple Example](#simple-example)
+- [Syntax Highlighting](#syntax-highlighting) for your favorite text editor
 - [Plugins](#plugins)
+- [Meteor Support](#meteor-support)
 - [Implementation Details](#implementation-details)
 - [Benchmarks](#benchmarks)
 - [License](#license)
@@ -1391,6 +1392,23 @@ tmpl({
 	</body>
 </html>
 ```
+
+Syntax Highlighting
+-------------------
+
+There are a few resources available to get syntax highlighting for your favorite text
+editor.
+
+- [Sublime Text 2](http://www.sublimetext.com/2):
+	https://github.com/kenvunz/js-blade-package (maybe thank kenvunz
+	[here](https://github.com/bminer/node-blade/issues/78))
+- [Textmate](https://github.com/textmate/textmate): the syntax highlighting files for
+	Sublime Text 2 may also be compatible with Textmate? See the link above.
+- [Notepad++](http://notepad-plus-plus.org/): [notepad++.xml]
+	(https://github.com/bminer/node-blade/blob/master/syntax-highlighting/notepad%2B%2B.xml)
+
+If you find (or create yourself) syntax highlighting plugins for other text editors,
+please write me, and I will post the links here. Or, simply submit a pull request.
 
 Plugins
 -------
