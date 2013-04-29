@@ -777,8 +777,10 @@ You may also place an `include` inside of a `function` or `block`.
 
 Finally, you can specify which local variables should be passed to the included view
 template by using the `exposing` keyword.  By default, Blade will pass the parent's
-local variables to the included template; however, when using the `exposing` keyword,
-you can specify exactly which variables are to be exposed to the included template.
+view locals (not local variables declared with `- var foo = ...`) to the included
+template; however, when using the `exposing` keyword, you can specify exactly which
+variables (either view locals or variables declared with `- var foo = ...`) are to
+be exposed to the included template.
 
 For example:
 

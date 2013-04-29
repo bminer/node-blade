@@ -1,9 +1,13 @@
-- for(var i = 1; i <= 10; i++)
+- locals.parentLocals = true
+- for(var i = 1; i <= 3; i++)
 	include "include2"
-- for(var i = 1; i <= 10; i++)
+- for(var i = 1; i <= 3; i++)
 	include "include2" exposing i
-- for(var i = 1; i <= 10; i++)
-	include "include2"
+- var include2 = "include2"
+- for(var i = 1; i <= 3; i++)
+	include include2
+- for(var i = 1; i <= 3; i++)
+	include include2 exposing i
 p The end: #{typeof locals.i} #{typeof i}
 
 p Before test block
