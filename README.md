@@ -14,9 +14,6 @@ It works like this...
 
 Never write HTML again. Please.
 
-**NOTE:** Users updating to Blade 3.0.0beta5 may notice that [chunk](#chunks) support
-has been removed.
-
 <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
 alt="Blade" width="150" height="169"/>
 
@@ -56,7 +53,7 @@ Why use Blade instead of Jade?
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
-- **Meteor support** - Blade works well with [Meteor](http://meteor.com/) and Spark.
+- **Meteor support** - Blade works with [Meteor](http://meteor.com/) 0.6.4 and Spark.
 	See the	[documentation below](#meteor-support).
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
@@ -101,7 +98,7 @@ Features
 - Supports Express.JS - just write `app.set("view engine", "blade");`
 - [HTML Comments and block comments](#comments)
 - [Text filters](#text-filters)
-- [String interpolation](#interpolation)
+- [String interpolation](#string-interpolation)
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
 - [Meteor smart package](#meteor-support)
@@ -114,9 +111,13 @@ Project Status
 I'd say that Blade itself is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
 is ready for production environments. I use Blade for many of my projects.
-Meteor support for Blade is still in a **beta** or **release candidate**
-stage until the final release of Blade 3.0.0. Please test Blade with Meteor
-and report any bugs and/or weird behavior.
+
+[Meteor support for Blade](#meteor-support) is a **work-in-progress**. The Meteor
+team has been changing the Templating API for Meteor significantly, and it is quite
+likely that any code that has been written for Blade + Meteor support will be
+very broken in the near future. If you use Blade with Meteor, please hang in there.
+Once Meteor 1.0 is released and the APIs are well-documented, I will work to integrate
+Blade with Meteor.
 
 If you find a bug, please [report it here]
 (https://github.com/bminer/node-blade/issues). If you include the Blade code
@@ -311,7 +312,7 @@ Rules are:
 - Unescaped JavaScript code block? Yep. Use `|!=` or `!=`.
 - Newlines in text blocks are preserved.
 
-<a name="interpolation"></a>
+#### String Interpolation
 String interpolation is supported for text blocks (and text attributes and text filters).
 Use `#{var_name}` notation, and anything between the curly braces is treated as
 vanilla JavaScript code.
@@ -348,7 +349,7 @@ Relax...</p>
 ```
 
 Interpolation comes in two forms: escaped and unescaped.  If you want escaped (i.e.
-the resulting string has &gt; &lt; &quot; and other HTML characters escaped), use
+the resulting string has `>`, `<`, `"`, and other HTML characters escaped), use
 `#{foo}`; if you want unescaped, use `!{foo}`.  If you literally want to insert
 "#{foo}" in your text, just prepend with a backslash like this: `\#{foo}`.
 
@@ -1438,12 +1439,14 @@ Internet Explorer 8.
 Meteor Support
 --------------
 
-Blade provides a [Meteor smart package](http://docs.meteor.com/#smartpackages)
-under the `meteor` directory. At the time of this writing, Blade is not a part of the
-Meteor core smart package list.
+Blade provides a [Meteor smart package](http://docs.meteor.com/#smartpackages) here:
+https://github.com/bminer/meteor-blade. At the time of this writing, Blade is not a part of the
+Meteor core smart package list, and Blade support is currently broken as of Meteor
+0.6.5.  Unfortunately, Blade + Meteor support will be suspended until the release of
+Meteor 1.0.
 
-Fortunately, an [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
-is available, which you can install using Meteorite.
+An [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
+is available for Meteor 0.6.4 (and below), which you can install using Meteorite.
 
 To install Blade's smart package from Atmosphere, simply [install Meteorite]
 (https://atmosphere.meteor.com/wtf/app), navigate to your Meteor project directory,
