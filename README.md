@@ -468,6 +468,8 @@ paragraph tag.  In this case, Blade wraps the indented content with curly braces
 If there is no indented content beneath the line of code, then a semicolon is appended
 instead.
 
+**Disclosure for Jade users**: Unlike Jade, you can't write conditional or iterative statements in Blade without the use of the dash `-`.  This is by design -- IMHO it helps one differentiate between logic and markup.
+
 Code that outputs (i.e. a code block or at the end of a tag).
 As mentioned before, it's just like a text block, except with an `=`.
 
@@ -594,6 +596,12 @@ renders as:
 ```
 
 ### Foreach
+
+This feature is now deprecated.  Consider the use of the native JavaScript 
+[Array.prototype.foreach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
+
+It is likely that this syntax will be removed in future versions of Blade, but rather
+than removing it entirely, there may be some alternative syntax added.
 
 The exact syntax of a foreach region is the word "foreach", followed by the variable
 name of the JavaScript Array or [Cursor Object](http://docs.meteor.com/#observe),
