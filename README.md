@@ -470,6 +470,38 @@ instead.
 
 **Disclosure for Jade users**: Unlike Jade, you can't write conditional or iterative statements in Blade without the use of the dash `-`.  This is by design -- IMHO it helps one differentiate between logic and markup.
 
+If you have longer lines of JavaScript code, and you want to extend the line over
+multiple lines, you can do that.  Just use the underscore `_` to tell Blade that you
+are extending the previous code statement.
+
+Pay close attention to when the dash `-` and underscore `_` are used.
+
+Here's an example:
+
+```
+#taskStatus
+	- if(task.completed &&
+		_ tasks.length == 0)
+		p Well... I suppose there is nothing left to do.
+```
+
+Or... another example...
+
+```
+- var longString = "This particular line of JavaScript " +
+	_ "is rather long, so we decided to break it up into " +
+	_ "multiple lines."
+p=longString
+```
+
+You should never use the underscore `_` if you don't need multi-line code statements.
+
+If you need to insert a tag that begins with an underscore `_`, escape it with a
+backslash `\` (just like you would if you were [escaping Blade keywords]
+(#escaping-blade-keywords) ).
+
+#### Code that Outputs
+
 Code that outputs (i.e. a code block or at the end of a tag).
 As mentioned before, it's just like a text block, except with an `=`.
 
