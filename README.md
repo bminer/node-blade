@@ -228,7 +228,7 @@ Also, tags without matching ending tags like `<img/>` render properly.
 
 #### Escaping Blade keywords
 
-Finally, you can start a tag name with a bashslash to escape Blade keywords.
+Finally, you can start a tag name with a backslash to escape Blade keywords.
 Normally, `include test` would include a file, but `\include test` renders as:
 
 ```xml
