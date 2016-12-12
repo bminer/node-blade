@@ -14,8 +14,8 @@ It works like this...
 
 Never write HTML again. Please.
 
-<img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg"
-alt="Blade" width="150" height="169"/>
+<img src="http://www.fightingmaster.com/actors/snipes/photos/snipes.jpg"
+alt="Blade" height="169"/>
 
 "Blade's blood is the key" :P Sorry... I had to...
 
@@ -80,7 +80,7 @@ Why use Blade instead of Jade?
 ```
 	Jade		vs.		Blade
 ```
-<img src="http://i.imgur.com/je5Wd.png" alt="Jade" height="169"/> &nbsp;&nbsp; <img src="http://www.empireonline.com/images/features/100greatestcharacters/photos/47.jpg" alt="Blade" width="150" height="169"/>
+<img src="http://i.imgur.com/je5Wd.png" alt="Jade" height="169"/> &nbsp;&nbsp; <img src="http://www.fightingmaster.com/actors/snipes/photos/snipes.jpg" alt="Blade" height="169"/>
 
 OK... it's admittedly not as funny as I thought it would be. But, I tried.
 
