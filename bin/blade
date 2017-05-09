@@ -13,7 +13,7 @@ try {
 	process.exit(1);
 }
 if(!fs.existsSync)
-	fs.existsSync = path.existsSync; //Node 0.6 compatibility
+	fs.existsSync = fs.existsSync; //Node 0.6 compatibility
 
 var opts = {};
 
