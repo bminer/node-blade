@@ -1,23 +1,19 @@
+<img src="https://raw.githubusercontent.com/bminer/node-blade/master/logo.png" alt="node-blade" height="200"/>
+
 Blade - HTML Template Compiler
 ==============================
 
-Blade is a HTML Template Compiler, inspired by Jade &amp; Haml, implemented in
-JavaScript, so it will run on your microwave oven.
+Blade is a HTML Template Compiler for Node.js, inspired by Jade/Pug and Haml.
 
 It works like this...
 
-1. Write up your template in Blade (which is a Jade-like language)
+1. Write up your template in Blade (which is a Pug-like language)
 2. Use the Blade compiler to generate a Blade template (which is a JavaScript function)
 3. Pass variables into your generated template to produce HTML or XML
 
 [View a simple example](#simple-example)
 
 Never write HTML again. Please.
-
-<img src="http://www.fightingmaster.com/actors/snipes/photos/snipes.jpg"
-alt="Blade" height="169"/>
-
-"Blade's blood is the key" :P Sorry... I had to...
 
 This is *NOT* the Blade templating engine developed by [Laravel](http://laravel.com/).
 Laravel Blade was added in Sept, 2011; whereas, I did not begin development on Blade
@@ -27,7 +23,7 @@ and for creating any confusion. :)
 Table of Contents
 -----------------
 
-- [Why use Blade instead of Jade?](#why-use-blade-instead-of-jade)
+- [Why use Blade instead of Jade/Pug?](#why-use-blade-instead-of-jade)
 - [Features](#features)
 - [Project Status](#project-status)
 - [Installation](#installation)
@@ -41,7 +37,6 @@ Table of Contents
 - [A Simple Example](#simple-example)
 - [Syntax Highlighting](#syntax-highlighting) for your favorite text editor
 - [Plugins](#plugins)
-- [Meteor Support](#meteor-support)
 - [Implementation Details](#implementation-details)
 - [Benchmarks](#benchmarks)
 - [License](#license)
@@ -49,16 +44,14 @@ Table of Contents
 Why use Blade instead of Jade?
 -----------------------
 
-- Jade is an ornamental stone. Blade is a badass vampire hunter.
+- Jade is an ornamental stone; Pugs are ugly. Blade is a badass vampire hunter.
 - **Client-side templates** can be served to the browser, no problem.
 	See [Browser Usage](#browser-usage) and [Blade Middleware]
 	(#blademiddlewaresourcepath-options) for more info.
-- **Meteor support** - Blade works with [Meteor](http://meteor.com/) 0.6.4 and Spark.
-	See the	[documentation below](#meteor-support).
 - **Compatibility** - The language syntax of Blade is very similar to Jade's. Jade is
 	an awesome templating language, and if you are already familiar with it, getting
 	started with Blade should take you very little time.
-- **[Smarter](#fileIncludeDetails) file includes** - 
+- **[Smarter](#fileIncludeDetails) file includes** -
 	Files compiled in Blade can be much smaller than Jade files when you are using file
 	includes because file includes happen at runtime instead of at compile-time. If you
 	re-use the same included file across multiple views, the included file does not need to
@@ -77,12 +70,6 @@ Why use Blade instead of Jade?
 	view template. This allows you to pass rendered HTML content to another function.
 	Checkout the [list of features](#features) below for a more complete list of features
 
-```
-	Jade		vs.		Blade
-```
-<img src="http://i.imgur.com/je5Wd.png" alt="Jade" height="169"/> &nbsp;&nbsp; <img src="http://www.fightingmaster.com/actors/snipes/photos/snipes.jpg" alt="Blade" height="169"/>
-
-OK... it's admittedly not as funny as I thought it would be. But, I tried.
 
 Features
 --------
@@ -101,7 +88,6 @@ Features
 - [String interpolation](#string-interpolation)
 - Nice error reporting to help you debug your broken templates
 - Command-line tool to compile/render templates (try `blade --help`)
-- [Meteor smart package](#meteor-support)
 - Write DOM [event handlers right into your views](#event-handlers)
 - Cool plugins (including [Live UI](https://github.com/bminer/node-blade/wiki/Live-UI-Blade-Plugin))
 
@@ -110,14 +96,12 @@ Project Status
 
 I'd say that Blade itself is **stable**. There are very few (if any)
 [known issues](https://github.com/bminer/node-blade/issues), and I think that Blade
-is ready for production environments. I use Blade for many of my projects.
+is ready for production environments. I use Blade for a few of my projects.
 
-[Meteor support for Blade](#meteor-support) is a **work-in-progress**. The Meteor
+[Meteor support for Blade](#meteor-support) is **deprecated**. The Meteor
 team has been changing the Templating API for Meteor significantly, and it is quite
-likely that any code that has been written for Blade + Meteor support will be
-very broken in the near future. If you use Blade with Meteor, please hang in there.
-Once Meteor 1.0 is released and the APIs are well-documented, I will work to integrate
-Blade with Meteor.
+likely that any code that has been written for Blade + Meteor support is
+broken.
 
 If you find a bug, please [report it here]
 (https://github.com/bminer/node-blade/issues). If you include the Blade code
@@ -135,8 +119,6 @@ for Node (via npm): `sudo npm install -g blade`
 
 Runtime for Browsers: `wget https://raw.github.com/bminer/node-blade/master/lib/runtime.js`
 Minified runtime is about 7-8 KB, uncompressed.
-
-Using Blade in a Meteor project? Check out [Meteor support](#meteor-support).
 
 Syntax
 ------
@@ -325,7 +307,7 @@ For example, you can write:
 p
 	|
 		I am just testing #{whatever + ", alright?"}
-		
+
 		Relax...
 ```
 
@@ -373,7 +355,7 @@ One way is to use a text block:
 
 ```blade
 input(type="text")
-|  
+|
 input(type="text")
 ```
 
@@ -403,7 +385,7 @@ Need `<br/>` tags inserted? Use a built-in filter, perhaps?
 p
 	:nl2br
 		How about some text with some breaks?
-		
+
 		Yep! It works!
 ```
 
@@ -629,7 +611,7 @@ renders as:
 
 ### Foreach
 
-This feature is now deprecated.  Consider the use of the native JavaScript 
+This feature is now **deprecated**.  Consider the use of the native JavaScript
 [Array.prototype.foreach](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Array/forEach).
 
 It is likely that this syntax will be removed in future versions of Blade, but rather
@@ -667,7 +649,7 @@ ul
 
 The foreach region is preferred over the example above not only because of readability
 and brevity, but because it also provides Blade with the ability to better integrate
-with live page updating engines (specifically [Meteor](http://www.meteor.com/) and 
+with live page updating engines (specifically [Meteor](http://www.meteor.com/) and
 [Spark](https://github.com/meteor/meteor/wiki/Spark)).
 That is, if the live page update engine supports tracking reactive collections, the most
 efficient DOM operations may occur to update the view's results in-place, without
@@ -1071,6 +1053,8 @@ modifies some blocks to generate the actual page.
 
 ### Preserve and constant regions
 
+Preserve and constant regions are **deprecated**.
+
 Preserve and constant regions are only useful when using a live page update engine.
 Anything in a "constant" region is marked by the live page update engine as a
 region that is not subject to re-rendering.
@@ -1127,6 +1111,8 @@ preserve ["*"]
 If the "preserve" keyword is not followed by any code, then nothing is preserved.
 
 ### Isolates
+
+Isolates are **deprecated**.
 
 Isolates are only useful when using a live page update engine. Creating an isolate
 ensures that if data dependencies relating only to that isolate are updated, then only
@@ -1456,7 +1442,7 @@ please write me, and I will post the links here. Or, simply submit a pull reques
 Plugins
 -------
 
-**Live UI**
+**Live UI** - **deprecated**
 
 Blade provides a Live UI plugin that allows Blade to use the [Spark live page update
 engine](https://github.com/meteor/meteor/wiki/Spark) independently from Meteor.
@@ -1479,28 +1465,7 @@ Internet Explorer 8.
 Meteor Support
 --------------
 
-Blade provides a [Meteor smart package](http://docs.meteor.com/#smartpackages) here:
-https://github.com/bminer/meteor-blade. At the time of this writing, Blade is not a part of the
-Meteor core smart package list, and Blade support is currently broken as of Meteor
-0.6.5.  Unfortunately, Blade + Meteor support will be suspended until the release of
-Meteor 1.0.
-
-An [Atmosphere smart package](https://atmosphere.meteor.com/package/blade)
-is available for Meteor 0.6.4 (and below), which you can install using Meteorite.
-
-To install Blade's smart package from Atmosphere, simply [install Meteorite]
-(https://atmosphere.meteor.com/wtf/app), navigate to your Meteor project directory,
-and type `mrt add blade`. Then, don't forget to run your project using `mrt` instead
-of `meteor`.
-
-Also check out these Blade features that work well with Meteor:
-
-- [Preserve and constant regions](#preserve-and-constant-regions)
-- [Isolates](#isolates)
-- [Foreach](#foreach)
-
-**More documentation and examples for Meteor + Blade can be found [on this wiki page]
-(https://github.com/bminer/node-blade/wiki/Using-Blade-with-Meteor).**
+Meteor support has been deprecated and will be removed in a future release.
 
 Implementation Details
 ----------------------
