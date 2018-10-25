@@ -1,7 +1,4 @@
-<img src="https://raw.githubusercontent.com/bminer/node-blade/master/logo.png" alt="node-blade" height="200"/>
-
-Blade - HTML Template Compiler
-==============================
+# <img src="https://raw.githubusercontent.com/bminer/node-blade/master/logo.png" alt="node-blade - HTML Template Compiler" height="200"/>
 
 Blade is a HTML Template Compiler for Node.js, inspired by Jade/Pug and Haml.
 
